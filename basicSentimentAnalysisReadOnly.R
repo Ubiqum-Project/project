@@ -13,7 +13,7 @@ library(readr)
 
 #####  Connect your csv file here ###################
 
-cleaned = #---- read CSV Here-----------------
+cleaned = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/etherPull 2018-01-25") #---- read CSV Here-----------------
 
 # colnames(cleaned$api_price_ltc)= "api_bid_btc"
 # 
