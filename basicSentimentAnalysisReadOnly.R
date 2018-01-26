@@ -15,15 +15,15 @@ library(readr)
 
 cleaned = #---- read CSV Here-----------------
 
-colnames(cleaned$api_price_ltc)= "api_bid_btc"
-
-# cleaned = cleanedEther
-# colnames(cleanedEther$api_price_eth)= "api_bid_btc"
-
-cleaned = unique(setDT(newDB), by = c('title'), fromLast = FALSE)    #NOT FOR USE  THIS filters unique values only
-#cleaned = cleanedEther
-
-cleaned = na.omit(cleaned)
+# colnames(cleaned$api_price_ltc)= "api_bid_btc"
+# 
+# # cleaned = cleanedEther
+# # colnames(cleanedEther$api_price_eth)= "api_bid_btc"
+# 
+# cleaned = unique(setDT(newDB), by = c('title'), fromLast = FALSE)    #NOT FOR USE  THIS filters unique values only
+# #cleaned = cleanedEther
+# 
+# cleaned = na.omit(cleaned)
 
 
 cleaned$combined = paste(cleaned$title, cleaned$paragraph)
