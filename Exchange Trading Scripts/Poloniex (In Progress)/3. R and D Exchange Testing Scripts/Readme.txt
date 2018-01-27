@@ -1,1 +1,1 @@
-These scripts work for pulling the public and API key related data.  Have not tested the API key with an account balance.... JD
+These scripts work for pulling the public and API key related data. Tested with an account balance...fully functional JD
