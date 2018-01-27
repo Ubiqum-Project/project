@@ -1,0 +1,1 @@
+Currently only in R&D for Poloniex Trading Scripts.  Using PoloniexR package....would like to generate custom Rcurl script instead to avoid package dependencies.
