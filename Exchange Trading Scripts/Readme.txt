@@ -1,0 +1,1 @@
+Folder of all Exchange Trading Scripts.  IMPORTANT>>>> DO NOT PUSH FILES WITH KEYS>>>>USE GIT IGNORE !!!!!!
