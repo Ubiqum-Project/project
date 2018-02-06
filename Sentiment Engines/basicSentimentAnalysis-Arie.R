@@ -7,17 +7,17 @@ library(data.table)
 library(ggplot2)
 library(plyr)
 library(dplyr)
-##library(qdap) <- does not work on my pc
+##library(qdap) <- does not work on my mac, due to java issues
 library(gridExtra)
 library(readr)
 library(SentimentAnalysis)
 
-#####  Input cleaned dataframe here ################### Why so many na's?
+#####  Input cleaned dataframe here ################### 
 cleaned.x$time_now_gmt <-  as.POSIXct(cleaned.x$time_now_gmt)
 df.s.t <- cleaned.x
 df.s <-  na.omit(df.s.t)
 
-#####  Sentiment ################### Currently title only! Please refer to text-analysis for changes
+#####  Sentiment ################### 
 df.s$nrcSentiment = get_sentiment(df.s$text, method="nrc")
 df.s$bingSentiment = get_sentiment(df.s$text, method="bing")
 df.s$afinnSentiment = get_sentiment(df.s$text, method="afinn")
@@ -32,12 +32,13 @@ df.s$meanrSentiment <-  meanr$score
 #for some, no text will result in NA, thus omit again
 df.s <-  na.omit(df.s)
 
-##### Sentimentr finds titles with word count 0?? More investigation needed
 sentimentr = sentiment(df.s$text)
 sentimentr$word_count[is.na(sentimentr$word_count)] <- 0
 sentimentr = aggregate(.~sentimentr$element_id, data=sentimentr, mean)
 df.s$sentimentrSentiment = sentimentr$sentiment
 
+
+##### Sentiment plotting
 plotNRC = ddply(df.s, 'time_now_gmt', summarise, sentiment = (mean(nrcSentiment)))
 plotBing = ddply(df.s, 'time_now_gmt', summarise, sentiment = mean(bingSentiment))
 plotAfinn = ddply(df.s, 'time_now_gmt', summarise, sentiment = mean(afinnSentiment))
@@ -129,7 +130,7 @@ GI = ggplot(data = plotGI, aes(x = as.POSIXct(plotSentimentr$time_now_gmt), y = 
   labs(title = "GI and Price Over Time")
 GI
 
-HE = ggplot(data = plotGI, aes(x = as.POSIXct(plotHE$time_now_gmt), y = as.numeric(plotHE$sentiment*-80000+10000+8000)), color = "green") + 
+HE = ggplot(data = plotGI, aes(x = as.POSIXct(plotHE$time_now_gmt), y = as.numeric(plotHE$sentiment*-800000+10000+8000)), color = "green") + 
   geom_point(data = df.s, aes(x =df.s$time_now_gmt, y = df.s$api_bid_btc), color = "black") + 
   geom_line(data = plotSentimentr, aes(x = as.POSIXct(plotHE$time_now_gmt), y = as.numeric(plotHE$sentiment*100+5000)), color = "green")+
   geom_smooth(color = "green")+
@@ -139,6 +140,7 @@ HE = ggplot(data = plotGI, aes(x = as.POSIXct(plotHE$time_now_gmt), y = as.numer
   labs(title = "HE and Price Over Time")
 HE
 
+     
 LM = ggplot(data = plotGI, aes(x = as.POSIXct(plotLM$time_now_gmt), y = as.numeric(plotLM$sentiment*-80000+10000+8000)), color = "green") + 
   geom_point(data = df.s, aes(x =df.s$time_now_gmt, y = df.s$api_bid_btc), color = "black") + 
   geom_line(data = plotSentimentr, aes(x = as.POSIXct(plotLM$time_now_gmt), y = as.numeric(plotLM$sentiment*100+5000)), color = "green")+
@@ -185,8 +187,42 @@ COMB = ggplot(data = plotSentimentr, aes(x = as.POSIXct(plotSentimentr$time_now_
   labs(title = "Combined Plot with all Models")
 COMB
 
+COMB2 = ggplot(data = plotGI, aes(x = as.POSIXct(plotGI$time_now_gmt), y = as.numeric(plotGI$sentiment*-80000+10000)), color = "green") + 
+  geom_point(data = df.s, aes(x =df.s$time_now_gmt, y = df.s$api_bid_btc), color = "black") + 
+  geom_line(data = plotGI, aes(x = as.POSIXct(plotGI$time_now_gmt), y = as.numeric(plotGI$sentiment*100+7000)), color = "green")+
+  geom_smooth(color = "green")+
+  #--------> plotHE
+  geom_line(data = plotHE, aes(x = as.POSIXct(plotHE$time_now_gmt), y = as.numeric(plotHE$sentiment*100+6000)), color = "blue")+
+  geom_smooth(aes(color = "blue", x = as.POSIXct(plotHE$time_now_gmt), y = as.numeric(plotHE$sentiment*-8000+11000)))+
+  #--------> plotQDAP
+  geom_line(data = plotQDAP, aes(x = as.POSIXct(plotQDAP$time_now_gmt), y = as.numeric(plotQDAP$sentiment*100+5000)), color = "red")+
+  geom_smooth(aes(color = "red", x = as.POSIXct(plotQDAP$time_now_gmt), y = as.numeric(plotQDAP$sentiment*-8000+13000)))+
+  #--------> plotLM
+  geom_line(data = plotLM , aes(x = as.POSIXct(plotLM$time_now_gmt), y = as.numeric(plotLM$sentiment*100+4000)), color = "purple")+
+  geom_smooth(aes(color = "purple", x = as.POSIXct(plotLM$time_now_gmt), y = as.numeric(plotLM$sentiment*-8000+11000)))+
+  scale_y_continuous(sec.axis = sec_axis(~./8000, name = "Relative Sentiment"))+
+  xlab('Date') +
+  ylab('Bitcoin Price')+
+  labs(title = "Combined Plot with all Models - 2")
+COMB2
+
 quadPlot = grid.arrange(NRC, AFINN, BING, SZUZ, MEANR,SENTR, COMB,ncol = 2, nrow = 4)
 quadPlot
 
+quadPlot2 = grid.arrange(HE, LM, QDAP, GI, COMB2,ncol = 2, nrow = 4)
+quadPlot2
+
 #######################End ####################################
 
+
+plotSentimentr.d = ddply(df.s, 'time_now_gmt', summarise, sentiment = mean(sentimentrSentiment), delta = mean(price_gf_delta_btc))
+
+SENTR.d = ggplot(data = plotSentimentr, aes(x = as.POSIXct(plotSentimentr.d$time_now_gmt), y = as.numeric(plotSentimentr.d$sentiment)), color = "green") + 
+  geom_point(data = df.s, aes(x =df.s$time_now_gmt, y = df.s$api_bid_btc), color = "black") + 
+  geom_line(data = plotSentimentr, aes(x = as.POSIXct(plotSentimentr.d$time_now_gmt), y = as.numeric(plotSentimentr.d$sentiment*100+5000)), color = "green")+
+  geom_smooth(color = "green")+
+  geom_smooth(data = df.s, aes(color = "black", x = as.POSIXct(df.s$time_now_gmt), y = as.numeric(df.s$api_bid_btc)))+
+  xlab('Date') +
+  ylab('Bitcoin Price')+
+  labs(title = "Sentimentr and Price Over Time")
+SENTR.d
