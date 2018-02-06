@@ -11,11 +11,12 @@ library(dplyr)
 library(gridExtra)
 library(readr)
 library(SentimentAnalysis)
+library(gtools)
 
-#####  Input cleaned dataframe here ################### 
-cleaned.x$time_now_gmt <-  as.POSIXct(cleaned.x$time_now_gmt)
-df.s.t <- cleaned.x
-df.s <-  na.omit(df.s.t)
+#####  Input cleaned dataframe here ###################
+df.s <- read_csv("~/Desktop/cleaned.csv", 
+                    col_types = cols(X1_1 = col_skip()))
+df.s$time_now_gmt <-  as.POSIXct(df.s$time_now_gmt)
 
 #####  Sentiment ################### 
 df.s$nrcSentiment = get_sentiment(df.s$text, method="nrc")
@@ -30,7 +31,7 @@ meanr = score(df.s$text)
 df.s$meanrSentiment <-  meanr$score
 
 #for some, no text will result in NA, thus omit again
-df.s <-  na.omit(df.s)
+# df.s <-  na.omit(df.s)
 
 sentimentr = sentiment(df.s$text)
 sentimentr$word_count[is.na(sentimentr$word_count)] <- 0
@@ -213,16 +214,3 @@ quadPlot2 = grid.arrange(HE, LM, QDAP, GI, COMB2,ncol = 2, nrow = 4)
 quadPlot2
 
 #######################End ####################################
-
-
-plotSentimentr.d = ddply(df.s, 'time_now_gmt', summarise, sentiment = mean(sentimentrSentiment), delta = mean(price_gf_delta_btc))
-
-SENTR.d = ggplot(data = plotSentimentr, aes(x = as.POSIXct(plotSentimentr.d$time_now_gmt), y = as.numeric(plotSentimentr.d$sentiment)), color = "green") + 
-  geom_point(data = df.s, aes(x =df.s$time_now_gmt, y = df.s$api_bid_btc), color = "black") + 
-  geom_line(data = plotSentimentr, aes(x = as.POSIXct(plotSentimentr.d$time_now_gmt), y = as.numeric(plotSentimentr.d$sentiment*100+5000)), color = "green")+
-  geom_smooth(color = "green")+
-  geom_smooth(data = df.s, aes(color = "black", x = as.POSIXct(df.s$time_now_gmt), y = as.numeric(df.s$api_bid_btc)))+
-  xlab('Date') +
-  ylab('Bitcoin Price')+
-  labs(title = "Sentimentr and Price Over Time")
-SENTR.d
