@@ -12,7 +12,6 @@ library(gridExtra)
 library(readr)
 
 #####  Connect your csv file here ###################
-
 cleaned = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/etherPull 2018-01-25") #---- read CSV Here-----------------
 
 # colnames(cleaned$api_price_ltc)= "api_bid_btc"
@@ -28,6 +27,7 @@ cleaned = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/etherPull 2018
 
 cleaned$combined = paste(cleaned$title, cleaned$paragraph)
 
+
 cleaned$nrcSentiment = get_sentiment(cleaned$combined, method="nrc")
 
 cleaned$bingSentiment = get_sentiment(cleaned$combined, method="bing")
@@ -35,6 +35,7 @@ cleaned$bingSentiment = get_sentiment(cleaned$combined, method="bing")
 cleaned$afinnSentiment = get_sentiment(cleaned$combined, method="afinn")
 
 cleaned$syuzhetSentiment = get_sentiment(cleaned$combined, method="syuzhet")
+
 
 meanr = score(cleaned$combined)
 cleaned$meanrSentiment = meanr$score

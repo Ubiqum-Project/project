@@ -1,61 +1,63 @@
-library(readr)
-library(tm)
-
-cleaned <- read_csv("~/Desktop/bitcoinPull 2018-01-25")
-cleaned.x <- cleaned[1:45000,]
-docs <- Corpus(VectorSource(cleaned$title[1:45000]))
-# docs.x <- Corpus(VectorSource(cleaned$title))
-inspect(docs)
-
-#convert various characters to spaces, to split up the words in the text
-toSpace <- content_transformer(function (x, pattern) gsub(pattern, " ", x, fixed=TRUE))
-docs <- tm_map(docs, toSpace, ")")
-docs <- tm_map(docs, toSpace, "/")
-docs <- tm_map(docs, toSpace, "@")
-docs <- tm_map(docs, toSpace, "\\|")
-docs <- tm_map(docs, toSpace, "\\")
-docs <- tm_map(docs, toSpace, "(")
-docs <- tm_map(docs, toSpace, "#")
-docs <- tm_map(docs, toSpace, ":")
-docs <- tm_map(docs, toSpace, "-")
-docs <- tm_map(docs, toSpace, "_")
-docs <- tm_map(docs, toSpace, "\r")
-docs <- tm_map(docs, toSpace, "\n")
-
-# Convert the text to lower case
-docs <- tm_map(docs, content_transformer(tolower))
-# Remove numbers (not required?)
-docs <- tm_map(docs, removeNumbers)
-# Remove punctuations
-docs <- tm_map(docs, removePunctuation)
-# Remove your own stop word
-# specify your stopwords as a character vector
-docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading", "commentsharesavehidereportloading","commentssharesavehidereport","submitted", "reddit", "redditcom", "hour ago", "hours ago", "pictwittercom", "just", "now", "minutes", "ago")) 
-# Remove english common stopwords
-docs <- tm_map(docs, removeWords, stopwords("english"))
-# Eliminate extra white spaces
-docs <- tm_map(docs, stripWhitespace)
-# Text stemming
-#docs <- tm_map(docs, stemDocument)
-
-title.df <- data.frame(text = sapply(docs, paste, collapse = " "), stringsAsFactors = FALSE)
-cleaned.x <- as.data.frame(cbind(cleaned.x,title.df))
-
-#write.csv(cleaned.x, "cleanedX.csv")
-
-
+#Library
+{
+  usePackage <- function(p) 
+  {
+    if (!is.element(p, installed.packages()[,1]))
+      install.packages(p, dep = TRUE)
+    require(p, character.only = TRUE)
+  }
+  
+  usePackage("ggplot2")
+  usePackage("dplyr")
+  usePackage("readr")
+  usePackage("tidytext")
+  usePackage("tidyverse")    # data manipulation & plotting
+  usePackage("stringr")        # text cleaning and regular expressions
+  usePackage("tm")
+  usePackage("widyr")
+  usePackage("countrycode")
+}
 
 ##### text analysis ##### 
-dtm <- TermDocumentMatrix(docs)
-m <- as.matrix(dtm)
-v <- sort(rowSums(m),decreasing=TRUE)
-d <- data.frame(word = names(v),freq=v)
-head(d, 10)
+#Data cleaned
+#cleaned <- read_csv("~/Desktop/cleaned.csv")
+source.name<-levels(factor(cleaned$name))
 
-findFreqTerms(dtm, lowfreq = 200)
-findAssocs(dtm, terms = "game", corlimit = 0.3)
-head(d, 10)
+Text.title<-tibble(article=seq_along(cleaned$text),source=cleaned$name,text=cleaned$text,time=cleaned$time_downloaded_gmt)
+#Text.title$source <- factor(Text.title$source, levels = rev(Text.title$source))
 
-barplot(d[1:10,]$freq, las = 2, names.arg = d[1:10,]$word,
-        col ="lightblue", main ="Most frequent words",
-        ylab = "Word frequencies")
+Title.word<-Text.title %>%
+  unnest_tokens(word, text)
+
+Title.word %>%
+  count(word, sort = TRUE)
+
+# pattern<-Title.word %>%
+#   filter(source=="BBC") %>%
+#   anti_join(stop_words) %>%
+#   group_by(source) %>%
+#   count(word, sort = TRUE) %>%
+#   top_n(10)
+
+#TOP 10 words per sources 
+for(i in 1:length(source.name)){
+  name<-source.name[i]
+  print(Title.word %>%
+          anti_join(stop_words) %>%
+          group_by(source) %>%
+          filter(source==name) %>%
+          count(word, sort = TRUE) %>%
+          filter(word != c("bitcoin")) %>%
+          top_n(10) %>%
+          ungroup() %>%
+          mutate(source = factor(source),
+                 text_order = nrow(.):1) %>%
+          ggplot(aes(reorder(word, text_order), n, fill = source)) +
+          geom_bar(stat = "identity") +
+          facet_wrap(~ source, scales = "free_y") +
+          labs(x = "NULL", y = "Frequency") +
+          coord_flip() +
+          theme(legend.position="none")
+  )
+  Sys.sleep(2)
+}
