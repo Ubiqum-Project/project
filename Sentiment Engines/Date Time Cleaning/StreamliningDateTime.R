@@ -347,32 +347,31 @@ googlePlusFunction <- function(dirtyDate){
 
 dayFunction <- function(i){
 
-  x = as.character(downloadTime[i] - as.numeric(regmatches(articleTime[i],gregexpr('[0-9]+',articleTime[i])))*60*60*24)
+  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60*24)
   return(x)
  
 }
 
 hourFunction <- function(i){
-  x = as.character(downloadTime[i] - as.numeric(regmatches(articleTime[i],gregexpr('[0-9]+',articleTime[i])))*60*60)
+  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
   return(x)
 }
 
 
-
-
-
 minuteFunction <- function(i){
-  x = as.character( now - as.numeric(unlist(regmatches(time$datez[i],gregexpr('[0-9]+',time$datez[i]))))*60)
+  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+
   return(x)
 }
 
 secondFunction <- function(i){
-  x = as.character(now - as.numeric(unlist(regmatches(time$datez[i],gregexpr('[0-9]+',time$datez[i])))))
+  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i]))))
+
   return(x)
 }
 
 justNowFunction <- function(i){
-  x = as.character(now)
+  x = time$download[i]
   return(x)
 }
 
@@ -462,6 +461,7 @@ time$timeNOWGMT = mdy_hms(time$timeNOWGMT)
 y = split(time, time$name)
 bbc = as.data.frame(y["BBC"])
 bcn = as.data.frame(y["Bitcoin News"])
+
 cd = as.data.frame(y["China Daily"])
 cnbc = as.data.frame(y["CNBC"])
 cndk= as.data.frame(y["Coin Desk"])
@@ -501,30 +501,99 @@ bcn$cleaned = as.POSIXct(bcn$Bitcoin.News.timeNOWGMT)
 downloadTime =  as.data.frame(bcn$Bitcoin.News.timeNOWGMT)
 articleTime =  as.data.frame(bcn$Bitcoin.News.datez)
 
-time = data.frame()
-grepl(paste(hourLibrary,collapse="|"), articleTime[3])
-grepl(paste(hourLibrary,collapse="|"), articleTime[1])
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
 
 
-for (i in 1:length(articleTime))
+
+for (i in 1:length(time$article))
 {
-  
-  if(grepl(paste(hourLibrary,collapse="|"), articleTime[i]))
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {    bcn$error[i] = "Hours"  
   bcn$cleaned[i] = hourFunction(i)
- # print(as.POSIXct(dmy(bcn$Bitcoin.News.datez[i])))
   }
   
-  else if(grepl(paste(dayLibrary,collapse="|"), articleTime[i]))
+  else if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
   {    bcn$error[i] = "Days"  
    bcn$cleaned[i] = dayFunction(i)
-  # print(as.POSIXct(dmy(bcn$Bitcoin.News.datez[i])))
   }
-  else if(grepl("\\d", articleTime[i]))
+  else if(grepl("\\d", time$article[i]))
   {    bcn$error[i] = "dates"  
-  # bcn$cleaned[i] = dmy(bcn$Bitcoin.News.datez[i])
-  # print(as.POSIXct(dmy(bcn$Bitcoin.News.datez[i])))
+   bcn$cleaned[i] = mdy_hms(as.character(time$article[i]))
+  }else{
+  bcn$error[i] = "default"
+  bcn$cleaned[i] = as.POSIXct(time$download[i])
   }
- 
+ }
+
+#----------->cd Date Cleaning Function -------------------------
+cd$cleaned = as.POSIXct(cd$China.Daily.timeNOWGMT)
+
+downloadTime =  as.data.frame(cd$China.Daily.timeNOWGMT)
+articleTime =  as.data.frame(cd$China.Daily.datez)
+
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+as.POSIXct(as.character(time$article[1]))
+
+for (i in 1:length(time$article))
+{
+   if(grepl("\\d", time$article[i]))
+  {    cd$error[i] = "dates"  
+  cd$cleaned[i] = ymd_hm(as.character(time$article[i]))
+   }
+  else{cd$cleaned[i] = time$download[i]
+  cd$error[i] = "default"
+  }
 }
-bcn  
+
+#----------->cnbc Date Cleaning Function -------------------------
+
+cnbc$cleaned = as.POSIXct(cnbc$CNBC.timeNOWGMT)
+
+downloadTime =  as.data.frame(cnbc$CNBC.timeNOWGMT)
+articleTime =  as.data.frame(cnbc$CNBC.datez)
+
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+as.POSIXct(time$download[10])
+time$download[10]
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {    cnbc$error[i] = "Hours"  
+  cnbc$cleaned[i] = hourFunction(i)
+  }
+  
+  else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {    cnbc$error[i] = "Minutes"  
+  cnbc$cleaned[i] = dayFunction(i)
+  }
+  else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {    cnbc$error[i] = "Now"  
+   cnbc$cleaned[i] =as.POSIXct(time$download[i])
+  }
+  else if(grepl("\\d", time$article[i]))
+  {    cnbc$error[i] = "dates"  
+  #cnbc$cleaned[i] = (as.character(time$article[i]))
+  }else{
+    cnbc$error[i] = "default"
+    cnbc$cleaned[i] = as.POSIXct(time$download[i])
+  }
+}
+
+cnbc
+
+
+
+
+
+
+
+
+cd
+bcn
+bbc
