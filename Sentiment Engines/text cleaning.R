@@ -24,6 +24,13 @@ removeURL  <- function(x) gsub (" ?(f|ht)(tp)s?(://)(\\S*)[./](\\S*)", "", x)
 docs <- tm_map(docs, toSpace.t, "pic.twitter")
 docs <- tm_map(docs, removeURL)
 docs <- tm_map(docs, toSpace, "/r/btc")
+docs <- tm_map(docs, toSpace, "/r")
+docs <- tm_map(docs, toSpace, "S9")
+docs <- tm_map(docs, toSpace, "s9")
+docs <- tm_map(docs, toSpace, "s5")
+docs <- tm_map(docs, toSpace, "s7")
+docs <- tm_map(docs, toSpace, "S5")
+docs <- tm_map(docs, toSpace, "S7")
 docs <- tm_map(docs, toSpace, ")")
 docs <- tm_map(docs, toSpace, "/")
 docs <- tm_map(docs, toSpace, "@")
@@ -47,7 +54,7 @@ docs <- tm_map(docs, removeNumbers)
 docs <- tm_map(docs, removePunctuation)
 # Remove your own stop word
 # specify your stopwords as a character vector
-docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading", "commentsharesavehidereportloading","commentssharesavehidereport","submitted", "reddit", "redditcom", "hour ago", "hours ago", "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1","wsj", "pm","city","pic.twitter.com","http","https","wrap","live", "cointelegraph", "am","bloomberg","selfcryptocurrency","ireddit","selfbitcoinmining","selfbitcointmarkets","discussiondaily","selfbitcoinbayarea","bitcointallbotcommentsharesavehidereport","dailycommentsharesavehidereport", "usethebitcoincom","andix3commentsharesavehidereport", "selfbitcoinmarkets","bitcoinallbotcommentsharesavehidereport", "newsbtc","read","cnbc","video","cryptodailycouk","coindoocom","andixcommentsharesavehidereport","selfbitcoinxt","lhicocommentsharesavehidereport","bitcoinallbot","iimgurcom", "minute", "months", "month","day","days")) 
+docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading", "commentsharesavehidereportloading","commentssharesavehidereport","submitted", "reddit", "redditcom", "hour ago", "hours ago", "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1","wsj", "pm","city","pic.twitter.com","http","https","wrap","live", "cointelegraph", "am","bloomberg","selfcryptocurrency","ireddit","selfbitcoinmining","selfbitcointmarkets","discussiondaily","selfbitcoinbayarea","bitcointallbotcommentsharesavehidereport","dailycommentsharesavehidereport", "usethebitcoincom","andix3commentsharesavehidereport", "selfbitcoinmarkets","bitcoinallbotcommentsharesavehidereport", "newsbtc","read","cnbc","video","cryptodailycouk","coindoocom","andixcommentsharesavehidereport","selfbitcoinxt","lhicocommentsharesavehidereport","bitcoinallbot","iimgurcom", "minute", "months", "month","day","days","10k", "10K", "8k", "9k","7k","8K","9K","7K")) 
 # Remove english common stopwords
 docs <- tm_map(docs, removeWords, stopwords("english"))
 # Eliminate extra white spaces
