@@ -255,93 +255,96 @@ dayLibrary <- c("day",
                 "DAYS"
 )
 
-googlePlusFunction <- function(dirtyDate){
-  clean =gsub("1h", "60",dirtyDate, ignore.case = T)
-  clean =gsub("2h", "120",clean, ignore.case = T)
-  clean =gsub("3h", "180",clean, ignore.case = T)
-  clean =gsub("4h", "240",clean, ignore.case = T)
-  clean =gsub("5h", "300",clean, ignore.case = T)
-  clean =gsub("6h", "360",clean, ignore.case = T)
-  clean =gsub("7h", "420",clean, ignore.case = T)
-  clean =gsub("8h", "480",clean, ignore.case = T)
-  clean =gsub("9h", "540",clean, ignore.case = T)
-  clean =gsub("10h", "600",clean, ignore.case = T)
-  clean =gsub("11h", "660",clean, ignore.case = T)
-  clean =gsub("12h", "720",clean, ignore.case = T)
-  clean =gsub("13h", "780",clean, ignore.case = T)
-  clean =gsub("14h", "840",clean, ignore.case = T)
-  clean =gsub("15h", "900",clean, ignore.case = T)
-  clean =gsub("16h", "960",clean, ignore.case = T)
-  clean =gsub("17h", "1020",clean, ignore.case = T)
-  clean =gsub("18h", "1080",clean, ignore.case = T)
-  clean =gsub("19h", "1140",clean, ignore.case = T)
-  clean =gsub("20h", "1200",clean, ignore.case = T)
-  clean =gsub("21h", "1260",clean, ignore.case = T)
-  clean =gsub("22h", "1320",clean, ignore.case = T)
-  clean =gsub("23h", "1380",clean, ignore.case = T)
-  clean =gsub("24h", "1440",clean, ignore.case = T)
-  clean =gsub("1m", "1",clean, ignore.case = T)
-  clean =gsub("2m", "2",clean, ignore.case = T)
-  clean =gsub("3m", "3",clean, ignore.case = T)
-  clean =gsub("4m", "4",clean, ignore.case = T)
-  clean =gsub("5m", "5",clean, ignore.case = T)
-  clean =gsub("6m", "6",clean, ignore.case = T)
-  clean =gsub("7m", "7",clean, ignore.case = T)
-  clean =gsub("8m", "8",clean, ignore.case = T)
-  clean =gsub("9m", "9",clean, ignore.case = T)
-  clean =gsub("10m", "10",clean, ignore.case = T)
-  clean =gsub("11m", "11",clean, ignore.case = T)
-  clean =gsub("12m", "12",clean, ignore.case = T)
-  clean =gsub("13m", "13",clean, ignore.case = T)
-  clean =gsub("14m", "14",clean, ignore.case = T)
-  clean =gsub("15m", "15",clean, ignore.case = T)
-  clean =gsub("16m", "16",clean, ignore.case = T)
-  clean =gsub("17m", "17",clean, ignore.case = T)
-  clean =gsub("18m", "18",clean, ignore.case = T)
-  clean =gsub("19m", "19",clean, ignore.case = T)
-  clean =gsub("20m", "20",clean, ignore.case = T)
-  clean =gsub("21m", "21",clean, ignore.case = T)
-  clean =gsub("22m", "22",clean, ignore.case = T)
-  clean =gsub("23m", "23",clean, ignore.case = T)
-  clean =gsub("24m", "24",clean, ignore.case = T)
-  clean =gsub("25m", "25",clean, ignore.case = T)
-  clean =gsub("26m", "26",clean, ignore.case = T)
-  clean =gsub("27m", "27",clean, ignore.case = T)
-  clean =gsub("28m", "28",clean, ignore.case = T)
-  clean =gsub("29m", "29",clean, ignore.case = T)
-  clean =gsub("30m", "30",clean, ignore.case = T)
-  clean =gsub("31m", "31",clean, ignore.case = T)
-  clean =gsub("32m", "32",clean, ignore.case = T)
-  clean =gsub("33m", "33",clean, ignore.case = T)
-  clean =gsub("34m", "34",clean, ignore.case = T)
-  clean =gsub("35m", "35",clean, ignore.case = T)
-  clean =gsub("36m", "36",clean, ignore.case = T)
-  clean =gsub("37m", "37",clean, ignore.case = T)
-  clean =gsub("38m", "38",clean, ignore.case = T)
-  clean =gsub("39m", "39",clean, ignore.case = T)
-  clean =gsub("40m", "40",clean, ignore.case = T)
-  clean =gsub("41m", "41",clean, ignore.case = T)
-  clean =gsub("42m", "42",clean, ignore.case = T)
-  clean =gsub("43m", "43",clean, ignore.case = T)
-  clean =gsub("44m", "44",clean, ignore.case = T)
-  clean =gsub("45m", "45",clean, ignore.case = T)
-  clean =gsub("46m", "46",clean, ignore.case = T)
-  clean =gsub("47m", "47",clean, ignore.case = T)
-  clean =gsub("48m", "48",clean, ignore.case = T)
-  clean =gsub("49m", "49",clean, ignore.case = T)
-  clean =gsub("50m", "50",clean, ignore.case = T)
-  clean =gsub("51m", "51",clean, ignore.case = T)
-  clean =gsub("52m", "52",clean, ignore.case = T)
-  clean =gsub("53m", "53",clean, ignore.case = T)
-  clean =gsub("54m", "54",clean, ignore.case = T)
-  clean =gsub("55m", "55",clean, ignore.case = T)
-  clean =gsub("56m", "56",clean, ignore.case = T)
-  clean =gsub("57m", "57",clean, ignore.case = T)
-  clean =gsub("58m", "58",clean, ignore.case = T)
+googlePlusFunction <- function(i){
+  # time$article[1]
+  # i=1  
+  clean =gsub("60m", "60",time$article[i], ignore.case = T)
   clean =gsub("59m", "59",clean, ignore.case = T)
-  clean =gsub("60m", "60",clean, ignore.case = T)
+  clean =gsub("58m", "58",clean, ignore.case = T)
+  clean =gsub("57m", "57",clean, ignore.case = T)
+  clean =gsub("56m", "56",clean, ignore.case = T)
+  clean =gsub("55m", "55",clean, ignore.case = T)
+  clean =gsub("54m", "54",clean, ignore.case = T)
+  clean =gsub("53m", "53",clean, ignore.case = T)
+  clean =gsub("52m", "52",clean, ignore.case = T)
+  clean =gsub("51m", "51",clean, ignore.case = T)
+  clean =gsub("50m", "50",clean, ignore.case = T)
+  clean =gsub("49m", "49",clean, ignore.case = T)
+  clean =gsub("48m", "48",clean, ignore.case = T)
+  clean =gsub("47m", "47",clean, ignore.case = T)
+  clean =gsub("46m", "46",clean, ignore.case = T)
+  clean =gsub("45m", "45",clean, ignore.case = T)
+  clean =gsub("44m", "44",clean, ignore.case = T)
+  clean =gsub("43m", "43",clean, ignore.case = T)
+  clean =gsub("42m", "42",clean, ignore.case = T)
+  clean =gsub("41m", "41",clean, ignore.case = T)
+  clean =gsub("40m", "40",clean, ignore.case = T)
+  clean =gsub("39m", "39",clean, ignore.case = T)
+  clean =gsub("38m", "38",clean, ignore.case = T)
+  clean =gsub("37m", "37",clean, ignore.case = T)
+  clean =gsub("36m", "36",clean, ignore.case = T)
+  clean =gsub("35m", "35",clean, ignore.case = T)
+  clean =gsub("34m", "34",clean, ignore.case = T)
+  clean =gsub("33m", "33",clean, ignore.case = T)
+  clean =gsub("32m", "32",clean, ignore.case = T)
+  clean =gsub("31m", "31",clean, ignore.case = T)
+  clean =gsub("30m", "30",clean, ignore.case = T)
+  clean =gsub("29m", "29",clean, ignore.case = T)
+  clean =gsub("28m", "28",clean, ignore.case = T)
+  clean =gsub("27m", "27",clean, ignore.case = T)
+  clean =gsub("26m", "26",clean, ignore.case = T)
+  clean =gsub("25m", "25",clean, ignore.case = T)
+  clean =gsub("24m", "24",clean, ignore.case = T)
+  clean =gsub("23m", "23",clean, ignore.case = T)
+  clean =gsub("22m", "22",clean, ignore.case = T)
+  clean =gsub("21m", "21",clean, ignore.case = T)
+  clean =gsub("20m", "20",clean, ignore.case = T)
+  clean =gsub("19m", "19",clean, ignore.case = T)
+  clean =gsub("18m", "18",clean, ignore.case = T)
+  clean =gsub("17m", "17",clean, ignore.case = T)
+  clean =gsub("16m", "16",clean, ignore.case = T)
+  clean =gsub("15m", "15",clean, ignore.case = T)
+  clean =gsub("14m", "14",clean, ignore.case = T)
+  clean =gsub("13m", "13",clean, ignore.case = T)
+  clean =gsub("12m", "12",clean, ignore.case = T)
+  clean =gsub("11m", "11",clean, ignore.case = T)
+  clean =gsub("10m", "10",clean, ignore.case = T)
+  clean =gsub("9m", "9",clean, ignore.case = T)
+  clean =gsub("8m", "8",clean, ignore.case = T)
+  clean =gsub("7m", "7",clean, ignore.case = T)
+  clean =gsub("6m", "6",clean, ignore.case = T)
+  clean =gsub("5m", "5",clean, ignore.case = T)
+  clean =gsub("4m", "4",clean, ignore.case = T)
+  clean =gsub("3m", "3",clean, ignore.case = T)
+  clean =gsub("2m", "2",clean, ignore.case = T)
+  clean =gsub("1m", "1",clean, ignore.case = T)
+  clean =gsub("24h", "1440",clean, ignore.case = T)
+  clean =gsub("23h", "1380",clean, ignore.case = T)
+  clean =gsub("22h", "1320",clean, ignore.case = T)
+  clean =gsub("21h", "1260",clean, ignore.case = T)
+  clean =gsub("20h", "1200",clean, ignore.case = T)
+  clean =gsub("19h", "1140",clean, ignore.case = T)
+  clean =gsub("18h", "1080",clean, ignore.case = T)
+  clean =gsub("17h", "1020",clean, ignore.case = T)
+  clean =gsub("16h", "960",clean, ignore.case = T)
+  clean =gsub("15h", "900",clean, ignore.case = T)
+  clean =gsub("14h", "840",clean, ignore.case = T)
+  clean =gsub("13h", "780",clean, ignore.case = T)
+  clean =gsub("12h", "720",clean, ignore.case = T)
+  clean =gsub("11h", "660",clean, ignore.case = T)
+  clean =gsub("10h", "600",clean, ignore.case = T)
+  clean =gsub("9h", "540",clean, ignore.case = T)
+  clean =gsub("8h", "480",clean, ignore.case = T)
+  clean =gsub("7h", "420",clean, ignore.case = T)
+  clean =gsub("6h", "360",clean, ignore.case = T)
+  clean =gsub("5h", "300",clean, ignore.case = T)
+  clean =gsub("4h", "240",clean, ignore.case = T)
+  clean =gsub("3h", "180",clean, ignore.case = T)
+  clean =gsub("2h", "120",clean, ignore.case = T)
+  clean =gsub("1h", "60",clean, ignore.case = T)
+  
   clean = as.numeric(clean)
-  x = as.character(now-clean*60)
+  x = as_datetime(time$download[i]-clean*60)
   x
   return(x)
 }
@@ -355,6 +358,7 @@ dayFunction <- function(i){
 
 hourFunction <- function(i){
   x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+ 
   return(x)
 }
 
@@ -380,7 +384,7 @@ yesterdayAtFunction <- function(i){
   testSplit = do.call('rbind',strsplit(as.character(time$article[i]),   " "   ,fixed=TRUE))
   yesterdayTime = testSplit[length(testSplit)]
   yesterdayTime
-  yesterdayDate = as.character(as.Date((time$download[i]-1)))
+   yesterdayDate = as.character(as.Date((time$download[i]-(60*60*24))))
   yesterdayDate
   x = paste(yesterdayDate, yesterdayTime, sep=" ")
   x
@@ -458,9 +462,7 @@ germanMonthFunctionNoTime <- function(i){
   x = as_datetime(as.character(unlist(dmy_hms(clean))))
   return(x)
 }
-time$article[6]
-germanMonthFunctionNoTime(1)
-germanMonthFunction(6)
+
 
 library(readxl)
 library(chron)
@@ -630,78 +632,263 @@ for (i in 1:length(time$article))
 }
 
 
-#----------->fbbtc Date Cleaning Function -------------------------
+#----------->fbbtc Date Cleaning Function (German) -------------------------
 
 fbbtc$cleaned = as.POSIXct(fbbtc$Facebook.BTC.Group.timeNOWGMT)
 downloadTime =  as.data.frame(fbbtc$Facebook.BTC.Group.timeNOWGMT)
 articleTime =  as.data.frame(fbbtc$Facebook.BTC.Group.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
-fbbtc
 
-time$article[7]
-
-germanMonthFunction(2)
-germanMonthFunctionNoTime(6)
-i =9
-
-
-
+for (i in 1:length(time$article))
+{
 if(grepl(paste(germanMonthLibrary,collapse="|"), time$article[i]))
 { if(grepl(":", time$article[i]))   {
-  germanMonthFunction(i)
+  fbbtc$error[i] = "Month with Time"
+  fbbtc$cleaned[i] = germanMonthFunction(i)
 }else { 
-  
-  germanMonthFunctionNoTime(i)
+  fbbtc$error[i] = "Month No Time"
+  fbbtc$cleaned[i] =germanMonthFunctionNoTime(i)
   }
 
 }else if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
 {
-  hourFunction(i)
+  fbbtc$error[i] = "Hours"
+  fbbtc$cleaned[i] = hourFunction(i)
 }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
 {
-  minuteFunction(i)
+  fbbtc$error[i] = "Minutes"
+  fbbtc$cleaned[i] = minuteFunction(i)
 }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
 {
-  as.POSIXct(time$download[i])
+  fbbtc$error[i] = "Time Meow"
+  fbbtc$cleaned[i] =as.POSIXct(time$download[i])
 }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
 {
-  ymd_hm(yesterdayAtFunction(i))
+  fbbtc$error[i] = "Yesterday at __"
+  fbbtc$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+}else
+{
+  fbbtc$error[i] = "Default"
+  fbbtc$cleaned[i] = time$download[i]
 }
+}
+
+#----------->fbbtc Date Cleaning Function -------------------------
+
+
+fbsrch$cleaned = as.POSIXct(fbsrch$Facebook.Search.timeNOWGMT)
+downloadTime =  as.data.frame(fbsrch$Facebook.Search.timeNOWGMT)
+articleTime =  as.data.frame(fbsrch$Facebook.Search.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(germanMonthLibrary,collapse="|"), time$article[i]))
+  { if(grepl(":", time$article[i]))   {
+    fbsrch$error[i] = "Month with Time"
+    fbsrch$cleaned[i] = germanMonthFunction(i)
+  }else { 
+    fbsrch$error[i] = "Month No Time"
+    fbsrch$cleaned[i] =germanMonthFunctionNoTime(i)
+  }
+    
+  }else if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    fbsrch$error[i] = "Hours"
+    fbsrch$cleaned[i] = hourFunction(i)
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    fbsrch$error[i] = "Minutes"
+    fbsrch$cleaned[i] = minuteFunction(i)
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    fbsrch$error[i] = "Time Meow"
+    fbsrch$cleaned[i] =as.POSIXct(time$download[i])
+  }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+  {
+    fbsrch$error[i] = "Yesterday at __"
+    fbsrch$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+  }else
+  {
+    fbsrch$error[i] = "Default"
+    fbsrch$cleaned[i] = time$download[i]
+  }
+}
+
+#----------->fr Date Cleaning Function -------------------------
+
+fr$cleaned = as.POSIXct(fr$Free.Republic.timeNOWGMT)
+downloadTime =  as.data.frame(fr$Free.Republic.timeNOWGMT)
+articleTime =  as.data.frame(fr$Free.Republic.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    fr$error[i] = "dates"  
+  fr$cleaned[i]=as.POSIXct(parse_date_time(time$article[i],"m/d/y IMS  p"))
+  }
+  else{fr$cleaned[i] = time$download[i]
+  fr$error[i] = "default"
+  }
+}
+
+#----------->gf Date Cleaning Function -------------------------
+
+gf$Google.Finance.datez= gsub("^.*?-","",gf$Google.Finance.datez)
+gf$cleaned = as.POSIXct(gf$Google.Finance.timeNOWGMT)
+downloadTime =  as.data.frame(gf$Google.Finance.timeNOWGMT)
+articleTime =  as.data.frame(gf$Google.Finance.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+{
+ # print(hourFunction(1))
+  gf$error[i] = "Hours"
+  gf$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+  
+  
+}else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+{
+  gf$error[i] = "Minutes"
+  gf$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+
+}else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+{
+  gf$error[i] = "Time Meow"
+  gf$cleaned[i] =as.POSIXct(time$download[i])
+}else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+{
+  gf$error[i] = "Yesterday at __"
+  gf$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+}else
+{
+  gf$error[i] = "Default"
+  gf$cleaned[i] = time$download[i]
+}
+}
+
+#----------->rba Date Cleaning Function -------------------------
+
+rba$cleaned = as.POSIXct(rba$Redit.BTC.All.timeNOWGMT)
+downloadTime =  as.data.frame(rba$Redit.BTC.All.timeNOWGMT)
+articleTime =  as.data.frame(rba$Redit.BTC.All.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    rba$error[i] = "Hours"
+    rba$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    rba$error[i] = "Minutes"
+    rba$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    rba$error[i] = "Time Meow"
+    rba$cleaned[i] =as.POSIXct(time$download[i])
+  }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+  {
+    rba$error[i] = "Yesterday at __"
+    rba$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+  }else
+  {
+    rba$error[i] = "Too Old"
+    rba$cleaned[i] = time$download[i]
+  }
+}
+
+#----------->reu Date Cleaning Function -------------------------
+
+
+reu$cleaned = as.POSIXct(reu$Reuters.timeNOWGMT)
+downloadTime =  as.data.frame(reu$Reuters.timeNOWGMT)
+articleTime =  as.data.frame(reu$Reuters.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    reu$error[i] = "dates"  
+  reu$cleaned[i]=as_datetime(mdy_hm(time$article[i]))
+  }
+  else{reu$cleaned[i] = time$download[i]
+  reu$error[i] = "default"
+  }
+}
+
+#----------->scmp Date Cleaning Function -------------------------
+
+
+
+
+scmp$cleaned = as.POSIXct(scmp$South.China.Morning.Post.timeNOWGMT)
+downloadTime =  as.data.frame(scmp$South.China.Morning.Post.timeNOWGMT)
+articleTime =  as.data.frame(mdy_hm(gsub("by.*","",gsub("^.*?Posted","",scmp$South.China.Morning.Post.datez))))
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    scmp$error[i] = "dates"  
+  scmp$cleaned[i]=as_datetime(ymd_hms(time$article[i]))
+  }
+  else{scmp$cleaned[i] = time$download[i]
+  scmp$error[i] = "default"
+  }
+}
+
+
+#----------->tw Date Cleaning Function -------------------------
+
+
+tw$cleaned = as.POSIXct(tw$Twitter.timeNOWGMT)
+downloadTime =  as.data.frame(tw$Twitter.timeNOWGMT)
+articleTime =  as.data.frame(tw$Twitter.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
 
 
 for (i in 1:length(time$article))
 {
-  if(grepl(paste(germLibrary,collapse="|"), time$article[i]))
-  {    cnbc$error[i] = "Hours"  
-  cnbc$cleaned[i] = hourFunction(i)
+  if(grepl("\\d", time$article[i]))
+  {    tw$error[i] = "dates"  
+  tw$cleaned[i]=googlePlusFunction(i)
   }
-  
-  else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
-  {    cnbc$error[i] = "Minutes"  
-  cnbc$cleaned[i] = dayFunction(i)
-  }
-  else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
-  {    cnbc$error[i] = "Now"  
-  cnbc$cleaned[i] =as.POSIXct(time$download[i])
-  }
-  else if(grepl("\\d", time$article[i]))
-  {    cnbc$error[i] = "dates"  
-  date = time$article[i]
-  m = regexpr("^([0-9]|([1][0-2])):[0-5][0-9][[:space:]][[:space:]]?([ap][m]?|[AP][M]?)", date)
-  timeStrip = as.character(regmatches(date, m))
-  d = regexpr("\\d{1,2}\\s\\w+\\s\\d{4}", date)
-  dateStrip = as.character(regmatches(date, d))
-  cnbc$cleaned[i]=as.POSIXct(parse_date_time(paste(dateStrip,timeStrip),"dmy IM  p"))
-  }else{
-    cnbc$error[i] = "default"
-    cnbc$cleaned[i] = as.POSIXct(time$download[i])
+  else{tw$cleaned[i] = time$download[i]
+  tw$error[i] = "default"
   }
 }
 
+#----------->tw Date Cleaning Function -------------------------
+
+yn
+you
+zh
 
 cd
 bcn
 bbc
 cnbc
 cndk
+fbbtc
+fbsrch
+fr
+gf
+reu
+scmp
+tw
