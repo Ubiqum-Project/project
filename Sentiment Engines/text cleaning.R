@@ -1,21 +1,28 @@
 library(readr)
 library(tm)
 library(tidyr)
+library(gtools)
 
 cleaned <- read_csv("~/Desktop/bitcoinPull 2018-01-25")
 cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
 cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
 cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
 
-cleaned$combination <- paste(cleaned$title, cleaned$paragraph)
+cleaned$combination<-cleaned$title
+cleaned$combination[which(cleaned$title != cleaned$paragraph)]=paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph[which(cleaned$title != cleaned$paragraph)])
+
 docs <- Corpus(VectorSource(cleaned$combination))
 
-# cleaned.x <- cleaned[1:100000,]
-# cleaned.x$combination <- paste(cleaned.x$title, cleaned.x$paragraph)
+#cleaned.x <- cleaned[1:100000,]
+#cleaned.x$combination <- paste(cleaned.x$title, cleaned.x$paragraph)
 #docs.x <- Corpus(VectorSource(cleaned.x$combination))
 
-#convert various characters to spaces, to split up the words in the text
+#convert various characters to spaces, split up the words in the text, remove urls etc.
+toSpace.t <- content_transformer(function (x, pattern) gsub(pattern, "http://", x, fixed=TRUE))
 toSpace <- content_transformer(function (x, pattern) gsub(pattern, " ", x, fixed=TRUE))
+removeURL  <- function(x) gsub (" ?(f|ht)(tp)s?(://)(\\S*)[./](\\S*)", "", x)
+docs <- tm_map(docs, toSpace.t, "pic.twitter")
+docs <- tm_map(docs, removeURL)
 docs <- tm_map(docs, toSpace, "/r/btc")
 docs <- tm_map(docs, toSpace, ")")
 docs <- tm_map(docs, toSpace, "/")
@@ -29,6 +36,8 @@ docs <- tm_map(docs, toSpace, "-")
 docs <- tm_map(docs, toSpace, "_")
 docs <- tm_map(docs, toSpace, "\r")
 docs <- tm_map(docs, toSpace, "\n")
+docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
+
 
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
@@ -46,8 +55,10 @@ docs <- tm_map(docs, stripWhitespace)
 # Text stemming
 #docs <- tm_map(docs, stemDocument)
 
+
 #put text back into cleaned df
 text.df <- data.frame(text = sapply(docs, paste, collapse = " "), stringsAsFactors = FALSE)
+text.df$text <- sapply(text.df$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
 cleaned <- as.data.frame(cbind(cleaned,text.df))
 
 #removes duplicates
@@ -57,6 +68,7 @@ cleaned <- cleaned[-dupes, ]
 # cleaned.puerto <- cleaned[ grep("threat global", cleaned$text, invert = FALSE) , ]
 # write_csv(cleaned.puerto, "puerto.csv")
 
+plot(count(cleaned$name))
 
 ####### further cleanup ####### 
 #input values for missings
@@ -66,6 +78,8 @@ cleaned$paragraph <- na.replace(cleaned$paragraph, "x")
 cleaned$article_time <- na.replace(cleaned$article_time, "x")
 cleaned$time_downloaded_gmt[is.na(cleaned$time_downloaded_gmt)] <- cleaned$time_now_gmt[is.na(cleaned$time_downloaded_gmt)]
 
-#sapply(df.s.t, function(x) sum(is.na(x)))
+sapply(cleaned, function(x) sum(is.na(x)))
+cleaned <- na.omit(cleaned)
 
-write.csv(cleaned, "cleaned.csv")
+#write csv
+write_csv(cleaned, "cleaned.csv")

@@ -11,7 +11,7 @@ library(dplyr)
 library(gridExtra)
 library(readr)
 library(SentimentAnalysis)
-library(gtools)
+
 
 #####  Input cleaned dataframe here ###################
 df.s <- read_csv("~/Desktop/cleaned.csv", 
