@@ -2,7 +2,10 @@ library(readxl)
 library(chron)
 library(lubridate)
 
-time = read_excel("test formats.xlsx")
+time = read_excel("Sentiment Engines/Date Time Cleaning/test formats.xlsx")
+# time <- read_csv("Sentiment Engines/cleaned.csv", 
+#                     col_types = cols(X1 = col_skip(), X1_1 = col_skip(), 
+#                                      article_time = col_character()))
 time$error = "Not Processed"
 # 
 time$articleTime = as.character(unlist(data.frame(time$articleTime)))
@@ -25,42 +28,6 @@ yn= as.data.frame(y["Yahoo News"])
 you= as.data.frame(y["Youtube"])
 zh= as.data.frame(y["Zero Hedge"])
 
-
-# time = as.character(unlist(data.frame(c(
-# "1 year ago", #Reddit
-#   "2 Hour Ago", #reddit
-# "1 Hours Ago", #Reddit  Bitcoin News
-# "341 Mins Ago", #Reddit
-# "13 seconds Ago",
-# "12 Days Ago",  #yahoo, bitcoin news, 
-# "12:03 PM ET Tue, 21 Nov 2017",
-# "10:27 PM ET Mon, 20 Nov 2017",
-# "6:56 PM ET Mon, 20 Nov 2017",
-# "Cointelegraph (Bitcoin, Cryptocurrency and Blockchain News) - 8 hours ago This is THE @# craziest thing ever@J#",
-# "just Now",
-# "8 horas",
-# "a few seconds ago",
-# "yesterday at 22:15",
-# "Ayer a las 13:52",
-# "20 de agosto a las 0:26",
-# "19 de noviembre a las 0:26",
-# "7h",  #twitter
-# "3m",  #twitter
-# "vor 28 SekundenKeine Aufrufe", #youtube
-# "3:56  PM ET Fri,  1 Dec 2017",  #CNBC
-# "
-# CNBC - Nov 20, 2017",
-# "Bloomberg - Dec 1, 2017",
-# "Vox - 6 hours ago",
-# "Story - Tyler Durden - 12/02/2017 - 12:31 - 49 comments - 0 attachments",
-# "vor 35 MinutenKeine Aufrufe",
-# "vor 1 StundeKeine Aufrufe",
-# "Gestern um 10:26",
-# "30. November um 17:43",
-# "December 02, 2017 09:00pm EST",   # reuters
-# "Posted Dec 02nd 2017, 12:34am by Reuters, Bloomberg", #South China Morning Post
-# "Cointelegraph (Bitcoin, Cryptocurrency and Blockchain News) - 15 hours ago" #google finance
-# ))))
 
 time = as.data.frame(time)
 time[,3]
@@ -339,6 +306,8 @@ dateFunction <- function(i){
   x = as.character(x)
   return(x)
 }
+
+dateFunction(time)
 
 googleFinanceFunction <- function(i){
   testSplit = do.call('rbind',strsplit(as.character(time$datez[19]),' - ',fixed=TRUE))
