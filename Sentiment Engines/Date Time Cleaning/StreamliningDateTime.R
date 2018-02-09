@@ -214,7 +214,8 @@ hourLibrary <- c("hr",
                  "Horas",
                  "HORAS",
                  "hours ago",
-                 "Stunde"
+                 "Stunde",
+                 "Std"
                  
 )
 
@@ -376,13 +377,14 @@ justNowFunction <- function(i){
 }
 
 yesterdayAtFunction <- function(i){
-  testSplit = do.call('rbind',strsplit(as.character(time$datez[i]),   " "   ,fixed=TRUE))
+  testSplit = do.call('rbind',strsplit(as.character(time$article[i]),   " "   ,fixed=TRUE))
   yesterdayTime = testSplit[length(testSplit)]
   yesterdayTime
-  yesterdayDate = as.character(Sys.Date()-1)
+  yesterdayDate = as.character(as.Date((time$download[i]-1)))
   yesterdayDate
   x = paste(yesterdayDate, yesterdayTime, sep=" ")
-  x = as.character(x)
+  x
+ # x = ymd_hm(as.character(x))
   x
   return(x)
 }
@@ -390,7 +392,7 @@ yesterdayAtFunction <- function(i){
 spanishMonthFunction <- function(i){
   
   ########### FOR FACEBOOK ###########################
-  clean =gsub("a las", "",time$datez[i], ignore.case = T)
+  clean =gsub("a las", "",time$article[i], ignore.case = T)
   clean =gsub("de", "",clean, ignore.case = T)
   clean =gsub("enero", "January 2018",clean, ignore.case = T)
   clean =gsub("febrero", "February 2018",clean, ignore.case = T)
@@ -414,13 +416,13 @@ spanishMonthFunction <- function(i){
 }
 
 germanMonthFunction <- function(i){
-  
-  
-  clean =gsub("um", "",time$datez[i], ignore.case = T)
-  clean =gsub(".", "",clean, ignore.case = T)
+
+   test = time$article[i]
+  clean =gsub("um", "",test, ignore.case = T)
+  clean =gsub("\\.", "",clean)
   clean =gsub("Januar", "January 2018",clean, ignore.case = T)
   clean =gsub("Februar", "February 2018",clean, ignore.case = T)
-  clean =gsub("M?rz", "March 2018",clean, ignore.case = T)
+  clean =gsub("Marz", "March 2018",clean, ignore.case = T)
   clean =gsub("April", "April 2018",clean, ignore.case = T)
   clean =gsub("Mai", "May 2018",clean, ignore.case = T)
   clean =gsub("Juni", "June 2018",clean, ignore.case = T)
@@ -430,15 +432,35 @@ germanMonthFunction <- function(i){
   clean =gsub("Oktober", "October 2017",clean, ignore.case = T)
   clean =gsub("November", "November 2017",clean, ignore.case = T)
   clean =gsub("Dezember", "December 2017",clean, ignore.case = T)
-  x = as.character(unlist(dmy_hm(clean)))
-  x= paste(x,"","")
-  x = unlist(x)
-  x = as.character(x)
   
-  
-  return(x)
+  x = as_datetime(as.character(unlist(dmy_hm(clean))))
+     return(x)
 }
 
+germanMonthFunctionNoTime <- function(i){
+  downloadTime= time$download[i]
+  downloadTime =as.character(format(as.POSIXct(downloadTime, format="%Y-%m-%d %H:%M:%S"), format="%H:%M:%S"))
+  clean =gsub("um", "",time$article[i], ignore.case = T)
+  clean =gsub("\\.", "",clean)
+  clean =gsub("Januar", "January 2018",clean, ignore.case = T)
+  clean =gsub("Februar", "February 2018",clean, ignore.case = T)
+  clean =gsub("Marz", "March 2018",clean, ignore.case = T)
+  clean =gsub("April", "April 2018",clean, ignore.case = T)
+  clean =gsub("Mai", "May 2018",clean, ignore.case = T)
+  clean =gsub("Juni", "June 2018",clean, ignore.case = T)
+  clean =gsub("Juli", "July 2018",clean, ignore.case = T)
+  clean =gsub("August", "August 2018",clean, ignore.case = T)
+  clean =gsub("September", "September 2018",clean, ignore.case = T)
+  clean =gsub("Oktober", "October 2017",clean, ignore.case = T)
+  clean =gsub("November", "November 2017",clean, ignore.case = T)
+  clean =gsub("Dezember", "December 2017",clean, ignore.case = T)
+  clean = paste(clean,downloadTime)
+  x = as_datetime(as.character(unlist(dmy_hms(clean))))
+  return(x)
+}
+time$article[6]
+germanMonthFunctionNoTime(1)
+germanMonthFunction(6)
 
 library(readxl)
 library(chron)
@@ -461,7 +483,6 @@ time$timeNOWGMT = mdy_hms(time$timeNOWGMT)
 y = split(time, time$name)
 bbc = as.data.frame(y["BBC"])
 bcn = as.data.frame(y["Bitcoin News"])
-
 cd = as.data.frame(y["China Daily"])
 cnbc = as.data.frame(y["CNBC"])
 cndk= as.data.frame(y["Coin Desk"])
@@ -578,22 +599,109 @@ for (i in 1:length(time$article))
   }
   else if(grepl("\\d", time$article[i]))
   {    cnbc$error[i] = "dates"  
-  #cnbc$cleaned[i] = (as.character(time$article[i]))
+  date = time$article[i]
+  m = regexpr("^([0-9]|([1][0-2])):[0-5][0-9][[:space:]][[:space:]]?([ap][m]?|[AP][M]?)", date)
+  timeStrip = as.character(regmatches(date, m))
+  d = regexpr("\\d{1,2}\\s\\w+\\s\\d{4}", date)
+  dateStrip = as.character(regmatches(date, d))
+  cnbc$cleaned[i]=as.POSIXct(parse_date_time(paste(dateStrip,timeStrip),"dmy IM  p"))
   }else{
     cnbc$error[i] = "default"
     cnbc$cleaned[i] = as.POSIXct(time$download[i])
   }
 }
 
-cnbc
+#----------->cndk Date Cleaning Function -------------------------
+cndk$cleaned = as.POSIXct(cndk$Coin.Desk.timeNOWGMT)
+downloadTime =  as.data.frame(cndk$Coin.Desk.timeNOWGMT)
+articleTime =  as.data.frame(cndk$Coin.Desk.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    cndk$error[i] = "dates"  
+  cndk$cleaned[i] = mdy_hm(as.character(time$article[i]))
+  }
+  else{cndk$cleaned[i] = time$download[i]
+  cndk$error[i] = "default"
+  }
+}
+
+
+#----------->fbbtc Date Cleaning Function -------------------------
+
+fbbtc$cleaned = as.POSIXct(fbbtc$Facebook.BTC.Group.timeNOWGMT)
+downloadTime =  as.data.frame(fbbtc$Facebook.BTC.Group.timeNOWGMT)
+articleTime =  as.data.frame(fbbtc$Facebook.BTC.Group.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+fbbtc
+
+time$article[7]
+
+germanMonthFunction(2)
+germanMonthFunctionNoTime(6)
+i =9
 
 
 
+if(grepl(paste(germanMonthLibrary,collapse="|"), time$article[i]))
+{ if(grepl(":", time$article[i]))   {
+  germanMonthFunction(i)
+}else { 
+  
+  germanMonthFunctionNoTime(i)
+  }
+
+}else if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+{
+  hourFunction(i)
+}else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+{
+  minuteFunction(i)
+}else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+{
+  as.POSIXct(time$download[i])
+}else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+{
+  ymd_hm(yesterdayAtFunction(i))
+}
 
 
-
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(germLibrary,collapse="|"), time$article[i]))
+  {    cnbc$error[i] = "Hours"  
+  cnbc$cleaned[i] = hourFunction(i)
+  }
+  
+  else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {    cnbc$error[i] = "Minutes"  
+  cnbc$cleaned[i] = dayFunction(i)
+  }
+  else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {    cnbc$error[i] = "Now"  
+  cnbc$cleaned[i] =as.POSIXct(time$download[i])
+  }
+  else if(grepl("\\d", time$article[i]))
+  {    cnbc$error[i] = "dates"  
+  date = time$article[i]
+  m = regexpr("^([0-9]|([1][0-2])):[0-5][0-9][[:space:]][[:space:]]?([ap][m]?|[AP][M]?)", date)
+  timeStrip = as.character(regmatches(date, m))
+  d = regexpr("\\d{1,2}\\s\\w+\\s\\d{4}", date)
+  dateStrip = as.character(regmatches(date, d))
+  cnbc$cleaned[i]=as.POSIXct(parse_date_time(paste(dateStrip,timeStrip),"dmy IM  p"))
+  }else{
+    cnbc$error[i] = "default"
+    cnbc$cleaned[i] = as.POSIXct(time$download[i])
+  }
+}
 
 
 cd
 bcn
 bbc
+cnbc
+cndk
