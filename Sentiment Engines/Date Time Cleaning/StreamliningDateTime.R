@@ -342,7 +342,22 @@ googlePlusFunction <- function(i){
   clean =gsub("3h", "180",clean, ignore.case = T)
   clean =gsub("2h", "120",clean, ignore.case = T)
   clean =gsub("1h", "60",clean, ignore.case = T)
-  
+  clean =gsub("16d", "18840",clean, ignore.case = T)
+  clean =gsub("15d", "17700",clean, ignore.case = T)
+  clean =gsub("14d", "16560",clean, ignore.case = T)
+  clean =gsub("13d", "15420",clean, ignore.case = T)
+  clean =gsub("12d", "14280",clean, ignore.case = T)
+  clean =gsub("11d", "13140",clean, ignore.case = T)
+  clean =gsub("10d", "12000",clean, ignore.case = T)
+  clean =gsub("9d", "10860",clean, ignore.case = T)
+  clean =gsub("8d", "9720",clean, ignore.case = T)
+  clean =gsub("7d", "8580",clean, ignore.case = T)
+  clean =gsub("6d", "7440",clean, ignore.case = T)
+  clean =gsub("5d", "6300",clean, ignore.case = T)
+  clean =gsub("4d", "5160",clean, ignore.case = T)
+  clean =gsub("3d", "4020",clean, ignore.case = T)
+  clean =gsub("2d", "2880",clean, ignore.case = T)
+  clean =gsub("1d", "1440",clean, ignore.case = T)
   clean = as.numeric(clean)
   x = as_datetime(time$download[i]-clean*60)
   x
@@ -351,7 +366,8 @@ googlePlusFunction <- function(i){
 
 dayFunction <- function(i){
 
-  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60*24)
+  x = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60*24)
+ 
   return(x)
  
 }
@@ -467,8 +483,10 @@ germanMonthFunctionNoTime <- function(i){
 library(readxl)
 library(chron)
 library(lubridate)
+library(stringi)
 
 #-----> Importing and DF Setup
+#import = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/bitcoinPull 2018-01-25")
 time = read_excel("Sentiment Engines/Date Time Cleaning/test formats.xlsx")
 time$error = "Not Processed"
 time$articleTime = as.character(unlist(data.frame(time$articleTime)))
@@ -483,40 +501,78 @@ time$timeNOWGMT = mdy_hms(time$timeNOWGMT)
 
 
 y = split(time, time$name)
-bbc = as.data.frame(y["BBC"])
+
+
+
+
+ 
+ 
+# Crypto Coin News  
+# Fortune   
+# Reddit BTC XT  
+
+ 
+
+blm =  as.data.frame(y["Bloomberg"])
 bcn = as.data.frame(y["Bitcoin News"])
 cd = as.data.frame(y["China Daily"])
-cnbc = as.data.frame(y["CNBC"])
+cnbc = as.data.frame(y["CNBC"])                     #### 5 hours left of UTC
 cndk= as.data.frame(y["Coin Desk"])
-fbbtc= as.data.frame(y["Facebook BTC Group"])
-fbsrch= as.data.frame(y["Facebook Search"])
-fr= as.data.frame(y["Free Republic"])
+fbbtc= as.data.frame(y["Facebook BTC Group"])       #### 0 hours right of UTC
+fbsrch= as.data.frame(y["Facebook Search"])         #### 0 hours right of UTC
+fr= as.data.frame(y["Free Republic"])               #### 8 hours left of UTC
 gf= as.data.frame(y["Google Finance"])
-iet= as.data.frame(y["India Economic Times"])
-rba= as.data.frame(y["Redit BTC All"])
-reu= as.data.frame(y["Reuters"])
-scmp= as.data.frame(y["South China Morning Post"])
+rba= as.data.frame(y["Redit BTC All"])              #### 0 hours right of UTC
+rbmine = as.data.frame(y["Redit BTC Mining"])       #### 0 hours right of UTC
+reu= as.data.frame(y["Reuters"])                    #### 5 hours left of UTC
+scmp= as.data.frame(y["South China Morning Post"])  #### 8 hours right of UTC
 tw= as.data.frame(y["Twitter"])
 yn= as.data.frame(y["Yahoo News"])
 you= as.data.frame(y["Youtube"])
-zh= as.data.frame(y["Zero Hedge"])
+zh= as.data.frame(y["Zero Hedge"])                  #### 0 hours right of UTC
+wsj =  as.data.frame(y["Wall Street Journal"])      #### 5 hours left of UTC
+rbb = as.data.frame(y["Redit BTC Bay"])             #### 0 hours right of UTC
+rbm = as.data.frame(y["Redit BTC Markets"])         #### 0 hours right of UTC
+rbc  = as.data.frame(y["Redit Crypto"])             #### 0 hours right of UTC
+bbc = as.data.frame(y["BBC"])
+gplus = as.data.frame(y["Google Plus"])
+iet= as.data.frame(y["India Economic Times:"])      #### 5.5 hours right of UTC
+#------------------------------------------------------------
+rbx =as.data.frame(y["Redit BTC XT"])
+frt = as.data.frame(y["Fortune"])
+ccn = as.data.frame(y["Crypto Coin News"])
+
+
+
+
+
 
 #----------->BBC Date Cleaning Function -------------------------
 bbc$cleaned = as.POSIXct(bbc$BBC.timeNOWGMT)
+downloadTime =  as.data.frame(bbc$BBC.timeNOWGMT)
+articleTime =  as.data.frame(bbc$BBC.datez)
 
-for (i in 1:length(bbc$BBC.datez))
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+paste(dmy(time$article[1]),strftime(as.character(time$download[1]), '%H:%M:%S'))#-- adds download time to just a date
+
+for (i in 1:length(time$article))
 {
 
-  if(grepl("\\d", bbc$BBC.datez[i]))
-  {    bbc$error[i] = "Success"  
-      bbc$cleaned[i] = dmy(bbc$BBC.datez[i])
-     print(as.POSIXct(dmy(bbc$BBC.datez[i])))}
+  if(grepl('\\d{5,6}', time$article[i]))
+  {    bbc$error[i] = "Invalid Date"  
+  bbc$cleaned[i] = NA
+  }
+  else if(grepl("\\d", time$article[i]))
+  {    bbc$error[i] = "date"  
+      bbc$cleaned[i] = ymd_hms(paste(dmy(time$article[i]),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
+   }
   else {bbc$error[i] = "Default"
-  bbc$cleaned[i]=bbc$BBC.timeNOWGMT[i]
+  bbc$cleaned[i]=time$download[i]
   
   }
 }
-bbc
 
 #----------->BCN Date Cleaning Function -------------------------
 bcn$cleaned = as.POSIXct(bcn$Bitcoin.News.timeNOWGMT)
@@ -606,7 +662,7 @@ for (i in 1:length(time$article))
   timeStrip = as.character(regmatches(date, m))
   d = regexpr("\\d{1,2}\\s\\w+\\s\\d{4}", date)
   dateStrip = as.character(regmatches(date, d))
-  cnbc$cleaned[i]=as.POSIXct(parse_date_time(paste(dateStrip,timeStrip),"dmy IM  p"))
+  cnbc$cleaned[i]=as.POSIXct(parse_date_time(paste(dateStrip,timeStrip),"dmy IM  p")+5*60*60)
   }else{
     cnbc$error[i] = "default"
     cnbc$cleaned[i] = as.POSIXct(time$download[i])
@@ -729,7 +785,7 @@ for (i in 1:length(time$article))
 {
   if(grepl("\\d", time$article[i]))
   {    fr$error[i] = "dates"  
-  fr$cleaned[i]=as.POSIXct(parse_date_time(time$article[i],"m/d/y IMS  p"))
+  fr$cleaned[i]=as.POSIXct(parse_date_time(time$article[i],"m/d/y IMS  p")+5*60*60)
   }
   else{fr$cleaned[i] = time$download[i]
   fr$error[i] = "default"
@@ -774,6 +830,28 @@ if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
 }
 }
 
+#----------->gplus Date Cleaning Function -------------------------
+
+
+gplus$cleaned = as.POSIXct(gplus$Google.Plus.timeNOWGMT)
+downloadTime =  as.data.frame(gplus$Google.Plus.timeNOWGMT)
+articleTime =  as.data.frame(gplus$Google.Plus.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+
+
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    gplus$error[i] = "dates"  
+  gplus$cleaned[i]=googlePlusFunction(i)
+  }
+  else{gplus$cleaned[i] = time$download[i]
+  gplus$error[i] = "default"
+  }
+}
+
 #----------->rba Date Cleaning Function -------------------------
 
 rba$cleaned = as.POSIXct(rba$Redit.BTC.All.timeNOWGMT)
@@ -800,6 +878,10 @@ for (i in 1:length(time$article))
   {
     rba$error[i] = "Time Meow"
     rba$cleaned[i] =as.POSIXct(time$download[i])
+  }else if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    rba$error[i] = "Day"
+    rba$cleaned[i] =dayFunction(i)
   }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
   {
     rba$error[i] = "Yesterday at __"
@@ -808,6 +890,168 @@ for (i in 1:length(time$article))
   {
     rba$error[i] = "Too Old"
     rba$cleaned[i] = time$download[i]
+  }
+}
+
+#----------->rbb Date Cleaning Function -------------------------
+
+rbb$cleaned = as.POSIXct(rbb$Redit.BTC.Bay.timeNOWGMT)
+downloadTime =  as.data.frame(rbb$Redit.BTC.Bay.timeNOWGMT)
+articleTime =  as.data.frame(rbb$Redit.BTC.Bay.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    rbb$error[i] = "Hours"
+    rbb$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    rbb$error[i] = "Minutes"
+    rbb$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    rbb$error[i] = "Time Meow"
+    rbb$cleaned[i] =as.POSIXct(time$download[i])
+  }else  if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    rbb$error[i] = "Day"
+    rbb$cleaned[i] =dayFunction(i)
+  }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+  {
+    rbb$error[i] = "Yesterday at __"
+    rbb$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+  }else
+  {
+    rbb$error[i] = "Too Old"
+    rbb$cleaned[i] = time$download[i]
+  }
+}
+#----------->rbm Date Cleaning Function -------------------------
+
+rbm$cleaned = as.POSIXct(rbm$Redit.BTC.Markets.timeNOWGMT)
+downloadTime =  as.data.frame(rbm$Redit.BTC.Markets.timeNOWGMT)
+articleTime =  as.data.frame(rbm$Redit.BTC.Markets.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    rbm$error[i] = "Hours"
+    rbm$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    rbm$error[i] = "Minutes"
+    rbm$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    rbm$error[i] = "Time Meow"
+    rbm$cleaned[i] =as.POSIXct(time$download[i])
+  }else if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    rbm$error[i] = "Day"
+    rbm$cleaned[i] =dayFunction(i)
+  }else  if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+  {
+    rbm$error[i] = "Yesterday at __"
+    rbm$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+  }else
+  {
+    rbm$error[i] = "Too Old"
+    rbm$cleaned[i] = time$download[i]
+  }
+}
+
+#----------->rbc Date Cleaning Function -------------------------
+
+rbc$cleaned = as.POSIXct(rbc$Redit.Crypto.timeNOWGMT)
+downloadTime =  as.data.frame(rbc$Redit.Crypto.timeNOWGMT)
+articleTime =  as.data.frame(rbc$Redit.Crypto.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    rbc$error[i] = "Hours"
+    rbc$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    rbc$error[i] = "Minutes"
+    rbc$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    rbc$error[i] = "Time Meow"
+    rbc$cleaned[i] =as.POSIXct(time$download[i])
+  }else  if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    rbc$error[i] = "Day"
+    rbc$cleaned[i] =dayFunction(i)
+  }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+  {
+    rbc$error[i] = "Yesterday at __"
+    rbc$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+  }else
+  {
+    rbc$error[i] = "Too Old"
+    rbc$cleaned[i] = time$download[i]
+  }
+}
+#----------->RBmine Date Cleaning Function -------------------------
+
+rbmine$cleaned = as.POSIXct(rbmine$Redit.BTC.Mining.timeNOWGMT)
+downloadTime =  as.data.frame(rbmine$Redit.BTC.Mining.timeNOWGMT)
+articleTime =  as.data.frame(rbmine$Redit.BTC.Mining.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    rbmine$error[i] = "Hours"
+    rbmine$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    rbmine$error[i] = "Minutes"
+    rbmine$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    rbmine$error[i] = "Time Meow"
+    rbmine$cleaned[i] =as.POSIXct(time$download[i])
+  }else  if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    rbmine$error[i] = "Day"
+    rbmine$cleaned[i] =dayFunction(i)
+  }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+  {
+    rbmine$error[i] = "Yesterday at __"
+    rbmine$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+  }else
+  {
+    rbmine$error[i] = "Too Old"
+    rbmine$cleaned[i] = time$download[i]
   }
 }
 
@@ -823,11 +1067,27 @@ for (i in 1:length(time$article))
 {
   if(grepl("\\d", time$article[i]))
   {    reu$error[i] = "dates"  
-  reu$cleaned[i]=as_datetime(mdy_hm(time$article[i]))
+  reu$cleaned[i]=as_datetime(mdy_hm(time$article[i])+5*60*60)
   }
   else{reu$cleaned[i] = time$download[i]
   reu$error[i] = "default"
   }
+}
+
+#----------->blm Date Cleaning Function -------------------------
+
+
+blm$cleaned = as.POSIXct(blm$Bloomberg.timeNOWGMT)
+downloadTime =  as.data.frame(blm$Bloomberg.timeNOWGMT)
+articleTime =  as.data.frame(blm$Bloomberg.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+for (i in 1:length(time$article))
+{
+  
+  blm$cleaned[i] = time$download[i]
+  blm$error[i] = "Writing Download Time"
+  
 }
 
 #----------->scmp Date Cleaning Function -------------------------
@@ -844,7 +1104,7 @@ for (i in 1:length(time$article))
 {
   if(grepl("\\d", time$article[i]))
   {    scmp$error[i] = "dates"  
-  scmp$cleaned[i]=as_datetime(ymd_hms(time$article[i]))
+  scmp$cleaned[i]=as_datetime(ymd_hms(time$article[i])-8*60*60)
   }
   else{scmp$cleaned[i] = time$download[i]
   scmp$error[i] = "default"
@@ -874,21 +1134,264 @@ for (i in 1:length(time$article))
   }
 }
 
-#----------->tw Date Cleaning Function -------------------------
+#----------->iet Date Cleaning Function -------------------------
 
-yn
-you
-zh
+
+iet$cleaned = as.POSIXct(iet$India.Economic.Times..timeNOWGMT)
+downloadTime =  as.data.frame(iet$India.Economic.Times..timeNOWGMT)
+articleTime =  as.data.frame(iet$India.Economic.Times..datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+isTRUE(3==4)
+
+
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    iet$error[i] = "dates"  
+  iet$cleaned[i]=dmy_hm(time$article[i])-5.5*60*60
+  }
+  else{iet$cleaned[i] = time$download[i]
+  iet$error[i] = "default"
+  }
+}
+iet
+#----------->yn Date Cleaning Function -------------------------
+
+
+yn$cleaned = as.POSIXct(yn$Yahoo.News.timeNOWGMT)
+downloadTime =  as.data.frame(yn$Yahoo.News.timeNOWGMT)
+articleTime =  as.data.frame(yn$Yahoo.News.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    yn$error[i] = "Hours"
+    yn$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    yn$error[i] = "Minutes"
+    yn$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    yn$error[i] = "Time Meow"
+    yn$cleaned[i] =as.POSIXct(time$download[i])
+  }else if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    yn$error[i] = "Days ago"
+    yn$cleaned[i] =dayFunction(i)# as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60*24)
+  }else
+  {
+    yn$error[i] = "Default"
+    yn$cleaned[i] = time$download[i]
+  }
+}
+
+#----------->you Date Cleaning Function -------------------------
+
+you$cleaned = as.POSIXct(you$Youtube.timeNOWGMT)
+downloadTime =  as.data.frame(you$Youtube.timeNOWGMT)
+articleTime =  as.data.frame(you$Youtube.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    you$error[i] = "Hours"
+    hours = as.numeric(stri_extract_first_regex(time$article[i], "[0-9]+"))*60*60
+    you$cleaned[i] =  as_datetime(time$download[i] - hours)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    you$error[i] = "Minutes"
+    minutes = as.numeric(stri_extract_first_regex(time$article[i], "[0-9]+"))*60
+    you$cleaned[i] = as_datetime(time$download[i] - minutes)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    you$error[i] = "Time Meow"
+    you$cleaned[i] =as.POSIXct(time$download[i])
+  }else if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    you$error[i] = "Days ago"
+    you$cleaned[i] =dayFunction(i)
+  }else
+  {
+    you$error[i] = "Default No Time.but worth keeping"
+    you$cleaned[i] = time$download[i]
+  }
+}
+
+#----------->you Date Cleaning Function -------------------------
+
+zh$cleaned = as.POSIXct(zh$Zero.Hedge.timeNOWGMT)
+downloadTime =  as.data.frame(zh$Zero.Hedge.timeNOWGMT)
+articleTime =  as.data.frame(zh$Zero.Hedge.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+test = time$article
+test = gsub("^.*?-","",test)
+test =gsub("^.*?-","",test)
+dateTrimmed = gsub("-.*","",test)
+test =gsub("^.*?-","",test)
+timeTrimmed = gsub("-.*","",test)
+
+time$article = paste(dateTrimmed,timeTrimmed)
+
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    zh$error[i] = "dates"  
+  zh$cleaned[i]= mdy_hm(time$article[i])
+  }
+  else{zh$cleaned[i] = time$download[i]
+  zh$error[i] = "default"
+  }
+}
+#----------->you Date Cleaning Function -------------------------
+wsj$cleaned = as.POSIXct(wsj$Wall.Street.Journal.timeNOWGMT)
+downloadTime =  as.data.frame(wsj$Wall.Street.Journal.timeNOWGMT)
+articleTime =  as.data.frame(wsj$Wall.Street.Journal.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    wsj$error[i] = "Hours"
+    wsj$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    wsj$error[i] = "Minutes"
+    wsj$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    wsj$error[i] = "Days ago"
+    wsj$cleaned[i] =dayFunction(i)# as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60*24)
+  }else if(grepl("\\d", time$article[i]))
+  {
+    wsj$error[i] = "Date"
+    wsj$cleaned[i] = mdy_hm(time$article[i])+5*60*60
+  }else
+  {
+    wsj$error[i] = "Default"
+    wsj$cleaned[i] = time$download[i]
+  }
+}
+
+#----------->ccn Date Cleaning Function -------------------------
+
+
+ccn$cleaned = as.POSIXct(ccn$Crypto.Coin.News.timeNOWGMT )
+downloadTime =  as.data.frame(ccn$Crypto.Coin.News.timeNOWGMT)
+articleTime =  as.data.frame(ccn$Crypto.Coin.News.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+isTRUE(3==4)
+
+
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    ccn$error[i] = "dates"  
+  ccn$cleaned[i]=ymd_hms(paste(dmy(time$article[i]),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
+  }
+  else{ccn$cleaned[i] = time$download[i]
+  ccn$error[i] = "default"
+  }
+}
+
+
+#----------->rbx Date Cleaning Function -------------------------
+
+
+rbx$cleaned = as.POSIXct(ccn$Crypto.Coin.News.timeNOWGMT )
+downloadTime =  as.data.frame(ccn$Crypto.Coin.News.timeNOWGMT)
+articleTime =  as.data.frame(ccn$Crypto.Coin.News.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
+
+isTRUE(3==4)
+
+
+for (i in 1:length(time$article))
+{
+  if(grepl("\\d", time$article[i]))
+  {    ccn$error[i] = "dates"  
+  ccn$cleaned[i]=ymd_hms(paste(dmy(time$article[i]),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
+  }
+  else{ccn$cleaned[i] = time$download[i]
+  ccn$error[i] = "default"
+  }
+}
+
+
+
+
+
+
+ymd_hms(paste(dmy(time$article[i]),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
 
 cd
 bcn
-bbc
+#bbc
 cnbc
 cndk
 fbbtc
 fbsrch
 fr
 gf
+rba
+rbb 
+rbm 
+rbc 
 reu
 scmp
 tw
+yn
+you
+wsj
+zh
+
+final = rbind(as.data.frame(cd, bcn,
+      #bbc,
+      cnbc,
+      cndk,
+      fbbtc,
+      fbsrch,
+      fr,
+      gf,
+      rba,
+      rbb ,
+      rbm ,
+      rbc ,
+      reu,
+      scmp,
+      tw,
+      yn,
+      you,
+      wsj,
+      zh))
+final
