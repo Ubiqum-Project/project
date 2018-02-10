@@ -258,7 +258,67 @@ dayLibrary <- c("day",
 googlePlusFunction <- function(i){
   # time$article[1]
   # i=1  
-  clean =gsub("60m", "60",time$article[i], ignore.case = T)
+  clean =gsub("60s", "60",time$article[i], ignore.case = T)
+  clean =gsub("59s", "59",clean, ignore.case = T)
+  clean =gsub("58s", "58",clean, ignore.case = T)
+  clean =gsub("57s", "57",clean, ignore.case = T)
+  clean =gsub("56s", "56",clean, ignore.case = T)
+  clean =gsub("55s", "55",clean, ignore.case = T)
+  clean =gsub("54s", "54",clean, ignore.case = T)
+  clean =gsub("53s", "53",clean, ignore.case = T)
+  clean =gsub("52s", "52",clean, ignore.case = T)
+  clean =gsub("51s", "51",clean, ignore.case = T)
+  clean =gsub("50s", "50",clean, ignore.case = T)
+  clean =gsub("49s", "49",clean, ignore.case = T)
+  clean =gsub("48s", "48",clean, ignore.case = T)
+  clean =gsub("47s", "47",clean, ignore.case = T)
+  clean =gsub("46s", "46",clean, ignore.case = T)
+  clean =gsub("45s", "45",clean, ignore.case = T)
+  clean =gsub("44s", "44",clean, ignore.case = T)
+  clean =gsub("43s", "43",clean, ignore.case = T)
+  clean =gsub("42s", "42",clean, ignore.case = T)
+  clean =gsub("41s", "41",clean, ignore.case = T)
+  clean =gsub("40s", "40",clean, ignore.case = T)
+  clean =gsub("39s", "39",clean, ignore.case = T)
+  clean =gsub("38s", "38",clean, ignore.case = T)
+  clean =gsub("37s", "37",clean, ignore.case = T)
+  clean =gsub("36s", "36",clean, ignore.case = T)
+  clean =gsub("35s", "35",clean, ignore.case = T)
+  clean =gsub("34s", "34",clean, ignore.case = T)
+  clean =gsub("33s", "33",clean, ignore.case = T)
+  clean =gsub("32s", "32",clean, ignore.case = T)
+  clean =gsub("31s", "31",clean, ignore.case = T)
+  clean =gsub("30s", "30",clean, ignore.case = T)
+  clean =gsub("29s", "29",clean, ignore.case = T)
+  clean =gsub("28s", "28",clean, ignore.case = T)
+  clean =gsub("27s", "27",clean, ignore.case = T)
+  clean =gsub("26s", "26",clean, ignore.case = T)
+  clean =gsub("25s", "25",clean, ignore.case = T)
+  clean =gsub("24s", "24",clean, ignore.case = T)
+  clean =gsub("23s", "23",clean, ignore.case = T)
+  clean =gsub("22s", "22",clean, ignore.case = T)
+  clean =gsub("21s", "21",clean, ignore.case = T)
+  clean =gsub("20s", "20",clean, ignore.case = T)
+  clean =gsub("19s", "19",clean, ignore.case = T)
+  clean =gsub("18s", "18",clean, ignore.case = T)
+  clean =gsub("17s", "17",clean, ignore.case = T)
+  clean =gsub("16s", "16",clean, ignore.case = T)
+  clean =gsub("15s", "15",clean, ignore.case = T)
+  clean =gsub("14s", "14",clean, ignore.case = T)
+  clean =gsub("13s", "13",clean, ignore.case = T)
+  clean =gsub("12s", "12",clean, ignore.case = T)
+  clean =gsub("11s", "11",clean, ignore.case = T)
+  clean =gsub("10s", "10",clean, ignore.case = T)
+  clean =gsub("9s", "9",clean, ignore.case = T)
+  clean =gsub("8s", "8",clean, ignore.case = T)
+  clean =gsub("7s", "7",clean, ignore.case = T)
+  clean =gsub("6s", "6",clean, ignore.case = T)
+  clean =gsub("5s", "5",clean, ignore.case = T)
+  clean =gsub("4s", "4",clean, ignore.case = T)
+  clean =gsub("3s", "3",clean, ignore.case = T)
+  clean =gsub("2s", "2",clean, ignore.case = T)
+  clean =gsub("1s", "1",clean, ignore.case = T)
+    clean =gsub("60m", "60",clean, ignore.case = T)
   clean =gsub("59m", "59",clean, ignore.case = T)
   clean =gsub("58m", "58",clean, ignore.case = T)
   clean =gsub("57m", "57",clean, ignore.case = T)
@@ -486,17 +546,30 @@ library(lubridate)
 library(stringi)
 
 #-----> Importing and DF Setup
-#import = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/bitcoinPull 2018-01-25")
-time = read_excel("Sentiment Engines/Date Time Cleaning/test formats.xlsx")
-time$error = "Not Processed"
-time$articleTime = as.character(unlist(data.frame(time$articleTime)))
-time = as.data.frame(time)
-time[,3]
-time$datez = time[,3]
-time$datez =as.character(time$datez)
+import = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/bitcoinPull 2018-01-25")
+#----> 
+
+#time = read_excel("Sentiment Engines/Date Time Cleaning/test formats.xlsx")
+
+#time = data.frame()
+
+#-----------------------
 
 
-time$timeNOWGMT = mdy_hms(time$timeNOWGMT)
+timeNOWGMT = import$time_now_gmt
+name = import$name
+articleTime = import$article_time
+
+time = data.frame(timeNOWGMT,name,articleTime)
+
+
+  
+  #-------------------------
+time$datez =as.character(unlist(data.frame(time$articleTime)))
+
+
+time$timeNOWGMT = ymd_hms(as.character(time$timeNOWGMT))
+
 
 
 
@@ -507,9 +580,7 @@ y = split(time, time$name)
 
  
  
-# Crypto Coin News  
-# Fortune   
-# Reddit BTC XT  
+
 
  
 
@@ -537,10 +608,13 @@ rbc  = as.data.frame(y["Redit Crypto"])             #### 0 hours right of UTC
 bbc = as.data.frame(y["BBC"])
 gplus = as.data.frame(y["Google Plus"])
 iet= as.data.frame(y["India Economic Times:"])      #### 5.5 hours right of UTC
+ccn = as.data.frame(y["Crypto Coin News"])          #### 0 hours right of UTC
+rbx =as.data.frame(y["Redit BTC XT"])               #### 0 hours right of UTC
+frt = as.data.frame(y["Fortune"])                   #### 0 hours right of UTC
 #------------------------------------------------------------
-rbx =as.data.frame(y["Redit BTC XT"])
-frt = as.data.frame(y["Fortune"])
-ccn = as.data.frame(y["Crypto Coin News"])
+
+
+
 
 
 
@@ -555,7 +629,6 @@ articleTime =  as.data.frame(bbc$BBC.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-paste(dmy(time$article[1]),strftime(as.character(time$download[1]), '%H:%M:%S'))#-- adds download time to just a date
 
 for (i in 1:length(time$article))
 {
@@ -606,7 +679,7 @@ for (i in 1:length(time$article))
  }
 
 #----------->cd Date Cleaning Function -------------------------
-cd$cleaned = as.POSIXct(cd$China.Daily.timeNOWGMT)
+
 
 downloadTime =  as.data.frame(cd$China.Daily.timeNOWGMT)
 articleTime =  as.data.frame(cd$China.Daily.datez)
@@ -620,7 +693,7 @@ for (i in 1:length(time$article))
 {
    if(grepl("\\d", time$article[i]))
   {    cd$error[i] = "dates"  
-  cd$cleaned[i] = ymd_hm(as.character(time$article[i]))
+  cd$cleaned[i] = as.POSIXct(cd$China.Daily.timeNOWGMT[i])
    }
   else{cd$cleaned[i] = time$download[i]
   cd$error[i] = "default"
@@ -889,7 +962,7 @@ for (i in 1:length(time$article))
   }else
   {
     rba$error[i] = "Too Old"
-    rba$cleaned[i] = time$download[i]
+    rba$cleaned[i] = NA
   }
 }
 
@@ -1156,7 +1229,7 @@ for (i in 1:length(time$article))
   iet$error[i] = "default"
   }
 }
-iet
+
 #----------->yn Date Cleaning Function -------------------------
 
 
@@ -1263,6 +1336,7 @@ for (i in 1:length(time$article))
   zh$error[i] = "default"
   }
 }
+
 #----------->you Date Cleaning Function -------------------------
 wsj$cleaned = as.POSIXct(wsj$Wall.Street.Journal.timeNOWGMT)
 downloadTime =  as.data.frame(wsj$Wall.Street.Journal.timeNOWGMT)
@@ -1326,72 +1400,167 @@ for (i in 1:length(time$article))
 
 #----------->rbx Date Cleaning Function -------------------------
 
-
-rbx$cleaned = as.POSIXct(ccn$Crypto.Coin.News.timeNOWGMT )
-downloadTime =  as.data.frame(ccn$Crypto.Coin.News.timeNOWGMT)
-articleTime =  as.data.frame(ccn$Crypto.Coin.News.datez)
+rbx$cleaned = as.POSIXct(rbx$Redit.BTC.XT.timeNOWGMT)
+downloadTime =  as.data.frame(rbx$Redit.BTC.XT.timeNOWGMT)
+articleTime =  as.data.frame(rbx$Redit.BTC.XT.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-isTRUE(3==4)
+for (i in 1:length(time$article))
+{
+  if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
+  {
+    # print(hourFunction(1))
+    rbx$error[i] = "Hours"
+    rbx$cleaned[i] =  as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+    
+    
+  }else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
+  {
+    rbx$error[i] = "Minutes"
+    rbx$cleaned[i] = as_datetime(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+    
+  }else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
+  {
+    rbx$error[i] = "Time Meow"
+    rbx$cleaned[i] =as.POSIXct(time$download[i])
+  }else if(grepl(paste(dayLibrary,collapse="|"), time$article[i]))
+  {
+    rbx$error[i] = "Day"
+    rbx$cleaned[i] =dayFunction(i)
+  }else if(grepl(paste(yesterdayLibrary,collapse="|"), time$article[i]))
+  {
+    rbx$error[i] = "Yesterday at __"
+    rbx$cleaned[i] =ymd_hm(yesterdayAtFunction(i))
+  }else
+  {
+    rbx$error[i] = "Too Old"
+    rbx$cleaned[i] = time$download[i]
+  }
+}
+
+
+#----------->frt Date Cleaning Function -------------------------
+
+
+frt$cleaned = as.POSIXct(frt$Fortune.timeNOWGMT)
+downloadTime =  as.data.frame(frt$Fortune.timeNOWGMT)
+articleTime =  as.data.frame(frt$Fortune.datez)
+time = data.frame(downloadTime,articleTime)
+colnames(time)= c("download", "article")
 
 
 for (i in 1:length(time$article))
 {
   if(grepl("\\d", time$article[i]))
-  {    ccn$error[i] = "dates"  
-  ccn$cleaned[i]=ymd_hms(paste(dmy(time$article[i]),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
+  {    frt$error[i] = "dates"  
+  frt$cleaned[i]=ymd_hms(paste(mdy(gsub("\\..*","",time$article[i])),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
   }
-  else{ccn$cleaned[i] = time$download[i]
-  ccn$error[i] = "default"
+  else{frt$cleaned[i] = time$download[i]
+  frt$error[i] = "default"
   }
 }
 
+#--------------------------BEGIN CONCATENATION-----------------------------------------
+colnames(blm)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(bcn)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(cd)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(cnbc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(cndk)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(fbbtc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(fbsrch)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(fr)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(gf)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(rba)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(rbmine)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(reu)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(scmp)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(tw)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(yn)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(you)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(zh)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(wsj)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(rbb)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(rbm)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(rbc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(bbc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(gplus)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(iet)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(ccn)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(rbx)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(frt)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+ 
+ 
+
+
+  
+ 
+
+
+ 
+
+ 
 
 
 
 
 
-ymd_hms(paste(dmy(time$article[i]),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
 
-cd
-bcn
-#bbc
-cnbc
-cndk
-fbbtc
-fbsrch
-fr
-gf
-rba
-rbb 
-rbm 
-rbc 
-reu
-scmp
-tw
-yn
-you
-wsj
-zh
+final = na.omit(rbind(
+  blm, 
+  bcn ,
+  cd ,
+  cnbc,
+  cndk,
+  fbbtc,
+  fbsrch,
+  fr,
+  gf,
+  rba,
+  rbmine, 
+  reu,
+  scmp,
+  tw,
+  yn,
+  you,
+  zh,
+  wsj,
+  rbb ,
+  rbm,
+  rbc , 
+  bbc ,
+  gplus,
+  iet,
+  ccn ,
+  rbx,
+  frt 
+ ))
 
-final = rbind(as.data.frame(cd, bcn,
-      #bbc,
-      cnbc,
-      cndk,
-      fbbtc,
-      fbsrch,
-      fr,
-      gf,
-      rba,
-      rbb ,
-      rbm ,
-      rbc ,
-      reu,
-      scmp,
-      tw,
-      yn,
-      you,
-      wsj,
-      zh))
-final
+
+# blm 
+# bcn 
+# cd 
+# cnbc
+# cndk
+# fbbtc
+# fbsrch
+# fr
+# gf
+# rba
+# rbmine 
+# reu
+# scmp
+# tw
+# yn
+# you
+# zh
+# wsj
+# rbb 
+# rbm
+# rbc  
+# bbc 
+# gplus
+# iet
+# ccn 
+# rbx
+# frt 
