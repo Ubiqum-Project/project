@@ -2,13 +2,19 @@ library(readxl)
 library(chron)
 library(lubridate)
 
+#-----> Importing and DF Setup
 time = read_excel("Sentiment Engines/Date Time Cleaning/test formats.xlsx")
-# time <- read_csv("Sentiment Engines/cleaned.csv", 
-#                     col_types = cols(X1 = col_skip(), X1_1 = col_skip(), 
-#                                      article_time = col_character()))
 time$error = "Not Processed"
-# 
 time$articleTime = as.character(unlist(data.frame(time$articleTime)))
+time = as.data.frame(time)
+time[,3]
+time$datez = time[,3]
+time$datez =as.character(time$datez)
+now = time$timeNOWGMT[1]
+
+#------------> DF Setup and ready----------
+
+
 y = split(time, time$name)
 bbc = as.data.frame(y["BBC"])
 bcn = as.data.frame(y["Bitcoin News"])
@@ -29,11 +35,7 @@ you= as.data.frame(y["Youtube"])
 zh= as.data.frame(y["Zero Hedge"])
 
 
-time = as.data.frame(time)
-time[,3]
-time$datez = time[,3]
-time$datez =as.character(time$datez)
-now = time$timeNOWGMT[1]
+
 #timeConv = -6
 
 spanishMonthLibrary = c(
@@ -307,7 +309,7 @@ dateFunction <- function(i){
   return(x)
 }
 
-dateFunction(time)
+
 
 googleFinanceFunction <- function(i){
   testSplit = do.call('rbind',strsplit(as.character(time$datez[19]),' - ',fixed=TRUE))
@@ -316,6 +318,8 @@ googleFinanceFunction <- function(i){
   x = as.character(paste(x, "12:00", sep = " "))
   return(x)
 }
+
+googleFinanceFunction(time)
 
 dayFunction <- function(i){
   x = as.character(now - as.numeric(unlist(regmatches(time$datez[i],gregexpr('[0-9]+',time$datez[i]))))*60*60*24)
@@ -387,7 +391,7 @@ germanMonthFunction <- function(i){
   clean =gsub(".", "",clean, ignore.case = T)
   clean =gsub("Januar", "January 2018",clean, ignore.case = T)
   clean =gsub("Februar", "February 2018",clean, ignore.case = T)
-  clean =gsub("M?rz", "March 2018",clean, ignore.case = T)
+  clean =gsub("Marz", "March 2018",clean, ignore.case = T)
   clean =gsub("April", "April 2018",clean, ignore.case = T)
   clean =gsub("Mai", "May 2018",clean, ignore.case = T)
   clean =gsub("Juni", "June 2018",clean, ignore.case = T)
