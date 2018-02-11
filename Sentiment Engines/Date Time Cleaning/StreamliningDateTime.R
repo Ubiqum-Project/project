@@ -1,3 +1,13 @@
+
+library(readxl)
+library(chron)
+library(lubridate)
+library(stringi)
+library(readr)
+library(zoo)
+
+#########################  LIBRARY AND FUNCTION DEFINITIONS ########################################
+
 spanishMonthLibrary = c(
   
   "enero",
@@ -539,12 +549,7 @@ germanMonthFunctionNoTime <- function(i){
   return(x)
 }
 
-
-library(readxl)
-library(chron)
-library(lubridate)
-library(stringi)
-
+#######################################################################################################
 #-----> Importing and DF Setup
 import = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/bitcoinPull 2018-01-25")
 #----> 
@@ -562,27 +567,23 @@ articleTime = import$article_time
 
 time = data.frame(timeNOWGMT,name,articleTime)
 
+time$title =  import$title
+time$paragraph =import$paragraph
+time$source =import$source
+time$price_gfbtc =import$price_gfbtc
+time$price_gf_delta_btc =import$price_gf_delta_btc
+time$api_last_btc =import$api_last_btc
+time$api_vol_btc =import$api_vol_btc
+time$api_bid_btc =import$api_bid_btc
+rm(import)
 
-  
-  #-------------------------
+#-------------------------
+
 time$datez =as.character(unlist(data.frame(time$articleTime)))
-
-
 time$timeNOWGMT = ymd_hms(as.character(time$timeNOWGMT))
-
-
-
 
 y = split(time, time$name)
 
-
-
-
- 
- 
-
-
- 
 
 blm =  as.data.frame(y["Bloomberg"])
 bcn = as.data.frame(y["Bitcoin News"])
@@ -629,10 +630,10 @@ articleTime =  as.data.frame(bbc$BBC.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 for (i in 1:length(time$article))
 {
-
+  setTxtProgressBar(pb, i)
   if(grepl('\\d{5,6}', time$article[i]))
   {    bbc$error[i] = "Invalid Date"  
   bbc$cleaned[i] = NA
@@ -646,7 +647,7 @@ for (i in 1:length(time$article))
   
   }
 }
-
+close(pb)
 #----------->BCN Date Cleaning Function -------------------------
 bcn$cleaned = as.POSIXct(bcn$Bitcoin.News.timeNOWGMT)
 
@@ -656,10 +657,11 @@ articleTime =  as.data.frame(bcn$Bitcoin.News.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {    bcn$error[i] = "Hours"  
   bcn$cleaned[i] = hourFunction(i)
@@ -677,29 +679,29 @@ for (i in 1:length(time$article))
   bcn$cleaned[i] = as.POSIXct(time$download[i])
   }
  }
-
+close(pb)
 #----------->cd Date Cleaning Function -------------------------
 
-
+cd$cleaned = as.POSIXct(cd$China.Daily.timeNOWGMT)
 downloadTime =  as.data.frame(cd$China.Daily.timeNOWGMT)
 articleTime =  as.data.frame(cd$China.Daily.datez)
 
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-as.POSIXct(as.character(time$article[1]))
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
    if(grepl("\\d", time$article[i]))
   {    cd$error[i] = "dates"  
-  cd$cleaned[i] = as.POSIXct(cd$China.Daily.timeNOWGMT[i])
+  cd$cleaned[i] = as.POSIXct(time$download[i])
    }
   else{cd$cleaned[i] = time$download[i]
   cd$error[i] = "default"
   }
 }
-
+close(pb)
 #----------->cnbc Date Cleaning Function -------------------------
 
 cnbc$cleaned = as.POSIXct(cnbc$CNBC.timeNOWGMT)
@@ -712,9 +714,10 @@ colnames(time)= c("download", "article")
 
 as.POSIXct(time$download[10])
 time$download[10]
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {    cnbc$error[i] = "Hours"  
   cnbc$cleaned[i] = hourFunction(i)
@@ -741,7 +744,7 @@ for (i in 1:length(time$article))
     cnbc$cleaned[i] = as.POSIXct(time$download[i])
   }
 }
-
+close(pb)
 #----------->cndk Date Cleaning Function -------------------------
 cndk$cleaned = as.POSIXct(cndk$Coin.Desk.timeNOWGMT)
 downloadTime =  as.data.frame(cndk$Coin.Desk.timeNOWGMT)
@@ -749,8 +752,11 @@ articleTime =  as.data.frame(cndk$Coin.Desk.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    cndk$error[i] = "dates"  
   cndk$cleaned[i] = mdy_hm(as.character(time$article[i]))
@@ -760,7 +766,7 @@ for (i in 1:length(time$article))
   }
 }
 
-
+close(pb)
 #----------->fbbtc Date Cleaning Function (German) -------------------------
 
 fbbtc$cleaned = as.POSIXct(fbbtc$Facebook.BTC.Group.timeNOWGMT)
@@ -769,8 +775,11 @@ articleTime =  as.data.frame(fbbtc$Facebook.BTC.Group.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
 if(grepl(paste(germanMonthLibrary,collapse="|"), time$article[i]))
 { if(grepl(":", time$article[i]))   {
   fbbtc$error[i] = "Month with Time"
@@ -802,6 +811,7 @@ if(grepl(paste(germanMonthLibrary,collapse="|"), time$article[i]))
   fbbtc$cleaned[i] = time$download[i]
 }
 }
+close(pb)
 
 #----------->fbbtc Date Cleaning Function -------------------------
 
@@ -812,8 +822,10 @@ articleTime =  as.data.frame(fbsrch$Facebook.Search.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(germanMonthLibrary,collapse="|"), time$article[i]))
   { if(grepl(":", time$article[i]))   {
     fbsrch$error[i] = "Month with Time"
@@ -845,7 +857,7 @@ for (i in 1:length(time$article))
     fbsrch$cleaned[i] = time$download[i]
   }
 }
-
+close(pb)
 #----------->fr Date Cleaning Function -------------------------
 
 fr$cleaned = as.POSIXct(fr$Free.Republic.timeNOWGMT)
@@ -853,9 +865,11 @@ downloadTime =  as.data.frame(fr$Free.Republic.timeNOWGMT)
 articleTime =  as.data.frame(fr$Free.Republic.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    fr$error[i] = "dates"  
   fr$cleaned[i]=as.POSIXct(parse_date_time(time$article[i],"m/d/y IMS  p")+5*60*60)
@@ -864,7 +878,7 @@ for (i in 1:length(time$article))
   fr$error[i] = "default"
   }
 }
-
+close(pb)
 #----------->gf Date Cleaning Function -------------------------
 
 gf$Google.Finance.datez= gsub("^.*?-","",gf$Google.Finance.datez)
@@ -873,9 +887,11 @@ downloadTime =  as.data.frame(gf$Google.Finance.timeNOWGMT)
 articleTime =  as.data.frame(gf$Google.Finance.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
 if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
 {
  # print(hourFunction(1))
@@ -902,7 +918,7 @@ if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   gf$cleaned[i] = time$download[i]
 }
 }
-
+close(pb)
 #----------->gplus Date Cleaning Function -------------------------
 
 
@@ -912,10 +928,11 @@ articleTime =  as.data.frame(gplus$Google.Plus.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    gplus$error[i] = "dates"  
   gplus$cleaned[i]=googlePlusFunction(i)
@@ -924,7 +941,7 @@ for (i in 1:length(time$article))
   gplus$error[i] = "default"
   }
 }
-
+close(pb)
 #----------->rba Date Cleaning Function -------------------------
 
 rba$cleaned = as.POSIXct(rba$Redit.BTC.All.timeNOWGMT)
@@ -933,8 +950,11 @@ articleTime =  as.data.frame(rba$Redit.BTC.All.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -965,7 +985,7 @@ for (i in 1:length(time$article))
     rba$cleaned[i] = NA
   }
 }
-
+close(pb)
 #----------->rbb Date Cleaning Function -------------------------
 
 rbb$cleaned = as.POSIXct(rbb$Redit.BTC.Bay.timeNOWGMT)
@@ -974,8 +994,11 @@ articleTime =  as.data.frame(rbb$Redit.BTC.Bay.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1006,6 +1029,7 @@ for (i in 1:length(time$article))
     rbb$cleaned[i] = time$download[i]
   }
 }
+close(pb)
 #----------->rbm Date Cleaning Function -------------------------
 
 rbm$cleaned = as.POSIXct(rbm$Redit.BTC.Markets.timeNOWGMT)
@@ -1014,8 +1038,11 @@ articleTime =  as.data.frame(rbm$Redit.BTC.Markets.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1046,7 +1073,7 @@ for (i in 1:length(time$article))
     rbm$cleaned[i] = time$download[i]
   }
 }
-
+close(pb)
 #----------->rbc Date Cleaning Function -------------------------
 
 rbc$cleaned = as.POSIXct(rbc$Redit.Crypto.timeNOWGMT)
@@ -1055,8 +1082,11 @@ articleTime =  as.data.frame(rbc$Redit.Crypto.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1087,6 +1117,7 @@ for (i in 1:length(time$article))
     rbc$cleaned[i] = time$download[i]
   }
 }
+close(pb)
 #----------->RBmine Date Cleaning Function -------------------------
 
 rbmine$cleaned = as.POSIXct(rbmine$Redit.BTC.Mining.timeNOWGMT)
@@ -1095,8 +1126,11 @@ articleTime =  as.data.frame(rbmine$Redit.BTC.Mining.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1127,7 +1161,7 @@ for (i in 1:length(time$article))
     rbmine$cleaned[i] = time$download[i]
   }
 }
-
+close(pb)
 #----------->reu Date Cleaning Function -------------------------
 
 
@@ -1136,8 +1170,12 @@ downloadTime =  as.data.frame(reu$Reuters.timeNOWGMT)
 articleTime =  as.data.frame(reu$Reuters.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
+
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
+
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    reu$error[i] = "dates"  
   reu$cleaned[i]=as_datetime(mdy_hm(time$article[i])+5*60*60)
@@ -1146,7 +1184,7 @@ for (i in 1:length(time$article))
   reu$error[i] = "default"
   }
 }
-
+close(pb)
 #----------->blm Date Cleaning Function -------------------------
 
 
@@ -1155,14 +1193,16 @@ downloadTime =  as.data.frame(blm$Bloomberg.timeNOWGMT)
 articleTime =  as.data.frame(blm$Bloomberg.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
+
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 for (i in 1:length(time$article))
 {
-  
+  setTxtProgressBar(pb, i) 
   blm$cleaned[i] = time$download[i]
   blm$error[i] = "Writing Download Time"
   
 }
-
+close(pb)
 #----------->scmp Date Cleaning Function -------------------------
 
 
@@ -1173,8 +1213,10 @@ downloadTime =  as.data.frame(scmp$South.China.Morning.Post.timeNOWGMT)
 articleTime =  as.data.frame(mdy_hm(gsub("by.*","",gsub("^.*?Posted","",scmp$South.China.Morning.Post.datez))))
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    scmp$error[i] = "dates"  
   scmp$cleaned[i]=as_datetime(ymd_hms(time$article[i])-8*60*60)
@@ -1183,7 +1225,7 @@ for (i in 1:length(time$article))
   scmp$error[i] = "default"
   }
 }
-
+close(pb)
 
 #----------->tw Date Cleaning Function -------------------------
 
@@ -1194,10 +1236,11 @@ articleTime =  as.data.frame(tw$Twitter.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    tw$error[i] = "dates"  
   tw$cleaned[i]=googlePlusFunction(i)
@@ -1206,7 +1249,7 @@ for (i in 1:length(time$article))
   tw$error[i] = "default"
   }
 }
-
+close(pb)
 #----------->iet Date Cleaning Function -------------------------
 
 
@@ -1216,11 +1259,12 @@ articleTime =  as.data.frame(iet$India.Economic.Times..datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-isTRUE(3==4)
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    iet$error[i] = "dates"  
   iet$cleaned[i]=dmy_hm(time$article[i])-5.5*60*60
@@ -1229,7 +1273,7 @@ for (i in 1:length(time$article))
   iet$error[i] = "default"
   }
 }
-
+close(pb)
 #----------->yn Date Cleaning Function -------------------------
 
 
@@ -1238,10 +1282,11 @@ downloadTime =  as.data.frame(yn$Yahoo.News.timeNOWGMT)
 articleTime =  as.data.frame(yn$Yahoo.News.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1268,7 +1313,7 @@ for (i in 1:length(time$article))
     yn$cleaned[i] = time$download[i]
   }
 }
-
+close(pb)
 #----------->you Date Cleaning Function -------------------------
 
 you$cleaned = as.POSIXct(you$Youtube.timeNOWGMT)
@@ -1276,10 +1321,11 @@ downloadTime =  as.data.frame(you$Youtube.timeNOWGMT)
 articleTime =  as.data.frame(you$Youtube.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1308,7 +1354,7 @@ for (i in 1:length(time$article))
     you$cleaned[i] = time$download[i]
   }
 }
-
+close(pb)
 #----------->you Date Cleaning Function -------------------------
 
 zh$cleaned = as.POSIXct(zh$Zero.Hedge.timeNOWGMT)
@@ -1316,6 +1362,7 @@ downloadTime =  as.data.frame(zh$Zero.Hedge.timeNOWGMT)
 articleTime =  as.data.frame(zh$Zero.Hedge.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 test = time$article
 test = gsub("^.*?-","",test)
@@ -1328,6 +1375,7 @@ time$article = paste(dateTrimmed,timeTrimmed)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    zh$error[i] = "dates"  
   zh$cleaned[i]= mdy_hm(time$article[i])
@@ -1336,7 +1384,7 @@ for (i in 1:length(time$article))
   zh$error[i] = "default"
   }
 }
-
+close(pb)
 #----------->you Date Cleaning Function -------------------------
 wsj$cleaned = as.POSIXct(wsj$Wall.Street.Journal.timeNOWGMT)
 downloadTime =  as.data.frame(wsj$Wall.Street.Journal.timeNOWGMT)
@@ -1344,9 +1392,11 @@ articleTime =  as.data.frame(wsj$Wall.Street.Journal.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1373,9 +1423,9 @@ for (i in 1:length(time$article))
     wsj$cleaned[i] = time$download[i]
   }
 }
+close(pb)
 
 #----------->ccn Date Cleaning Function -------------------------
-
 
 ccn$cleaned = as.POSIXct(ccn$Crypto.Coin.News.timeNOWGMT )
 downloadTime =  as.data.frame(ccn$Crypto.Coin.News.timeNOWGMT)
@@ -1383,11 +1433,12 @@ articleTime =  as.data.frame(ccn$Crypto.Coin.News.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-isTRUE(3==4)
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    ccn$error[i] = "dates"  
   ccn$cleaned[i]=ymd_hms(paste(dmy(time$article[i]),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
@@ -1396,7 +1447,7 @@ for (i in 1:length(time$article))
   ccn$error[i] = "default"
   }
 }
-
+close(pb)
 
 #----------->rbx Date Cleaning Function -------------------------
 
@@ -1405,9 +1456,11 @@ downloadTime =  as.data.frame(rbx$Redit.BTC.XT.timeNOWGMT)
 articleTime =  as.data.frame(rbx$Redit.BTC.XT.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
   {
     # print(hourFunction(1))
@@ -1438,20 +1491,19 @@ for (i in 1:length(time$article))
     rbx$cleaned[i] = time$download[i]
   }
 }
-
+close(pb)
 
 #----------->frt Date Cleaning Function -------------------------
-
-
 frt$cleaned = as.POSIXct(frt$Fortune.timeNOWGMT)
 downloadTime =  as.data.frame(frt$Fortune.timeNOWGMT)
 articleTime =  as.data.frame(frt$Fortune.datez)
 time = data.frame(downloadTime,articleTime)
 colnames(time)= c("download", "article")
 
-
+pb <- txtProgressBar(min = 0, max = length(time$article), style = 3)
 for (i in 1:length(time$article))
 {
+  setTxtProgressBar(pb, i)
   if(grepl("\\d", time$article[i]))
   {    frt$error[i] = "dates"  
   frt$cleaned[i]=ymd_hms(paste(mdy(gsub("\\..*","",time$article[i])),strftime(as.character(time$download[i]), '%H:%M:%S')))#-- adds download time to just a date
@@ -1460,83 +1512,199 @@ for (i in 1:length(time$article))
   frt$error[i] = "default"
   }
 }
-
+close(pb)
 #--------------------------BEGIN CONCATENATION-----------------------------------------
-colnames(blm)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(bcn)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(cd)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(cnbc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(cndk)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(fbbtc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(fbsrch)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(fr)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(gf)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(rba)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(rbmine)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(reu)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(scmp)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(tw)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(yn)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(you)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(zh)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(wsj)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(rbb)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(rbm)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(rbc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(bbc)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(gplus)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(iet)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(ccn)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(rbx)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
-colnames(frt)= c("timeNOWGMT", "name","articleTime", "datez", "cleaned", "error")
+colnames(blm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(bcn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(cd)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(cnbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(cndk)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(fbbtc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(fbsrch)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(fr)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(gf)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(rba)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(rbmine)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(reu)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(scmp)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(tw)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(yn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(you)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(zh)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(wsj)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(rbb)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(rbm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(rbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(bbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(gplus)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(iet)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(ccn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(rbx)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(frt)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
  
  
 
-
-  
- 
-
-
- 
-
- 
-
-
-
-
-
-
-final = na.omit(rbind(
-  blm, 
+final = rbind(
+  blm,
   bcn ,
   cd ,
-  cnbc,
-  cndk,
-  fbbtc,
-  fbsrch,
-  fr,
-  gf,
-  rba,
-  rbmine, 
-  reu,
-  scmp,
-  tw,
-  yn,
-  you,
-  zh,
-  wsj,
-  rbb ,
-  rbm,
-  rbc , 
-  bbc ,
-  gplus,
-  iet,
-  ccn ,
-  rbx,
-  frt 
- ))
+   cnbc,
+   cndk,
+   fbbtc,
+   fbsrch,
+   fr,
+   gf,
+   rba,
+   rbmine, 
+   reu,
+   scmp,
+   tw,
+   yn,
+   you,
+   zh,
+   wsj,
+   rbb ,
+   rbm,
+   rbc , 
+   bbc ,
+   gplus,
+   iet,
+   ccn ,
+   rbx,
+   frt 
+ )
+
+rm(
+  blm,bcn , cd ,  cnbc,  cndk,  fbbtc,  fbsrch,  fr,  gf,  rba,  rbmine,   reu,  scmp,  tw,  yn,  you,  zh,
+  wsj,  rbb ,  rbm,  rbc ,   bbc ,  gplus,  iet,  ccn ,  rbx,  frt )
 
 
+
+
+final = final[-118430,]#-------------------------FIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+write.csv(final, "final.csv")
+
+############################--------> END DATE CLEANING FUNCTION <--------###########################
+#####################################################################################################
+############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
+
+
+final = read.csv("final.csv")
+final$cleaned = as_datetime(final$cleaned)
+#
+
+##############################-----KRAKKEN PRICE LOOKUP-----------########################################
+#---------------------Access Kraken Historical Price Info
+
+#---------> Download file 
+# temp <- tempfile()
+# download.file("http://api.bitcoincharts.com/v1/csv/krakenUSD.csv.gz",temp)
+# historicPriceKrakkenDL <- read.csv(gzfile(temp, ".krakenUSD.csv"))
+# rm(temp)
+
+#---------> Or Read file 
+
+historicPriceKrakkenDL <- read.csv(".krakenUSD.csv")
+
+#---------> End File Input 
+
+historicPriceKrakken = historicPriceKrakkenDL[1:nrow(historicPriceKrakkenDL),]
+rm(historicPriceKrakkenDL)
+colnames(historicPriceKrakken)= c("date_Krakken", "price_USD_BTC_Krakken", "vol_Krakken")
+historicPriceKrakken$date = as_datetime(as.numeric(historicPriceKrakken$date))
+
+#------------------- Isolate Key Dates and dump Historical Price
+
+final = na.omit(final)  #---->set to the final output of the date cleaner
+final = final#[1:10,]  #-----> restricts digestion amount
+#----Selecting the first and last date from the final output of the date cleaner
+firstDate = final$cleaned[which.min(final$cleaned)]
+lastDate = final$cleaned[which.max(final$cleaned)]
+
+
+y = as.POSIXct(final$cleaned)
+x = structure(list(date = historicPriceKrakken$date, Value = historicPriceKrakken$`price USD`, class = "data.frame"))
+
+minValue = sapply(firstDate, function(z) which.min(abs(x$date - z)))
+maxValue = sapply(lastDate, function(z) which.min(abs(x$date - z)))
+isolatedHistoricPriceKrakken = historicPriceKrakken[minValue:maxValue,]
+rm(historicPriceKrakken)
+rm(x)
+#------------------- Look up price/vol using cleaned date and writing to final dataframe----------------
+pb <- txtProgressBar(min = 0, max = length(final$cleaned), style = 3)
+for (i in 1:length(final$cleaned))
+{
+  setTxtProgressBar(pb, i)
+  final$price_USD_BTC_Krakken[i] = isolatedHistoricPriceKrakken$price_USD_BTC_Krakken[sapply(final$cleaned[i], function(z) which.min(abs(as_datetime(isolatedHistoricPriceKrakken$date_Krakken) - z)))]
+  #final$vol_Krakken[i] = isolatedHistoricPriceKrakken$vol_Krakken[sapply(final$cleaned[i], function(z) which.min(abs(as_datetime(isolatedHistoricPriceKrakken$date_Krakken) - z)))]
+  final$date_Krakken[i] = isolatedHistoricPriceKrakken$date[sapply(final$cleaned[i], function(z) which.min(abs(as_datetime(isolatedHistoricPriceKrakken$date_Krakken) - z)))]
+  
+}
+close(pb)
+rm(isolatedHistoricPriceKrakken)
+final$date_Krakken = as_datetime(final$date_Krakken)
+
+##############################-----Coinbase PRICE LOOKUP-----------########################################
+
+#------------> Download Coinbase File-------------
+# temp <- tempfile()
+# download.file("http://api.bitcoincharts.com/v1/csv/coinbaseUSD.csv.gz",temp)
+# historicPriceCoinbaseDL <- read.csv(gzfile(temp, ".coinbaseUSD"))
+# rm(temp)
+
+#------------> Open Coinbase File-------------
+
+historicPriceCoinbaseDL <- read.csv(".coinbaseUSD.csv")
+
+#------------> Begin Analysis ------------------
+
+historicPriceCoinbase = historicPriceCoinbaseDL[15401587:nrow(historicPriceCoinbaseDL),]
+rm(historicPriceCoinbaseDL)
+colnames(historicPriceCoinbase)= c("date_Coinbase", "price_USD_BTC_Coinbase", "vol_Coinbase")
+#write.csv(historicPriceCoinbase, "historicPriceCoinbase.csv")
+#historicPriceCoinbase = read.csv("historicPriceCoinbase.csv")
+historicPriceCoinbase$date = as_datetime(as.numeric(historicPriceCoinbase$date))
+
+
+
+#------------------- Isolate Key Dates and dump Historical Price
+
+final = na.omit(final)  #---->set to the final output of the date cleaner
+
+#----Selecting the first and last date from the final output of the date cleaner
+firstDate = final$cleaned[which.min(final$cleaned)]
+lastDate = final$cleaned[which.max(final$cleaned)]
+
+
+y = as.POSIXct(final$cleaned)
+x = structure(list(date = historicPriceCoinbase$date, Value = historicPriceCoinbase$`price USD`, class = "data.frame"))
+
+minValue = sapply(firstDate, function(z) which.min(abs(x$date - z)))
+maxValue = sapply(lastDate, function(z) which.min(abs(x$date - z)))
+isolatedHistoricPriceCoinbase = historicPriceCoinbase[minValue:maxValue,]
+rm(historicPriceCoinbase)
+rm(x)
+
+#------------------- Look up price/vol using cleaned date and writing to final dataframe----------------
+pb <- txtProgressBar(min = 0, max = length(final$cleaned), style = 3)
+for (i in 1:length(final$cleaned))
+{
+  setTxtProgressBar(pb, i)
+  final$price_USD_BTC_Coinbase[i] = isolatedHistoricPriceCoinbase$price_USD_BTC_Coinbase[sapply(final$cleaned[i], function(z) which.min(abs(as_datetime(isolatedHistoricPriceCoinbase$date_Coinbase) - z)))]
+  final$date_Coinbase[i] = isolatedHistoricPriceCoinbase$date_Coinbase[sapply(final$cleaned[i], function(z) which.min(abs(as_datetime(isolatedHistoricPriceCoinbase$date_Coinbase) - z)))]
+}
+close(pb)
+rm(isolatedHistoricPriceCoinbase)
+final$date_Coinbase = as_datetime(final$date_Coinbase)
+
+#----------------- Write CSV with cleaned date and looked up BTC Price from Coinbase-------------------------
+
+write.csv(final, "Cleaned_with_date_price.csv")
+
+
+
+#---------------------> Archive -----------------------------------------------------------------------------
+#----These are the articles this file can parse----------------
 # blm 
 # bcn 
 # cd 
