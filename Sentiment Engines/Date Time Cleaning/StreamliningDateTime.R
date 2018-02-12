@@ -5,7 +5,215 @@ library(lubridate)
 library(stringi)
 library(readr)
 library(zoo)
+#####################################################################################################
+#####################################################################################################
 
+# library(readr)
+# library(tm)
+# library(tidyr)
+# library(gtools)
+# 
+# cleaned <- read_csv("bitcoinPull 2018-01-25")
+# # cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
+# # cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
+# # cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
+# 
+# cleaned$combination<-cleaned$title
+# cleaned$combination[which(cleaned$title != cleaned$paragraph)]=paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph[which(cleaned$title != cleaned$paragraph)])
+# 
+# docs <- Corpus(VectorSource(cleaned$combination))
+# 
+# #cleaned.x <- cleaned[1:100000,]
+# #cleaned.x$combination <- paste(cleaned.x$title, cleaned.x$paragraph)
+# #docs.x <- Corpus(VectorSource(cleaned.x$combination))
+# 
+# #convert various characters to spaces, split up the words in the text, remove urls etc.
+# toSpace.t <- content_transformer(function (x, pattern) gsub(pattern, "http://", x, fixed=TRUE))
+# toSpace <- content_transformer(function (x, pattern) gsub(pattern, " ", x, fixed=TRUE))
+# removeURL  <- function(x) gsub (" ?(f|ht)(tp)s?(://)(\\S*)[./](\\S*)", "", x)
+# docs <- tm_map(docs, toSpace.t, "pic.twitter")
+# docs <- tm_map(docs, removeURL)
+# docs <- tm_map(docs, toSpace, "/r/btc")
+# docs <- tm_map(docs, toSpace, "/r")
+# docs <- tm_map(docs, toSpace, "S9")
+# docs <- tm_map(docs, toSpace, "s9")
+# docs <- tm_map(docs, toSpace, "s5")
+# docs <- tm_map(docs, toSpace, "s7")
+# docs <- tm_map(docs, toSpace, "S5")
+# docs <- tm_map(docs, toSpace, "S7")
+# docs <- tm_map(docs, toSpace, ")")
+# docs <- tm_map(docs, toSpace, "/")
+# docs <- tm_map(docs, toSpace, "@")
+# docs <- tm_map(docs, toSpace, "\\|")
+# docs <- tm_map(docs, toSpace, "\\")
+# docs <- tm_map(docs, toSpace, "(")
+# docs <- tm_map(docs, toSpace, "#")
+# docs <- tm_map(docs, toSpace, ":")
+# docs <- tm_map(docs, toSpace, "-")
+# docs <- tm_map(docs, toSpace, "_")
+# docs <- tm_map(docs, toSpace, "\r")
+# docs <- tm_map(docs, toSpace, "\n")
+# docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
+# 
+# 
+# # Convert the text to lower case
+# docs <- tm_map(docs, content_transformer(tolower))
+# # Remove numbers (not required?)
+# docs <- tm_map(docs, removeNumbers)
+# # Remove punctuations
+# docs <- tm_map(docs, removePunctuation)
+# # Remove your own stop word
+# # specify your stopwords as a character vector
+# docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading", "commentsharesavehidereportloading","commentssharesavehidereport","submitted", "reddit", "redditcom", "hour ago", "hours ago", "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1","wsj", "pm","city","pic.twitter.com","http","https","wrap","live", "cointelegraph", "am","bloomberg","selfcryptocurrency","ireddit","selfbitcoinmining","selfbitcointmarkets","discussiondaily","selfbitcoinbayarea","bitcointallbotcommentsharesavehidereport","dailycommentsharesavehidereport", "usethebitcoincom","andix3commentsharesavehidereport", "selfbitcoinmarkets","bitcoinallbotcommentsharesavehidereport", "newsbtc","read","cnbc","video","cryptodailycouk","coindoocom","andixcommentsharesavehidereport","selfbitcoinxt","lhicocommentsharesavehidereport","bitcoinallbot","iimgurcom", "minute", "months", "month","day","days","10k", "10K", "8k", "9k","7k","8K","9K","7K")) 
+# # Remove english common stopwords
+# docs <- tm_map(docs, removeWords, stopwords("english"))
+# # Eliminate extra white spaces
+# docs <- tm_map(docs, stripWhitespace)
+# # Text stemming
+# #docs <- tm_map(docs, stemDocument)
+# 
+# 
+# #put text back into cleaned df
+# text.df <- data.frame(text = sapply(docs, paste, collapse = " "), stringsAsFactors = FALSE)
+# text.df$text <- sapply(text.df$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
+# cleaned <- as.data.frame(cbind(cleaned,text.df))
+# 
+# #removes duplicates
+# dupes <- which(duplicated(cleaned$text))
+# cleaned <- cleaned[-dupes, ]
+# 
+# # cleaned.puerto <- cleaned[ grep("threat global", cleaned$text, invert = FALSE) , ]
+# # write_csv(cleaned.puerto, "puerto.csv")
+# 
+# #plot(count(cleaned$name))
+# 
+# ####### further cleanup ####### 
+# #input values for missings
+# cleaned$price_gf_delta_btc <- na.replace(cleaned$price_gf_delta_btc, 0)
+# cleaned$title <- na.replace(cleaned$title, "x")
+# cleaned$paragraph <- na.replace(cleaned$paragraph, "x")
+# # cleaned$article_time <- na.replace(cleaned$article_time, "x")
+# # cleaned$time_downloaded_gmt[is.na(cleaned$time_downloaded_gmt)] <- cleaned$time_now_gmt[is.na(cleaned$time_downloaded_gmt)]
+# 
+# sapply(cleaned, function(x) sum(is.na(x)))
+# cleaned <- na.omit(cleaned)
+
+
+cleaned <- read.csv("bitcoinPull 2018-01-25")
+# cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
+# cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
+# cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
+Sys.setlocale("LC_ALL", "C")
+cleaned$paragraph <- as.character(cleaned$paragraph)
+cleaned$title <- as.character(cleaned$title)
+
+cleaned$combination<-cleaned$title
+{cleaned$combination[which(cleaned$title != cleaned$paragraph)]=
+    paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph
+          [which(cleaned$title != cleaned$paragraph)])}
+
+docs <- Corpus(VectorSource(cleaned$combination))
+
+#cleaned.x <- cleaned[1:100000,]
+#cleaned.x$combination <- paste(cleaned.x$title, cleaned.x$paragraph)
+#docs.x <- Corpus(VectorSource(cleaned.x$combination))
+
+#convert various characters to spaces, split up the words in the text, remove urls etc.
+toSpace.t <- content_transformer(function (x, pattern) gsub(pattern, "http://", x, fixed=TRUE))
+toSpace <- content_transformer(function (x, pattern) gsub(pattern, " ", x, fixed=TRUE))
+removeURL  <- function(x) gsub (" ?(f|ht)(tp)s?(://)(\\S*)[./](\\S*)", "", x)
+docs <- tm_map(docs, toSpace.t, "pic.twitter")
+docs <- tm_map(docs, removeURL)
+docs <- tm_map(docs, toSpace, "/r/btc")
+docs <- tm_map(docs, toSpace, "/r")
+docs <- tm_map(docs, toSpace, "S9")
+docs <- tm_map(docs, toSpace, "s9")
+docs <- tm_map(docs, toSpace, "s5")
+docs <- tm_map(docs, toSpace, "s7")
+docs <- tm_map(docs, toSpace, "S5")
+docs <- tm_map(docs, toSpace, "S7")
+docs <- tm_map(docs, toSpace, ")")
+docs <- tm_map(docs, toSpace, "/")
+docs <- tm_map(docs, toSpace, "@")
+docs <- tm_map(docs, toSpace, "\\|")
+docs <- tm_map(docs, toSpace, "\\")
+docs <- tm_map(docs, toSpace, "(")
+docs <- tm_map(docs, toSpace, "#")
+docs <- tm_map(docs, toSpace, ":")
+docs <- tm_map(docs, toSpace, "-")
+docs <- tm_map(docs, toSpace, "_")
+docs <- tm_map(docs, toSpace, "\r")
+docs <- tm_map(docs, toSpace, "\n")
+docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
+
+# united states correction
+us <- content_transformer(function (x, pattern) gsub(pattern, "unitedstates", x, fixed=TRUE))
+docs <- tm_map(docs, us, "U.S.")
+# Convert the text to lower case
+docs <- tm_map(docs, content_transformer(tolower))
+# Remove numbers (not required?)
+docs <- tm_map(docs, removeNumbers)
+# Remove punctuations
+docs <- tm_map(docs, removePunctuation)
+# Remove your own stop word
+# specify your stopwords as a character vector
+docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading",
+                                    "commentsharesavehidereportloading","commentssharesavehidereport",
+                                    "submitted", "reddit", "redditcom", "hour ago", "hours ago", 
+                                    "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1",
+                                    "wsj", "pm","city","pic.twitter.com","http","https","wrap","live",
+                                    "cointelegraph", "am","bloomberg","selfcryptocurrency","ireddit",
+                                    "selfbitcoinmining","selfbitcointmarkets","discussiondaily",
+                                    "selfbitcoinbayarea","bitcointallbotcommentsharesavehidereport",
+                                    "dailycommentsharesavehidereport", "usethebitcoincom",
+                                    "andix3commentsharesavehidereport", "selfbitcoinmarkets",
+                                    "bitcoinallbotcommentsharesavehidereport", "newsbtc","read","cnbc","video",
+                                    "cryptodailycouk","coindoocom","andixcommentsharesavehidereport",
+                                    "selfbitcoinxt","lhicocommentsharesavehidereport","bitcoinallbot",
+                                    "iimgurcom", "minute", "months", "month","day","days","10k", "10K", "8k",
+                                    "9k","7k","8K","9K","7K")) 
+# Remove english common stopwords
+docs <- tm_map(docs, removeWords, stopwords("english"))
+# Text stemming
+#docs <- tm_map(docs, stemDocument)
+# other country corrections
+s.korea <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
+docs <- tm_map(docs, s.korea, "south korea")
+s.korean <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
+docs <- tm_map(docs, s.korean, "south korean")
+n.korea <- content_transformer(function (x, pattern) gsub(pattern, "north-korea", x, fixed=TRUE))
+docs <- tm_map(docs, n.korea, "north korea")
+s.africa <- content_transformer(function (x, pattern) gsub(pattern, "south-africa", x, fixed=TRUE))
+docs <- tm_map(docs, s.africa, "south africa")
+s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "south-sudan", x, fixed=TRUE))
+docs <- tm_map(docs, s.sudan, "south sudan")
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+
+#put text back into cleaned df
+text.df <- data.frame(text = sapply(docs, paste, collapse = " "), stringsAsFactors = FALSE)
+text.df$text <- sapply(text.df$text,function(row) iconv(row, "latin1", "ASCII", sub=""))
+cleaned <- as.data.frame(cbind(cleaned,text.df))
+
+#removes duplicates
+dupes <- which(duplicated(cleaned$text))
+if (dupes != 0) cleaned <- cleaned[-dupes, ]
+
+# cleaned.puerto <- cleaned[ grep("threat global", cleaned$text, invert = FALSE) , ]
+# write_csv(cleaned.puerto, "puerto.csv")
+
+####### further cleanup ####### 
+#input values for missings
+cleaned$price_gf_delta_btc <- na.replace(cleaned$price_gf_delta_btc, 0)
+cleaned$title <- na.replace(cleaned$title, "x")
+cleaned$paragraph <- na.replace(cleaned$paragraph, "x")
+# cleaned$article_time <- na.replace(cleaned$article_time, "x")
+# cleaned$time_downloaded_gmt[is.na(cleaned$time_downloaded_gmt)] <- cleaned$time_now_gmt[is.na(cleaned$time_downloaded_gmt)]
+
+sapply(cleaned, function(x) sum(is.na(x)))
+cleaned <- na.omit(cleaned)
+
+#####################################################################################################
 #########################  LIBRARY AND FUNCTION DEFINITIONS ########################################
 
 spanishMonthLibrary = c(
@@ -443,14 +651,15 @@ dayFunction <- function(i){
 }
 
 hourFunction <- function(i){
-  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60)
+  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60*60+1*60*60)
  
   return(x)
 }
 
 
 minuteFunction <- function(i){
-  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60)
+  
+  x = as.character(time$download[i] - as.numeric(regmatches(time$article[i],gregexpr('[0-9]+',time$article[i])))*60+1*60*60)
 
   return(x)
 }
@@ -551,7 +760,9 @@ germanMonthFunctionNoTime <- function(i){
 
 #######################################################################################################
 #-----> Importing and DF Setup
-import = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/bitcoinPull 2018-01-25")
+#import = read_csv("~/Ubiqum Data Science/cryptnami/cryptnami/www/bitcoinPull 2018-01-25")
+
+import = cleaned
 #----> 
 
 #time = read_excel("Sentiment Engines/Date Time Cleaning/test formats.xlsx")
@@ -575,6 +786,8 @@ time$price_gf_delta_btc =import$price_gf_delta_btc
 time$api_last_btc =import$api_last_btc
 time$api_vol_btc =import$api_vol_btc
 time$api_bid_btc =import$api_bid_btc
+time$combination = import$combination
+time$text = import$text
 rm(import)
 
 #-------------------------
@@ -586,7 +799,7 @@ y = split(time, time$name)
 
 
 blm =  as.data.frame(y["Bloomberg"])
-bcn = as.data.frame(y["Bitcoin News"])
+bcn = as.data.frame(y["Bitcoin News"])              #### 1 Hours left of UTC
 cd = as.data.frame(y["China Daily"])
 cnbc = as.data.frame(y["CNBC"])                     #### 5 hours left of UTC
 cndk= as.data.frame(y["Coin Desk"])
@@ -673,10 +886,10 @@ for (i in 1:length(time$article))
   }
   else if(grepl("\\d", time$article[i]))
   {    bcn$error[i] = "dates"  
-   bcn$cleaned[i] = mdy_hms(as.character(time$article[i]))
+   bcn$cleaned[i] = mdy_hms(as.character(time$article[i]))+1*60*60
   }else{
   bcn$error[i] = "default"
-  bcn$cleaned[i] = as.POSIXct(time$download[i])
+  bcn$cleaned[i] = as.POSIXct(time$download[i])+1*60*60
   }
  }
 close(pb)
@@ -725,7 +938,7 @@ for (i in 1:length(time$article))
   
   else if(grepl(paste(minuteLibrary,collapse="|"), time$article[i]))
   {    cnbc$error[i] = "Minutes"  
-  cnbc$cleaned[i] = dayFunction(i)
+  cnbc$cleaned[i] = minuteFunction(i)
   }
   else if(grepl(paste(nowLibrary,collapse="|"), time$article[i]))
   {    cnbc$error[i] = "Now"  
@@ -1513,34 +1726,36 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+
+
 #--------------------------BEGIN CONCATENATION-----------------------------------------
-colnames(blm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(bcn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(cd)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(cnbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(cndk)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(fbbtc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(fbsrch)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(fr)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(gf)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(rba)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(rbmine)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(reu)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(scmp)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(tw)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(yn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(you)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(zh)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(wsj)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(rbb)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(rbm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(rbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(bbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(gplus)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(iet)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(ccn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(rbx)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
-colnames(frt)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "datez", "cleaned", "DateNotes")
+colnames(blm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(bcn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(cd)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(cnbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(cndk)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(fbbtc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(fbsrch)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(fr)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(gf)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(rba)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(rbmine)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(reu)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(scmp)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(tw)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(yn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(you)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(zh)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(wsj)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(rbb)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(rbm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(rbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(bbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(gplus)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(iet)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(ccn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(rbx)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+colnames(frt)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
  
  
 
@@ -1581,17 +1796,18 @@ rm(
 
 
 
-final = final[-118430,]#-------------------------FIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-write.csv(final, "final.csv")
+#final = final[-118430,]#-------------------------FIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+write.csv(final, "final5.csv")
 
 ############################--------> END DATE CLEANING FUNCTION <--------###########################
 #####################################################################################################
 ############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
 
 
-final = read.csv("final.csv")
+final = read.csv("final5.csv")
 final$cleaned = as_datetime(final$cleaned)
 #
+
 
 ##############################-----KRAKKEN PRICE LOOKUP-----------########################################
 #---------------------Access Kraken Historical Price Info
@@ -1645,7 +1861,7 @@ for (i in 1:length(final$cleaned))
 close(pb)
 rm(isolatedHistoricPriceKrakken)
 final$date_Krakken = as_datetime(final$date_Krakken)
-write.csv(final, "final1.csv")
+write.csv(final, "final_w_Krakken.csv")
 ##############################-----Coinbase PRICE LOOKUP-----------########################################
 
 #------------> Download Coinbase File-------------
