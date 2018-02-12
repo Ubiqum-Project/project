@@ -1713,7 +1713,7 @@ cleaned = final[,!(names(final) %in% remove.columns)]
 final = subset(cleaned, cleaned > "2017-11-29 00:00:00")
 
 
-write.csv(final, "final5.csv")
+#write.csv(final, "final5.csv")
 
 z <- gzfile("cleaned_with_dates.csv.gz")
 write.csv(final, z)
@@ -1723,9 +1723,8 @@ write.csv(final, z)
 ############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
 
 
-final = read.csv("final5.csv")
+final = read.csv(gzfile("cleaned_with_dates.csv.gz"))
 final$cleaned = as_datetime(final$cleaned)
-#
 
 
 ##############################-----KRAKKEN PRICE LOOKUP-----------########################################
@@ -1781,6 +1780,7 @@ close(pb)
 rm(isolatedHistoricPriceKrakken)
 final$date_Krakken = as_datetime(final$date_Krakken)
 write.csv(final, "final_w_Krakken.csv")
+
 ##############################-----Coinbase PRICE LOOKUP-----------########################################
 
 #------------> Download Coinbase File-------------
