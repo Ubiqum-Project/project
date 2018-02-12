@@ -1779,7 +1779,10 @@ for (i in 1:length(final$cleaned))
 close(pb)
 rm(isolatedHistoricPriceKrakken)
 final$date_Krakken = as_datetime(final$date_Krakken)
-write.csv(final, "final_w_Krakken.csv")
+#write.csv(final, "final_w_Krakken.csv")
+
+z <- gzfile("cleaned_w_Krakken.csv.gz")
+write.csv(final, z)
 
 ##############################-----Coinbase PRICE LOOKUP-----------########################################
 
@@ -1892,8 +1895,9 @@ historicPriceCoinbase$date = as_datetime(as.numeric(historicPriceCoinbase$date))
 # final$date_Coinbase = as_datetime(final$date_Coinbase)
 #----------------- Write CSV with cleaned date and looked up BTC Price from Coinbase-------------------------
 
-write.csv(final, "Cleaned_with_date_price.csv")
-
+#write.csv(final, "Cleaned_with_date_price.csv")
+z <- gzfile("cleaned_w_Krakken_Coinbase.csv.gz")
+write.csv(final, z)
 
 
 #---------------------> Archive -----------------------------------------------------------------------------
