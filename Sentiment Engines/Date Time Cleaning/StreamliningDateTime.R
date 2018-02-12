@@ -1703,11 +1703,20 @@ rm(
   blm,bcn , cd ,  cnbc,  cndk,  fbbtc,  fbsrch,  fr,  gf,  rba,  rbmine,   reu,  scmp,  tw,  yn,  you,  zh,
   wsj,  rbb ,  rbm,  rbc ,   bbc ,  gplus,  iet,  ccn ,  rbx,  frt )
 
+#remove columns
+remove.columns <- c( "X", "X1", "text.1", "articleTime", "title", "paragraph" ,
+                    "source" , "price_gfbtc" , "api_bid_btc", "price_gf_delta_btc" ,"api_last_btc" ,
+                    "api_vol_btc" , "api_vol_btc")
+
+cleaned = final[,!(names(final) %in% remove.columns)]
+
+final = subset(cleaned, cleaned > "2017-11-29 00:00:00")
 
 
-
-#final = final[-118430,]#-------------------------FIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 write.csv(final, "final5.csv")
+
+z <- gzfile("cleaned_with_dates.csv.gz")
+write.csv(final, z)
 
 ############################--------> END DATE CLEANING FUNCTION <--------###########################
 #####################################################################################################
