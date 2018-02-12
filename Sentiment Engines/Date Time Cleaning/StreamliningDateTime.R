@@ -1605,8 +1605,10 @@ final$cleaned = as_datetime(final$cleaned)
 #---------> Or Read file 
 
 historicPriceKrakkenDL <- read.csv(".krakenUSD.csv")
-
+ 
+historicPriceKrakkenDL = historicPriceKrakkenDL[!duplicated(strftime(as_datetime(historicPriceKrakkenDL$X1389118697), '%Y-%m-%d %H:%M')),]
 #---------> End File Input 
+
 
 historicPriceKrakken = historicPriceKrakkenDL[1:nrow(historicPriceKrakkenDL),]
 rm(historicPriceKrakkenDL)
@@ -1643,7 +1645,7 @@ for (i in 1:length(final$cleaned))
 close(pb)
 rm(isolatedHistoricPriceKrakken)
 final$date_Krakken = as_datetime(final$date_Krakken)
-
+write.csv(final, "final1.csv")
 ##############################-----Coinbase PRICE LOOKUP-----------########################################
 
 #------------> Download Coinbase File-------------
@@ -1656,9 +1658,11 @@ final$date_Krakken = as_datetime(final$date_Krakken)
 
 historicPriceCoinbaseDL <- read.csv(".coinbaseUSD.csv")
 
+historicPriceCoinbaseDL = historicPriceCoinbaseDL[!duplicated(strftime(as_datetime(historicPriceCoinbaseDL$X1417412036), '%Y-%m-%d %H:%M')),]
+
 #------------> Begin Analysis ------------------
 
-historicPriceCoinbase = historicPriceCoinbaseDL[15401587:nrow(historicPriceCoinbaseDL),]
+historicPriceCoinbase = historicPriceCoinbaseDL[1:nrow(historicPriceCoinbaseDL),]
 rm(historicPriceCoinbaseDL)
 colnames(historicPriceCoinbase)= c("date_Coinbase", "price_USD_BTC_Coinbase", "vol_Coinbase")
 #write.csv(historicPriceCoinbase, "historicPriceCoinbase.csv")
@@ -1697,6 +1701,60 @@ close(pb)
 rm(isolatedHistoricPriceCoinbase)
 final$date_Coinbase = as_datetime(final$date_Coinbase)
 
+##############################-----Coinbase PRICE LOOKUP-----------########################################
+
+#------------> Download Coinbase File-------------
+# temp <- tempfile()
+# download.file("http://api.bitcoincharts.com/v1/csv/coinbaseUSD.csv.gz",temp)
+# historicPriceCoinbaseDL <- read.csv(gzfile(temp, ".coinbaseUSD"))
+# rm(temp)
+
+#------------> Open Coinbase File-------------
+
+historicPriceCoinbaseDL <- read.csv(".coinbaseUSD.csv")
+
+historicPriceCoinbaseDL = historicPriceCoinbaseDL[!duplicated(strftime(as_datetime(historicPriceCoinbaseDL$X1417412036), '%Y-%m-%d %H:%M')),]
+
+#------------> Begin Analysis ------------------
+
+historicPriceCoinbase = historicPriceCoinbaseDL[1:nrow(historicPriceCoinbaseDL),]
+rm(historicPriceCoinbaseDL)
+colnames(historicPriceCoinbase)= c("date_Coinbase", "price_USD_BTC_Coinbase", "vol_Coinbase")
+#write.csv(historicPriceCoinbase, "historicPriceCoinbase.csv")
+#historicPriceCoinbase = read.csv("historicPriceCoinbase.csv")
+historicPriceCoinbase$date = as_datetime(as.numeric(historicPriceCoinbase$date))
+
+
+
+# #------------------- Isolate Key Dates and dump Historical Price
+# 
+# final = na.omit(final)  #---->set to the final output of the date cleaner
+# 
+# #----Selecting the first and last date from the final output of the date cleaner
+# firstDate = final$cleaned[which.min(final$cleaned)]
+# lastDate = final$cleaned[which.max(final$cleaned)]
+# 
+# 
+# y = as.POSIXct(final$cleaned)
+# x = structure(list(date = historicPriceCoinbase$date, Value = historicPriceCoinbase$`price USD`, class = "data.frame"))
+# 
+# minValue = sapply(firstDate, function(z) which.min(abs(x$date - z)))
+# maxValue = sapply(lastDate, function(z) which.min(abs(x$date - z)))
+# isolatedHistoricPriceCoinbase = historicPriceCoinbase[minValue:maxValue,]
+# rm(historicPriceCoinbase)
+# rm(x)
+# 
+# #------------------- Look up price/vol using cleaned date and writing to final dataframe----------------
+# pb <- txtProgressBar(min = 0, max = length(final$cleaned), style = 3)
+# for (i in 1:length(final$cleaned))
+# {
+#   setTxtProgressBar(pb, i)
+#   final$price_USD_BTC_Coinbase[i] = isolatedHistoricPriceCoinbase$price_USD_BTC_Coinbase[sapply(final$cleaned[i], function(z) which.min(abs(as_datetime(isolatedHistoricPriceCoinbase$date_Coinbase) - z)))]
+#   final$date_Coinbase[i] = isolatedHistoricPriceCoinbase$date_Coinbase[sapply(final$cleaned[i], function(z) which.min(abs(as_datetime(isolatedHistoricPriceCoinbase$date_Coinbase) - z)))]
+# }
+# close(pb)
+# rm(isolatedHistoricPriceCoinbase)
+# final$date_Coinbase = as_datetime(final$date_Coinbase)
 #----------------- Write CSV with cleaned date and looked up BTC Price from Coinbase-------------------------
 
 write.csv(final, "Cleaned_with_date_price.csv")
