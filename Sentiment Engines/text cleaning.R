@@ -3,10 +3,14 @@ library(tm)
 library(tidyr)
 library(gtools)
 
-cleaned <- read_csv("~/Desktop/bitcoinPull 2018-01-25")
-cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
-cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
-cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
+cleaned <- read.csv("~/Desktop/bitcoinPull 2018-01-2.csv")
+# cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
+# cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
+# cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
+Sys.setlocale("LC_ALL", "C")
+cleaned$paragraph <- as.character(cleaned$paragraph)
+cleaned$title <- as.character(cleaned$title)
+
 
 cleaned$combination<-cleaned$title
 cleaned$combination[which(cleaned$title != cleaned$paragraph)]=paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph[which(cleaned$title != cleaned$paragraph)])
@@ -75,18 +79,16 @@ cleaned <- cleaned[-dupes, ]
 # cleaned.puerto <- cleaned[ grep("threat global", cleaned$text, invert = FALSE) , ]
 # write_csv(cleaned.puerto, "puerto.csv")
 
-plot(count(cleaned$name))
-
 ####### further cleanup ####### 
 #input values for missings
 cleaned$price_gf_delta_btc <- na.replace(cleaned$price_gf_delta_btc, 0)
 cleaned$title <- na.replace(cleaned$title, "x")
 cleaned$paragraph <- na.replace(cleaned$paragraph, "x")
-cleaned$article_time <- na.replace(cleaned$article_time, "x")
-cleaned$time_downloaded_gmt[is.na(cleaned$time_downloaded_gmt)] <- cleaned$time_now_gmt[is.na(cleaned$time_downloaded_gmt)]
+# cleaned$article_time <- na.replace(cleaned$article_time, "x")
+# cleaned$time_downloaded_gmt[is.na(cleaned$time_downloaded_gmt)] <- cleaned$time_now_gmt[is.na(cleaned$time_downloaded_gmt)]
 
 sapply(cleaned, function(x) sum(is.na(x)))
 cleaned <- na.omit(cleaned)
 
 #write csv
-write_csv(cleaned, "cleaned.csv")
+write_csv(cleaned, "cleaned.x.csv")
