@@ -1,8 +1,8 @@
 
-#INDEX 1 IRARTIONAL INDEX 
-#It is a reverse sentiment analysis, we targeted irrationality and we want some insight
+#INDEX 1 Countries
+#
 TARGET_COUNTRY<-tolower(countrycode_data$country.name.en)
-TARGET_COUNTRY<-c(TARGET_COUNTRY,"southkorea","vietnam","usa","unitedstates")
+TARGET_COUNTRY<-c(TARGET_COUNTRY,"south-korean","vietnam","usa","unitedstates")
 TARGET_WORDS<-TARGET_COUNTRY
 
 #Number of appearance of theses words per day
