@@ -3,7 +3,8 @@ library(tm)
 library(tidyr)
 library(gtools)
 
-cleaned <- read.csv("~/Desktop/bitcoinPull 2018-01-2.csv")
+
+cleaned <- read.csv("~/Desktop/final5.csv")
 # cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
 # cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
 # cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
@@ -11,9 +12,10 @@ Sys.setlocale("LC_ALL", "C")
 cleaned$paragraph <- as.character(cleaned$paragraph)
 cleaned$title <- as.character(cleaned$title)
 
-
 cleaned$combination<-cleaned$title
-cleaned$combination[which(cleaned$title != cleaned$paragraph)]=paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph[which(cleaned$title != cleaned$paragraph)])
+{cleaned$combination[which(cleaned$title != cleaned$paragraph)]=
+    paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph
+          [which(cleaned$title != cleaned$paragraph)])}
 
 docs <- Corpus(VectorSource(cleaned$combination))
 
@@ -49,7 +51,9 @@ docs <- tm_map(docs, toSpace, "\r")
 docs <- tm_map(docs, toSpace, "\n")
 docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
 
-
+# united states correction
+us <- content_transformer(function (x, pattern) gsub(pattern, "unitedstates", x, fixed=TRUE))
+docs <- tm_map(docs, us, "U.S.")
 # Convert the text to lower case
 docs <- tm_map(docs, content_transformer(tolower))
 # Remove numbers (not required?)
@@ -58,14 +62,38 @@ docs <- tm_map(docs, removeNumbers)
 docs <- tm_map(docs, removePunctuation)
 # Remove your own stop word
 # specify your stopwords as a character vector
-docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading", "commentsharesavehidereportloading","commentssharesavehidereport","submitted", "reddit", "redditcom", "hour ago", "hours ago", "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1","wsj", "pm","city","pic.twitter.com","http","https","wrap","live", "cointelegraph", "am","bloomberg","selfcryptocurrency","ireddit","selfbitcoinmining","selfbitcointmarkets","discussiondaily","selfbitcoinbayarea","bitcointallbotcommentsharesavehidereport","dailycommentsharesavehidereport", "usethebitcoincom","andix3commentsharesavehidereport", "selfbitcoinmarkets","bitcoinallbotcommentsharesavehidereport", "newsbtc","read","cnbc","video","cryptodailycouk","coindoocom","andixcommentsharesavehidereport","selfbitcoinxt","lhicocommentsharesavehidereport","bitcoinallbot","iimgurcom", "minute", "months", "month","day","days","10k", "10K", "8k", "9k","7k","8K","9K","7K")) 
+docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading",
+                                    "commentsharesavehidereportloading","commentssharesavehidereport",
+                                    "submitted", "reddit", "redditcom", "hour ago", "hours ago", 
+                                    "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1",
+                                    "wsj", "pm","city","pic.twitter.com","http","https","wrap","live",
+                                    "cointelegraph", "am","bloomberg","selfcryptocurrency","ireddit",
+                                    "selfbitcoinmining","selfbitcointmarkets","discussiondaily",
+                                    "selfbitcoinbayarea","bitcointallbotcommentsharesavehidereport",
+                                    "dailycommentsharesavehidereport", "usethebitcoincom",
+                                    "andix3commentsharesavehidereport", "selfbitcoinmarkets",
+                                    "bitcoinallbotcommentsharesavehidereport", "newsbtc","read","cnbc","video",
+                                    "cryptodailycouk","coindoocom","andixcommentsharesavehidereport",
+                                    "selfbitcoinxt","lhicocommentsharesavehidereport","bitcoinallbot",
+                                    "iimgurcom", "minute", "months", "month","day","days","10k", "10K", "8k",
+                                    "9k","7k","8K","9K","7K")) 
 # Remove english common stopwords
 docs <- tm_map(docs, removeWords, stopwords("english"))
-# Eliminate extra white spaces
-docs <- tm_map(docs, stripWhitespace)
 # Text stemming
 #docs <- tm_map(docs, stemDocument)
-
+# other country corrections
+s.korea <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
+docs <- tm_map(docs, s.korea, "south korea")
+s.korean <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
+docs <- tm_map(docs, s.korean, "south korean")
+n.korea <- content_transformer(function (x, pattern) gsub(pattern, "north-korea", x, fixed=TRUE))
+docs <- tm_map(docs, n.korea, "north korea")
+s.africa <- content_transformer(function (x, pattern) gsub(pattern, "south-africa", x, fixed=TRUE))
+docs <- tm_map(docs, s.africa, "south africa")
+s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "south-sudan", x, fixed=TRUE))
+docs <- tm_map(docs, s.sudan, "south sudan")
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
 
 #put text back into cleaned df
 text.df <- data.frame(text = sapply(docs, paste, collapse = " "), stringsAsFactors = FALSE)
@@ -74,7 +102,7 @@ cleaned <- as.data.frame(cbind(cleaned,text.df))
 
 #removes duplicates
 dupes <- which(duplicated(cleaned$text))
-cleaned <- cleaned[-dupes, ]
+if (dupes != 0) cleaned <- cleaned[-dupes, ]
 
 # cleaned.puerto <- cleaned[ grep("threat global", cleaned$text, invert = FALSE) , ]
 # write_csv(cleaned.puerto, "puerto.csv")
@@ -91,4 +119,8 @@ sapply(cleaned, function(x) sum(is.na(x)))
 cleaned <- na.omit(cleaned)
 
 #write csv
-write_csv(cleaned, "cleaned.x.csv")
+# remove.columns <- c("INSERT YOUR OWN HERE", "X", "X1", "text.1", "articleTime", "title", "paragraph" ,
+#                     "source" , "price_gfbtc" , "api_bid_btc", "price_gf_delta_btc" ,"api_last_btc" ,
+#                     "api_vol_btc" , "api_vol_btc", "DateNotes", "datez")
+# cleaned = cleaned[,!(names(cleaned) %in% remove.columns)]
+# write_csv(cleaned, "cleanedx.csv")
