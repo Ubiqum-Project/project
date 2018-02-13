@@ -160,7 +160,29 @@ z <- gzfile("secondary_Predictor_Pull.csv.gz")
 write.csv(concatenated_Secondary_Predictors, z)
 
 # Clean the workspace
-rm(out, SP500, GOLD, BTCUSDX, BTC_ETH, BTC_LTC, VIX, concatenated_Secondary_Predictors, z, pullDateStart, pullDateEnd)
+#rm(out, SP500, GOLD, BTCUSDX, BTC_ETH, BTC_LTC, VIX, concatenated_Secondary_Predictors, z, pullDateStart, pullDateEnd)
+
+cleanedWithExchangePrice = read.csv(gzfile("cleaned_w_Krakken_Coinbase.csv.gz"))
+
+#bkup = cleanedWithExchangePrice
+
+cleanedWithExchangePrice = bkup
+cleanedWithExchangePrice$cleaned = as_datetime(cleanedWithExchangePrice$cleaned)
+concatenated_Secondary_Predictors$date = as_datetime(concatenated_Secondary_Predictors$date)
+
+
+cleanedWithExchangePrice = as.data.table(cleanedWithExchangePrice)
+concatenated_Secondary_Predictors= as.data.table(concatenated_Secondary_Predictors)
+
+cleanedWithExchangePrice[, join_time:=cleaned]
+concatenated_Secondary_Predictors[, join_time:=date]
+
+
+setkey(as.data.table(cleanedWithExchangePrice), cleaned, join_time)
+setkey(as.data.table(concatenated_Secondary_Predictors), date, join_time)
+
+test = concatenated_Secondary_Predictors[cleanedWithExchangePrice, roll = T, on = "join_time"]
+#tester = test[!duplicated(test$combination),]
 
 ################################## End of Secondary Predictor Puller ######################################################
 
