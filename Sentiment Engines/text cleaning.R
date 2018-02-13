@@ -4,7 +4,7 @@ library(tidyr)
 library(gtools)
 
 
-cleaned <- read.csv("~/Desktop/kjhkjhkjh.csv")
+cleaned <- read.csv("~/Desktop/final5.csv")
 # cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
 # cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
 # cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]

@@ -1,8 +1,6 @@
 #Financial data on Bitcoin
 #https://www.quandl.com/tools/r
 #https://www.quandl.com/collections/markets/bitcoin-data
-
-install.packages("Quandl")
 library(Quandl)
 Quandl.api_key("2zs3zXe_rhC6E9CW1QPb")
 
@@ -20,9 +18,7 @@ Price<-Price[order(as.Date(Price$Date)),]
 #Add price features
 Price<-DeltaCol(Price,Price$Close)
 
-Vol.price.30D
 #GRAPH
 ggplot()+geom_line(data=Price,aes(x = Date,y=Close))+scale_x_date(breaks = date_breaks("2 days"),labels=date_format("%d-%m"))
 
 
-plot(Price$Close)
