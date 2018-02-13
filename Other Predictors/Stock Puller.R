@@ -10,11 +10,151 @@ library(curl)
 #devtools::install_github('diplodata/gtrendsR')
 library(gtrendsR)
 
+
+
+#####################################################################################################
+############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
+
+
+final = read.csv(gzfile("cleaned_with_dates.csv.gz"))
+final$cleaned = as_datetime(final$cleaned)
+
+
+##############################-----KRAKKEN PRICE LOOKUP-----------########################################
+#---------------------Access Kraken Historical Price Info
+
+#---------> Download file 
+# temp <- tempfile()
+# download.file("http://api.bitcoincharts.com/v1/csv/krakenUSD.csv.gz",temp)
+# historicPriceKrakkenDL <- read.csv(gzfile(temp, ".krakenUSD.csv"))
+# rm(temp)
+
+#---------> Or Read file 
+
+historicPriceKrakkenDL <- read.csv(".krakenUSD.csv", skip =4580000 )
+colnames(historicPriceKrakkenDL) = c("krakkenDate", "KrakkenPrice")
+historicPriceKrakkenDL = historicPriceKrakkenDL[1:2]
+#---------> End File Input 
+
+final$cleaned = as_datetime(final$cleaned)
+historicPriceKrakkenDL$krakkenDate = as_datetime(historicPriceKrakkenDL$krakkenDate)
+
+
+final = as.data.table(final)
+historicPriceKrakkenDL= as.data.table(historicPriceKrakkenDL)
+
+final[, join_time:=cleaned]
+historicPriceKrakkenDL[, join_time:=krakkenDate]
+
+
+setkey(as.data.table(final), cleaned, join_time)
+setkey(as.data.table(historicPriceKrakkenDL), krakkenDate, join_time)
+
+testKrakken = unique(historicPriceKrakkenDL[final, roll = T, on = "join_time"])
+
+testedKrakken = testKrakken[!duplicated(testKrakken$combination),]
+
+
+colnames(testedKrakken)[1] = "KrakkenDate" #--> For Quality Control Purposes
+colnames(testedKrakken)[2] = "KrakkenPrice"
+
+testedKrakken = testedKrakken[,-c(3,4)]
+
+final = testedKrakken
+
+#############################--->Coinbase<------####################################
+#---------------------Access Kraken Historical Price Info
+
+#------------> Download Coinbase File-------------
+# temp <- tempfile()
+# download.file("http://api.bitcoincharts.com/v1/csv/coinbaseUSD.csv.gz",temp)
+# historicPriceCoinbaseDL <- read.csv(gzfile(temp, ".coinbaseUSD"))
+# rm(temp)
+
+#------------> Open Coinbase File-------------
+
+
+historicPriceCoinbaseDL <- read.csv(".coinbaseUSD.csv", skip =24000000)
+colnames(historicPriceCoinbaseDL) = c("coinbaseDate", "coinbasePrice")
+historicPriceCoinbaseDL = historicPriceCoinbaseDL[1:2]
+#---------> End File Input 
+
+final$cleaned = as_datetime(final$cleaned)
+historicPriceCoinbaseDL$coinbaseDate = as_datetime(historicPriceCoinbaseDL$coinbaseDate)
+
+
+final = as.data.table(final)
+historicPriceCoinbaseDL= as.data.table(historicPriceCoinbaseDL)
+
+final[, join_time:=cleaned]
+historicPriceCoinbaseDL[, join_time:=coinbaseDate]
+
+
+setkey(as.data.table(final), cleaned, join_time)
+setkey(as.data.table(historicPriceCoinbaseDL), coinbaseDate, join_time)
+
+testCoin = unique(historicPriceCoinbaseDL[final, roll = T, on = "join_time"])
+
+testedCoin = testCoin[!duplicated(testCoin$combination),]
+
+colnames(testedCoin)[1] = "CoinbaseDate" #--> For Quality Control Purposes
+colnames(testedCoin)[2] = "CoinbasePrice"
+
+testedCoin = testedCoin[,-c(3)]
+
+final = testedCoin
+#############################--->CEX<------####################################
+#---------------------Access Kraken Historical Price Info
+
+#------------> Download Coinbase File-------------
+# temp <- tempfile()
+# download.file("http://api.bitcoincharts.com/v1/csv/cexUSD.csv.gz",temp)
+# historicPriceCEXDL <- read.csv(gzfile(temp, ".coinbaseUSD"))
+# rm(temp)
+
+#------------> Open Coinbase File-------------
+
+
+
+historicPriceCEXDL <- read.csv(".cexUSD.csv")
+colnames(historicPriceCEXDL) = c("cexDate", "cexPrice")
+historicPriceCEXDL = historicPriceCEXDL[1:2]
+#---------> End File Input 
+
+final$cleaned = as_datetime(final$cleaned)
+historicPriceCEXDL$cexDate = as_datetime(historicPriceCEXDL$cexDate)
+
+
+final = as.data.table(final)
+historicPriceCEXDL= as.data.table(historicPriceCEXDL)
+
+final[, join_time:=cleaned]
+historicPriceCEXDL[, join_time:=cexDate]
+
+
+setkey(as.data.table(final), cleaned, join_time)
+setkey(as.data.table(historicPriceCEXDL), cexDate, join_time)
+
+testCex = unique(historicPriceCEXDL[final, roll = T, on = "join_time"])
+
+testedCex = testCex[!duplicated(testCex$combination),]
+
+colnames(testedCex)[1] = "cexDate" #--> For Quality Control Purposes
+colnames(testedCex)[2] = "cexPrice"
+
+testedCex = testedCex[,-c(3)]
+
+final = testedCex
+z <- gzfile("cleaned_w_Krakken_Coinbase_Cex.csv.gz")
+write.csv(final, z)
+
+####################################################################################
+
 # Import the first and last date from the cleaned dates on our cleaned data frame
-cleanedData = read.csv(gzfile("cleaned_with_dates.csv.gz"))
+cleanedData = final #read.csv(gzfile("cleaned_w_Krakken_Coinbase_Cex.csv.gz"))
 pullDateStart = strftime(as.character(min(as_datetime(cleanedData$cleaned))), '%Y-%m-%d')
 pullDateEnd = strftime(as.character((max(as_datetime(cleanedData$cleaned)))), '%Y-%m-%d')
-rm(cleanedData)
+
 
 # Begin Secondary Predictor Collection
 SP500 <- setDT(as.data.frame(getSymbols("^GSPC",auto.assign = FALSE, from = pullDateStart, to= pullDateEnd)), keep.rownames = TRUE)[]
@@ -155,18 +295,14 @@ out = ( BTC_ETH[c(out), on = c("date")])
 # Last Value Carry Forward (assign friday values to saturday and sunday)
 concatenated_Secondary_Predictors = na.locf(out)
 
-# Write to GZ file
-z <- gzfile("secondary_Predictor_Pull.csv.gz")
-write.csv(concatenated_Secondary_Predictors, z)
-
 # Clean the workspace
 #rm(out, SP500, GOLD, BTCUSDX, BTC_ETH, BTC_LTC, VIX, concatenated_Secondary_Predictors, z, pullDateStart, pullDateEnd)
 
-cleanedWithExchangePrice = read.csv(gzfile("cleaned_w_Krakken_Coinbase.csv.gz"))
+cleanedWithExchangePrice = cleanedData
 
 #bkup = cleanedWithExchangePrice
 
-cleanedWithExchangePrice = bkup
+#cleanedWithExchangePrice = bkup
 cleanedWithExchangePrice$cleaned = as_datetime(cleanedWithExchangePrice$cleaned)
 concatenated_Secondary_Predictors$date = as_datetime(concatenated_Secondary_Predictors$date)
 
@@ -182,7 +318,11 @@ setkey(as.data.table(cleanedWithExchangePrice), cleaned, join_time)
 setkey(as.data.table(concatenated_Secondary_Predictors), date, join_time)
 
 test = concatenated_Secondary_Predictors[cleanedWithExchangePrice, roll = T, on = "join_time"]
-#tester = test[!duplicated(test$combination),]
+tester = test[!duplicated(test$combination),]
+
+# Write to GZ file
+z <- gzfile("secondary_Predictor_Pull.csv.gz")
+write.csv(tester, z)
 
 ################################## End of Secondary Predictor Puller ######################################################
 
