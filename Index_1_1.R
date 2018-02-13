@@ -1,5 +1,5 @@
 #INDEX 1_1 
-sentiment.used<-"afinn"
+
 
 #PROCESS & RESULT
 #These indicators will focus on the highlighted countries of the days
@@ -8,6 +8,15 @@ sentiment.used<-"afinn"
 #a)--Take the table quatrigrams and give a score using the sentiment analysis dictionnary
 #b)--take the bigram or quatrigram to understand the reason give a index for reason
 #Result: a sentiment score of the top 3 most used countries name every day + An index factor giving the reason of the mention
+
+
+#Index1_1 <- function(sentiment.used,Source,TARGET_WORDS.count,quatrigrams_filtered) 
+#Base
+sentiment.used<-"afinn"
+TARGET_WORDS.count
+quatrigrams_filtered
+quatrigrams_filtered.end
+NegationWords
 
 
 #1)
@@ -20,8 +29,6 @@ get_sentiments(sentiment.used)
 
 #ISNOT TEST : List of trigram with ISNOT or negation
 {
-  NegationWords<-c("isnt","cannot","cant","wont","wasnt")
-  
   IsNot<-quatrigrams_filtered%>%
     mutate(nTrigram = 1:n())%>%
     unnest_tokens(word, trigram)%>%
@@ -37,7 +44,7 @@ get_sentiments(sentiment.used)
   colnames(IsNot.end)[2]<-"TestIsNot"
 }
 
-#Sentiment
+#Sentiment material
 sentim<-quatrigrams_filtered%>%
   left_join(source.ratio)%>%
   mutate(nTrigram = 1:n())%>%
@@ -70,26 +77,43 @@ Working_Table<-Working_Table%>%
   left_join(sentim.around)
 
 #explanation checking
-Used.table <- trigrams_filtered %>% 
-  count(word1, bigram,time)
-colnames(Used.table)[1]<-"tword"
-colnames(Used.table)[4]<-"nword"
-
-explaination<-Working_Table%>%
-  left_join(Used.table)%>%
-  arrange(desc(time))%>%
-  arrange(desc(nword))%>%
-  arrange(desc(tword))
-
-Used.table2 <- trigrams_filtered.end %>% 
-  count(word3, bigram,time)
-colnames(Used.table2)[1]<-"tword"
-colnames(Used.table2)[4]<-"nword"
-
-explaination<-Working_Table%>%
-  left_join(Used.table2)%>%
-  arrange(desc(time))%>%
-  arrange(desc(nword))%>%
-  arrange(desc(tword))
+{
+  Used.table <- trigrams_filtered %>% 
+    count(word1, bigram,time)
+  colnames(Used.table)[1]<-"tword"
+  colnames(Used.table)[4]<-"nword"
   
+  explaination<-Working_Table%>%
+    left_join(Used.table)%>%
+    arrange(desc(time))%>%
+    arrange(desc(nword))%>%
+    arrange(desc(tword))
+  explaination
+  
+  Used.table2 <- trigrams_filtered.end %>% 
+    count(word3, bigram,time)
+  colnames(Used.table2)[1]<-"tword"
+  colnames(Used.table2)[4]<-"nword"
+  
+  explaination<-Working_Table%>%
+    left_join(Used.table2)%>%
+    arrange(desc(time))%>%
+    arrange(desc(nword))%>%
+    arrange(desc(tword))
+  
+}
+
+#Index formula
+Index<-Working_Table%>%
+  group_by(time)%>%
+  summarise(index.value=mean(score,na.rm=TRUE))#Not a weighted average because the weight is already comprise in the score
+
+
+Index.article<-full_join(quatrigrams_filtered, quatrigrams_filtered.end)%>%
+  grou
+
+
+#return(Index.article)
+
+
 
