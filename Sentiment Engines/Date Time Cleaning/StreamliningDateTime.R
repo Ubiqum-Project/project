@@ -5,11 +5,51 @@ library(lubridate)
 library(stringi)
 library(readr)
 library(zoo)
+library(RPostgreSQL)
+
 #####################################################################################################
+####################################### Pull From Database ##########################################
+
+
+# #Enter the values for you database connection
+# dsn_database = "bitcoin"            # e.g. "compose"
+# dsn_hostname = "165.227.167.6" # e.g.: "aws-us-east-1-portal.4.dblayer.com"
+# dsn_port = "5432"                 # e.g. 11101 
+# dsn_uid = "postgres"        # e.g. "admin"
+# dsn_pwd = "840RanchoCircle!!"      # e.g. "xxx"
+# 
+# tryCatch({
+#   drv <- dbDriver("PostgreSQL")
+#   print("Connecting to database")
+#   conn <- dbConnect(drv, 
+#                     dbname = dsn_database,
+#                     host = dsn_hostname, 
+#                     port = dsn_port,
+#                     user = dsn_uid, 
+#                     password = dsn_pwd)
+#   print("Connected!")
+# },
+# error=function(cond) {
+#   print("Unable to connect to database.")
+# })
+# 
+# 
+# # 
+# bitcoinDB <- dbGetQuery(conn, "SELECT * from bitcoin")   #NOT FOR USE  THIS DOWNLOADS THE ENTIRE DATABASE
+# dbDisconnect(conn)
+# cleaned = unique(setDT(bitcoinDB), by = c('title'), fromLast = FALSE)    #NOT FOR USE  THIS filters unique values only
+
+
+#######################################  Or Pull From File  #########################################
 #####################################################################################################
 
 
 cleaned <- read.csv("bitcoinPull 2018-01-25")
+
+#####################################################################################################
+#####################################################################################################
+
+
 # cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
 # cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
 # cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
@@ -1703,20 +1743,28 @@ rm(
   blm,bcn , cd ,  cnbc,  cndk,  fbbtc,  fbsrch,  fr,  gf,  rba,  rbmine,   reu,  scmp,  tw,  yn,  you,  zh,
   wsj,  rbb ,  rbm,  rbc ,   bbc ,  gplus,  iet,  ccn ,  rbx,  frt )
 
+#remove columns
+remove.columns <- c( "X", "X1", "text.1", "articleTime", "title", "paragraph" ,
+                    "source" , "price_gfbtc" , "api_bid_btc", "price_gf_delta_btc" ,"api_last_btc" ,
+                    "api_vol_btc" , "api_vol_btc")
+
+cleaned = final[,!(names(final) %in% remove.columns)]
+
+final = subset(cleaned, cleaned > "2017-11-29 00:00:00")
 
 
+#write.csv(final, "final5.csv")
 
-#final = final[-118430,]#-------------------------FIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-write.csv(final, "final5.csv")
+z <- gzfile("cleaned_with_dates.csv.gz")
+write.csv(final, z)
 
 ############################--------> END DATE CLEANING FUNCTION <--------###########################
 #####################################################################################################
 ############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
 
 
-final = read.csv("final5.csv")
+final = read.csv(gzfile("cleaned_with_dates.csv.gz"))
 final$cleaned = as_datetime(final$cleaned)
-#
 
 
 ##############################-----KRAKKEN PRICE LOOKUP-----------########################################
@@ -1771,7 +1819,11 @@ for (i in 1:length(final$cleaned))
 close(pb)
 rm(isolatedHistoricPriceKrakken)
 final$date_Krakken = as_datetime(final$date_Krakken)
-write.csv(final, "final_w_Krakken.csv")
+#write.csv(final, "final_w_Krakken.csv")
+
+z <- gzfile("cleaned_w_Krakken.csv.gz")
+write.csv(final, z)
+
 ##############################-----Coinbase PRICE LOOKUP-----------########################################
 
 #------------> Download Coinbase File-------------
@@ -1883,8 +1935,9 @@ historicPriceCoinbase$date = as_datetime(as.numeric(historicPriceCoinbase$date))
 # final$date_Coinbase = as_datetime(final$date_Coinbase)
 #----------------- Write CSV with cleaned date and looked up BTC Price from Coinbase-------------------------
 
-write.csv(final, "Cleaned_with_date_price.csv")
-
+#write.csv(final, "Cleaned_with_date_price.csv")
+z <- gzfile("cleaned_w_Krakken_Coinbase.csv.gz")
+write.csv(final, z)
 
 
 #---------------------> Archive -----------------------------------------------------------------------------
