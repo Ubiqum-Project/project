@@ -33,24 +33,20 @@
   cleaned <- read_csv("~/Desktop/Bitcoin project/Project bitcoin/cleaned.csv")
   cleaned <- read_csv("~/Desktop/final5.csv")
 }
-#SOURCE RATIO CREATION
+#Other information
 {
-  #Sources list
-  source.name<-levels(factor(cleaned$name))
-  #Ratio Table 
-  source.ratio<-data.frame(source=source.name)
-  source.ratio$ratio<-1
-  #Giving ratio 1 to 10
-  {
-    # source.ratio[source.ratio$source=="BBC",]$ratio<-10
-    # source.ratio[source.ratio$source=="Bloomberg",]$ratio<-10
-    # source.ratio[source.ratio$source=="Reuters",]$ratio<-10
-    # source.ratio[source.ratio$source=="Zero Hedge",]$ratio<-7
-  }
+  #DUMMIES for sources
+    #Sources list
+    source.name<-levels(factor(cleaned$name))
+    #Ratio Table 
+    source.ratio<-data.frame(source=source.name)
+    source.ratio$ratio<-1
+
+  #SENTIMENT INDICATOR
+  Sentiment.list<-c("afinn","nrc","bing","syuzhet")
   #NEGATIVE WORDS
-  {
-    NegationWords<-c("isnt","cannot","cant","wont","wasnt")
-  }
+  NegationWords<-c("isnt","cannot","cant","wont","wasnt")
+
 }
 #INDEX TABLE CREATION-------------------------------------------------------------------
 {
