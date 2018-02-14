@@ -159,25 +159,65 @@ pullDateEnd = strftime(as.character((max(as_datetime(cleanedData$cleaned)))), '%
 # Begin Secondary Predictor Collection
 SP500 <- setDT(as.data.frame(getSymbols("^GSPC",auto.assign = FALSE, from = pullDateStart, to= pullDateEnd)), keep.rownames = TRUE)[]
 colnames(SP500)[1] ="date"
+colnames(SP500)[2] ="GSPC_Open"
+colnames(SP500)[3] ="GSPC_High"
+colnames(SP500)[4] ="GSPC_Low"
+colnames(SP500)[5] ="GSPC_Close"
+colnames(SP500)[6] ="GSPC_Volume"
+colnames(SP500)[7] ="GSPC_Adjusted"
 
 BTCUSDX <- setDT(as.data.frame(getSymbols("BTCUSD=X",auto.assign = FALSE, from = pullDateStart, to= pullDateEnd)), keep.rownames = TRUE)[]
 colnames(BTCUSDX)[1] ="date"
+colnames(BTCUSDX)[2] ="BTCUSDX_Open"
+colnames(BTCUSDX)[3] ="BTCUSDX_High"
+colnames(BTCUSDX)[4] ="BTCUSDX_Low"
+colnames(BTCUSDX)[5] ="BTCUSDX_Close"
+colnames(BTCUSDX)[6] ="BTCUSDX_Volume"
+colnames(BTCUSDX)[7] ="BTCUSDX_Adjusted"
 
 VIX <- setDT(as.data.frame(getSymbols("^VIX",auto.assign = FALSE, from = pullDateStart, to= pullDateEnd)), keep.rownames = TRUE)[]
+
 colnames(VIX)[1] ="date"
+colnames(VIX)[2] ="VIX_Open"
+colnames(VIX)[3] ="VIX_High"
+colnames(VIX)[4] ="VIX_Low"
+colnames(VIX)[5] ="VIX_Close"
+colnames(VIX)[6] ="VIX_Volume"
+colnames(VIX)[7] ="VIX_Adjusted"
 
 GOLD <- setDT(as.data.frame(getSymbols("GCJ18.CMX",auto.assign = FALSE, from = pullDateStart, to= pullDateEnd)), keep.rownames = TRUE)[]
+
 colnames(GOLD)[1] ="date"
+colnames(GOLD)[2] ="GOLD_Open"
+colnames(GOLD)[3] ="GOLD_High"
+colnames(GOLD)[4] ="GOLD_Low"
+colnames(GOLD)[5] ="GOLD_Close"
+colnames(GOLD)[6] ="GOLD_Volume"
+colnames(GOLD)[7] ="GOLD_Adjusted"
 
 BTC_ETH <- setDT(as.data.frame(getSymbols("BTC-ETH",auto.assign = FALSE, from = pullDateStart, to= pullDateEnd)), keep.rownames = TRUE)[]
 colnames(BTC_ETH)[1] ="date"
 
+colnames(BTC_ETH)[1] ="date"
+colnames(BTC_ETH)[2] ="BTC_ETH_Open"
+colnames(BTC_ETH)[3] ="BTC_ETH_High"
+colnames(BTC_ETH)[4] ="BTC_ETH_Low"
+colnames(BTC_ETH)[5] ="BTC_ETH_Close"
+colnames(BTC_ETH)[6] ="BTC_ETH_Volume"
+colnames(BTC_ETH)[7] ="BTC_ETH_Adjusted"
+
 BTC_LTC <- setDT(as.data.frame(getSymbols("LTC-BTC",auto.assign = FALSE, from = pullDateStart, to= pullDateEnd)), keep.rownames = TRUE)[]
 colnames(BTC_LTC)[1] ="date"
+colnames(BTC_LTC)[2] ="BTC_LTC_Open"
+colnames(BTC_LTC)[3] ="BTC_LTC_High"
+colnames(BTC_LTC)[4] ="BTC_LTC_Low"
+colnames(BTC_LTC)[5] ="BTC_LTC_Close"
+colnames(BTC_LTC)[6] ="BTC_LTC_Volume"
+colnames(BTC_LTC)[7] ="BTC_LTC_Adjusted"
 
 #--> Collect Google Trends
 
-location = c("US")  #---> See Below for country codes for Google Trends...Code only accepts one for now
+location = c("")  #---> See Below for country codes for Google Trends...Code only accepts one for now
 
 gtrendBitcoin = gtrends("bitcoin", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
                                                          "images", "froogle", "youtube"), category = 0, hl = "en-US")
@@ -205,12 +245,12 @@ colnames(gtrendBitcoinCrash)[2] ="gtrendBitcoinCrash"
 gtrendBitcoinCrash= setDT(gtrendBitcoinCrash)
 Sys.sleep(sample(1:3))
 
-gtrendBitcoinBounce = gtrends("bitcoin bounce", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
+gtrendBitcoinPrice = gtrends("bitcoin price", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
                                                                                                                       "images", "froogle", "youtube"), category = 0, hl = "en-US")
-gtrendBitcoinBounce = as.data.frame(gtrendBitcoinBounce$interest_over_time[,c(1,2)])
-gtrendBitcoinBounce$date = as.character(gtrendBitcoinBounce$date)
-colnames(gtrendBitcoinBounce)[2] ="gtrendBitcoinBounce"
-gtrendBitcoinBounce= setDT(gtrendBitcoinBounce)
+gtrendBitcoinPrice = as.data.frame(gtrendBitcoinPrice$interest_over_time[,c(1,2)])
+gtrendBitcoinPrice$date = as.character(gtrendBitcoinPrice$date)
+colnames(gtrendBitcoinPrice)[2] ="gtrendBitcoinPrice"
+gtrendBitcoinPrice= setDT(gtrendBitcoinPrice)
 Sys.sleep(sample(1:3))
 
 
@@ -223,12 +263,12 @@ gtrendBitcoinBan= setDT(gtrendBitcoinBan)
 Sys.sleep(sample(1:3))
 
 
-gtrendBitcoinExchangeHack = gtrends("bitcoin exchange hack", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
+gtrendBitcoinTether = gtrends("bitcoin tether", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
                                                                                                                                    "images", "froogle", "youtube"), category = 0, hl = "en-US")
-gtrendBitcoinExchangeHack = as.data.frame(gtrendBitcoinExchangeHack$interest_over_time[,c(1,2)])
-gtrendBitcoinExchangeHack$date = as.character(gtrendBitcoinExchangeHack$date)
-colnames(gtrendBitcoinExchangeHack)[2] ="gtrendBitcoinExchangeHack"
-gtrendBitcoinExchangeHack= setDT(gtrendBitcoinExchangeHack)
+gtrendBitcoinTether = as.data.frame(gtrendBitcoinTether$interest_over_time[,c(1,2)])
+gtrendBitcoinTether$date = as.character(gtrendBitcoinTether$date)
+colnames(gtrendBitcoinTether)[2] ="gtrendBitcoinTether"
+gtrendBitcoinTether= setDT(gtrendBitcoinTether)
 Sys.sleep(sample(1:3))
 
 gtrendEther = gtrends("ethereum", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
@@ -273,8 +313,8 @@ gtrendLiteCrash= setDT(gtrendLiteCrash)
 # Begin merging gTrends into a single dataframe
 
 gOut =  gtrendBitcoin[gtrendBitcoinBubble, on = "date"]
-gOut = gOut[gtrendBitcoinBounce, on = "date"]
-gOut = gOut[gtrendBitcoinExchangeHack, on = "date"]
+gOut = gOut[gtrendBitcoinPrice, on = "date"]
+gOut = gOut[gtrendBitcoinTether, on = "date"]
 gOut = gOut[gtrendEther, on = "date"]
 gOut = gOut[gtrendEtherBubble, on = "date"]
 gOut = gOut[gtrendEtherCrash, on = "date"]
