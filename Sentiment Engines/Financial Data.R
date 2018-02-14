@@ -6,7 +6,6 @@ Quandl.api_key("2zs3zXe_rhC6E9CW1QPb")
 
 
 
-
 st.dt<-"2017-11-29"
 end.dt<-"2018-01-25"
 
