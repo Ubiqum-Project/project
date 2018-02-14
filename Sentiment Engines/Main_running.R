@@ -1,33 +1,31 @@
 #MAIN RUNNING
-Final.table<-
+Final.table<-Text.art
 
-
+for(sentiment.used in Sentiment.list){
+  Final.table<-Final.table%>%
+    left_join(Index1_1(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered))
+  colnames(Final.table)[length(Final.table)]<-paste("Index1_1",sentiment.used)
+}
 
 
 #Function used
 {
   #IndexMain
-  
+  {
+    
+  }
   #Index1_1
   {
     Index1_1 <- function(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered) 
     {  #Base
-      sentiment.used<-"afinn"
-      
-      Text.art
-      TARGET_WORDS.count
-      quatrigrams_filtered
-      quatrigrams_filtered.end
-      NegationWords
-      
-      
+      print(sentiment.used)
       #1)
       Working_Table<-TARGET_WORDS.count%>%
         top_n(3)
       colnames(Working_Table)[2]<-"tword"
       
       #2)
-      get_sentiments(sentiment.used)
+      get_sentiment(sentiment.used)
       
       #ISNOT TEST : List of trigram with ISNOT or negation
       {
@@ -47,21 +45,20 @@ Final.table<-
       }
       
       #Sentiment material
+      
       sentim<-quatrigrams_filtered%>%
         mutate(nTrigram = 1:n())%>%
         left_join(IsNot)%>%
-        unnest_tokens(word, trigram)%>%
-        inner_join(get_sentiments(sentiment.used), by = "word")%>%
+        mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
         group_by(nTrigram,time,word1)%>%
-        summarise(score=sum(score*ratio*ifelse(is.na(TestIsNot),1,-1)))
+        summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
       
       sentim.end<-quatrigrams_filtered.end%>%
         mutate(nTrigram = 1:n())%>%
         left_join(IsNot.end)%>%
-        unnest_tokens(word, trigram)%>%
-        inner_join(get_sentiments(sentiment.used), by = "word")%>%
+        mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
         group_by(nTrigram,time,word4)%>%
-        summarise(score=sum(score*ratio*ifelse(is.na(TestIsNot),1,-1)))
+        summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
       
       colnames(sentim)[3]<-"tword"
       colnames(sentim.end)[3]<-"tword"
@@ -75,33 +72,6 @@ Final.table<-
       
       Working_Table<-Working_Table%>%
         left_join(sentim.around)
-      
-      #explanation checking
-      {
-        Used.table <- trigrams_filtered %>% 
-          count(word1, bigram,time)
-        colnames(Used.table)[1]<-"tword"
-        colnames(Used.table)[4]<-"nword"
-        
-        explaination<-Working_Table%>%
-          left_join(Used.table)%>%
-          arrange(desc(time))%>%
-          arrange(desc(nword))%>%
-          arrange(desc(tword))
-        explaination
-        
-        Used.table2 <- trigrams_filtered.end %>% 
-          count(word3, bigram,time)
-        colnames(Used.table2)[1]<-"tword"
-        colnames(Used.table2)[4]<-"nword"
-        
-        explaination<-Working_Table%>%
-          left_join(Used.table2)%>%
-          arrange(desc(time))%>%
-          arrange(desc(nword))%>%
-          arrange(desc(tword))
-        
-        }
       
       #3)Index formula
       Index<-Working_Table%>%

@@ -10,9 +10,11 @@
 #Result: a sentiment score of the top 3 most used countries name every day + An index factor giving the reason of the mention
 
 
-#Index1_1 <- function(sentiment.used,Source,TARGET_WORDS.count,quatrigrams_filtered) 
+#Index1_1 <- function(sentiment.used,TARGET_WORDS.count,quatrigrams_filtered) 
 #Base
-sentiment.used<-"afinn"
+sentiment.used<-"bing"
+
+Text.art
 TARGET_WORDS.count
 quatrigrams_filtered
 quatrigrams_filtered.end
@@ -25,7 +27,7 @@ Working_Table<-TARGET_WORDS.count%>%
 colnames(Working_Table)[2]<-"tword"
 
 #2)
-get_sentiments(sentiment.used)
+get_sentiment(sentiment.used)
 
 #ISNOT TEST : List of trigram with ISNOT or negation
 {
@@ -45,23 +47,20 @@ get_sentiments(sentiment.used)
 }
 
 #Sentiment material
+
 sentim<-quatrigrams_filtered%>%
-  left_join(source.ratio)%>%
   mutate(nTrigram = 1:n())%>%
   left_join(IsNot)%>%
-  unnest_tokens(word, trigram)%>%
-  inner_join(get_sentiments(sentiment.used), by = "word")%>%
+  mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
   group_by(nTrigram,time,word1)%>%
-  summarise(score=sum(score*ratio*ifelse(is.na(TestIsNot),1,-1)))
+  summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
 
 sentim.end<-quatrigrams_filtered.end%>%
-  left_join(source.ratio)%>%
   mutate(nTrigram = 1:n())%>%
   left_join(IsNot.end)%>%
-  unnest_tokens(word, trigram)%>%
-  inner_join(get_sentiments(sentiment.used), by = "word")%>%
+  mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
   group_by(nTrigram,time,word4)%>%
-  summarise(score=sum(score*ratio*ifelse(is.na(TestIsNot),1,-1)))
+  summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
 
 colnames(sentim)[3]<-"tword"
 colnames(sentim.end)[3]<-"tword"
@@ -103,17 +102,22 @@ Working_Table<-Working_Table%>%
   
 }
 
-#Index formula
+#3)Index formula
 Index<-Working_Table%>%
   group_by(time)%>%
   summarise(index.value=mean(score,na.rm=TRUE))#Not a weighted average because the weight is already comprise in the score
 
-
 Index.article<-full_join(quatrigrams_filtered, quatrigrams_filtered.end)%>%
-  grou
+  left_join(Index)%>%
+  count(article,index.value)%>%
+  select(article, index.value)
+
+Result<-Text.art%>%
+  left_join(Index.article)%>%
+  select(article,index.value)
 
 
-#return(Index.article)
+#return(Result)
 
 
 
