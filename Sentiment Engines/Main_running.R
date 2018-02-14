@@ -1,19 +1,50 @@
 #MAIN RUNNING
-Final.table<-Text.art
+Final.table<-Index_0(Text.art)
 
-for(sentiment.used in Sentiment.list){
-  Final.table<-Final.table%>%
-    left_join(Index1_1(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered))
-  colnames(Final.table)[length(Final.table)]<-paste("Index1_1",sentiment.used)
-}
+Sentiment.list[1]
+
+Final.table<-Final.table%>%
+  left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered))%>%
+  left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered))%>%
+  left_join(Index1_1(Text.art,Sentiment.list[3],TARGET_WORDS.count,quatrigrams_filtered))%>%
+  left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered))%>%
+
+
+
+
+colnames(Final.table)[length(Final.table)]<-paste("Index1_1",sentiment.used)
 
 
 #Function used
 {
   #IndexMain
+  
+  #Index0
   {
-    
+    Index_0 <- function(Text.art) 
+    {
+      #List of data used
+      print("bing 1/4")
+      result <- cbind(Text.art$article, as.data.frame(get_sentiment(Text.art$text, method="bing")))
+      print("nrc 2/4")
+      result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="nrc")))
+      print("afinn 3/4")
+      result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="afinn")))
+      print("syuzhet 4/4")
+      result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="syuzhet")))
+      print("merge")
+      sentimentr <- sentiment(Text.art$text)
+      result <- cbind(result,sentimentr[,4])
+      rm(sentimentr)
+      colnames(result)[1] <- "article"
+      colnames(result)[2] <- "total_bing"
+      colnames(result)[3] <- "total_nrc"
+      colnames(result)[4] <- "total_afinn"
+      colnames(result)[5] <- "total_syuzhet"
+      colnames(result)[6] <- "total_sentimentr"
+    }
   }
+  
   #Index1_1
   {
     Index1_1 <- function(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered) 
