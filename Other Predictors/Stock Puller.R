@@ -217,7 +217,7 @@ colnames(BTC_LTC)[7] ="BTC_LTC_Adjusted"
 
 #--> Collect Google Trends
 
-location = c("US")  #---> See Below for country codes for Google Trends...Code only accepts one for now
+location = c("")  #---> See Below for country codes for Google Trends...Code only accepts one for now
 
 gtrendBitcoin = gtrends("bitcoin", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
                                                          "images", "froogle", "youtube"), category = 0, hl = "en-US")
