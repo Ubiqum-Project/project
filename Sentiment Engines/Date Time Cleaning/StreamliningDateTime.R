@@ -9,6 +9,7 @@ library(tidyr)
 library(gtools)
 library(zoo)
 library(RPostgreSQL)
+library(stringr)
 
 #####################################################################################################
 ####################################### Pull From Database ##########################################
@@ -47,7 +48,7 @@ library(RPostgreSQL)
 #####################################################################################################
 
 
-cleaned <- read.csv("bitcoinPull 2018-01-25")
+cleaned <- read_csv("bitcoinPull 2018-01-25")
 
 #####################################################################################################
 #####################################################################################################
@@ -64,6 +65,8 @@ cleaned$combination<-cleaned$title
 {cleaned$combination[which(cleaned$title != cleaned$paragraph)]=
     paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph
           [which(cleaned$title != cleaned$paragraph)])}
+
+
 
 docs <- Corpus(VectorSource(cleaned$combination))
 
@@ -97,13 +100,14 @@ docs <- tm_map(docs, toSpace, "-")
 docs <- tm_map(docs, toSpace, "_")
 docs <- tm_map(docs, toSpace, "\r")
 docs <- tm_map(docs, toSpace, "\n")
-docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
+
+
+docs <- tm_map(docs, function(x) iconv(docs$content, "UTF-8", "UTF-8",sub=''))
 
 # united states correction
 us <- content_transformer(function (x, pattern) gsub(pattern, "unitedstates", x, fixed=TRUE))
 docs <- tm_map(docs, us, "U.S.")
-# Convert the text to lower case
-docs <- tm_map(docs, content_transformer(tolower))
+
 # Remove numbers (not required?)
 docs <- tm_map(docs, removeNumbers)
 # Remove punctuations
@@ -140,6 +144,14 @@ s.africa <- content_transformer(function (x, pattern) gsub(pattern, "south-afric
 docs <- tm_map(docs, s.africa, "south africa")
 s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "south-sudan", x, fixed=TRUE))
 docs <- tm_map(docs, s.sudan, "south sudan")
+
+
+emo = content_transformer(function (x) gsub("[^\x01-\x7F]", "", x))
+docs <- tm_map(docs, emo)
+
+
+# Convert the text to lower case
+docs <- tm_map(docs, content_transformer(tolower))
 # Eliminate extra white spaces
 docs <- tm_map(docs, stripWhitespace)
 

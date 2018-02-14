@@ -16,7 +16,7 @@ library(gtrendsR)
 ############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
 
 
-final = read.csv(gzfile("cleaned_with_dates.csv.gz"))
+final = read_csv(gzfile("cleaned_with_dates.csv.gz"))
 final$cleaned = as_datetime(final$cleaned)
 
 
