@@ -1,58 +1,17 @@
-dirtyFrame = read.csv(gzfile("secondary_Predictor_Pull.csv.gz"))
+toBeNormalized = read.csv(gzfile("secondary_Predictor_Pull.csv.gz"))
 
-final =  dirtyFrame[,c("cleaned",
-                       "name",
-                       "combination",
-                       "text",
-                        "KrakkenPrice",
-                        "CoinbasePrice",
-                        "gtrendLiteCrash",
-                        "gtrendEtherCrash",
-                        "gtrendEtherBubble",
-                        "gtrendEther",
-                        "gtrendBitcoinPrice",
-                        "gtrendBitcoinTether",
-                        "gtrendBitcoinBubble",
-                         "gtrendBitcoin",
-                        "GSPC_Adjusted",
-                        "GSPC_Volume",
-                        "GSPC_Close",
-                        "GSPC_Low",
-                        "GSPC_High",
-                        "GSPC_Open",
-                        "VIX_Adjusted",
-                        "VIX_Close",
-                        "VIX_Low",
-                        "VIX_High",
-                        "VIX_Open",
-                        "GOLD_Adjusted",
-                        "GOLD_Volume",
-                        "GOLD_Close",
-                        "GOLD_Low",
-                        "GOLD_High",
-                        "GOLD_Open",
-                        "BTCUSDX_Adjusted",
-                       "BTCUSDX_Volume", 
-                        "BTCUSDX_Close",
-                        "BTCUSDX_Low",
-                        "BTCUSDX_High",
-                        "BTCUSDX_Open",
-                        "BTC_LTC_Adjusted",
-                        "BTC_LTC_Volume",
-                        "BTC_LTC_Close",
-                        "BTC_LTC_Low",
-                        "BTC_LTC_High",
-                        "BTC_LTC_Open",
-                        "BTC_ETH_Adjusted",
-                        "BTC_ETH_Volume",
-                        "BTC_ETH_Close",
-                        "BTC_ETH_Low",
-                        "BTC_ETH_High",
-                        "BTC_ETH_Open")]
+btcPrice = as.data.frame(toBeNormalized$KrakkenPrice)
 
 
+x1 = 15000
 
+x2 = 15700
 
+x = x2-x1
 
+y = 1
 
+atan((x2-x1)/y)
 
+atan(y/(x2-x1))
+atan(y/x)
