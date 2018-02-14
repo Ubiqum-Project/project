@@ -1,17 +1,30 @@
+#install.packages("aspace")
+library(aspace)
 toBeNormalized = read.csv(gzfile("secondary_Predictor_Pull.csv.gz"))
+toBeNormalized = toBeNormalized[!duplicated(toBeNormalized$cleaned),]
 
-btcPrice = as.data.frame(toBeNormalized$KrakkenPrice)
 
 
-x1 = 15000
+KrakkenPrice = toBeNormalized #[c("cleaned","KrakkenPrice")]
+#KrakkenPrice = unique(KrakkenPrice)
 
-x2 = 15700
 
-x = x2-x1
 
-y = 1
 
-atan((x2-x1)/y)
+for (i in 1:length(KrakkenPrice$KrakkenPrice))
+{
 
-atan(y/(x2-x1))
-atan(y/x)
+  x = 1 # This represents the time series
+
+  KrakkenPrice$deltaKrakken[i] = (tan_d(theta = (KrakkenPrice$KrakkenPrice[i+1]-KrakkenPrice$KrakkenPrice[i])/x))/40
+  KrakkenPrice$deltaCoinbase[i] = (tan_d(theta = (KrakkenPrice$CoinbasePrice[i+1]-KrakkenPrice$CoinbasePrice[i])/x))
+  
+}
+
+KrakkenPrice$tan= sin(as.numeric(KrakkenPrice$deltaKrakken))
+
+plot(KrakkenPrice$deltaKrakken, time)
+time()
+plot(KrakkenPrice$tan, breaks = 50)
+line
+
