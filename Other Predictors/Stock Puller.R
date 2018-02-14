@@ -63,7 +63,7 @@ testedKrakken = testedKrakken[,-c(3,4)]
 final = testedKrakken
 
 #############################--->Coinbase<------####################################
-#---------------------Access Kraken Historical Price Info
+#---------------------Access Coinbase Historical Price Info
 
 #------------> Download Coinbase File-------------
 # temp <- tempfile()
@@ -104,49 +104,47 @@ testedCoin = testedCoin[,-c(3)]
 
 final = testedCoin
 #############################--->CEX<------####################################
-#---------------------Access Kraken Historical Price Info
+#---------------------Access CEX Historical Price Info
 
-#------------> Download Coinbase File-------------
+#------------> Download CEX File-------------
 # temp <- tempfile()
 # download.file("http://api.bitcoincharts.com/v1/csv/cexUSD.csv.gz",temp)
 # historicPriceCEXDL <- read.csv(gzfile(temp, ".coinbaseUSD"))
 # rm(temp)
 
-#------------> Open Coinbase File-------------
-
-
-
-historicPriceCEXDL <- read.csv(".cexUSD.csv")
-colnames(historicPriceCEXDL) = c("cexDate", "cexPrice")
-historicPriceCEXDL = historicPriceCEXDL[1:2]
-#---------> End File Input 
-
-final$cleaned = as_datetime(final$cleaned)
-historicPriceCEXDL$cexDate = as_datetime(historicPriceCEXDL$cexDate)
-
-
-final = as.data.table(final)
-historicPriceCEXDL= as.data.table(historicPriceCEXDL)
-
-final[, join_time:=cleaned]
-historicPriceCEXDL[, join_time:=cexDate]
-
-
-setkey(as.data.table(final), cleaned, join_time)
-setkey(as.data.table(historicPriceCEXDL), cexDate, join_time)
-
-testCex = unique(historicPriceCEXDL[final, roll = T, on = "join_time"])
-
-testedCex = testCex[!duplicated(testCex$combination),]
-
-colnames(testedCex)[1] = "cexDate" #--> For Quality Control Purposes
-colnames(testedCex)[2] = "cexPrice"
-
-testedCex = testedCex[,-c(3)]
-
-final = testedCex
-z <- gzfile("cleaned_w_Krakken_Coinbase_Cex.csv.gz")
-write.csv(final, z)
+# #------------> Open CEX File-------------
+# 
+# historicPriceCEXDL <- read.csv(".cexUSD.csv")
+# colnames(historicPriceCEXDL) = c("cexDate", "cexPrice")
+# historicPriceCEXDL = historicPriceCEXDL[1:2]
+# #---------> End File Input 
+# 
+# final$cleaned = as_datetime(final$cleaned)
+# historicPriceCEXDL$cexDate = as_datetime(historicPriceCEXDL$cexDate)
+# 
+# 
+# final = as.data.table(final)
+# historicPriceCEXDL= as.data.table(historicPriceCEXDL)
+# 
+# final[, join_time:=cleaned]
+# historicPriceCEXDL[, join_time:=cexDate]
+# 
+# 
+# setkey(as.data.table(final), cleaned, join_time)
+# setkey(as.data.table(historicPriceCEXDL), cexDate, join_time)
+# 
+# testCex = unique(historicPriceCEXDL[final, roll = T, on = "join_time"])
+# 
+# testedCex = testCex[!duplicated(testCex$combination),]
+# 
+# colnames(testedCex)[1] = "cexDate" #--> For Quality Control Purposes
+# colnames(testedCex)[2] = "cexPrice"
+# 
+# testedCex = testedCex[,-c(3)]
+# 
+# final = testedCex
+# z <- gzfile("cleaned_w_Krakken_Coinbase_Cex.csv.gz")
+# write.csv(final, z)
 
 ####################################################################################
 
@@ -257,7 +255,7 @@ Sys.sleep(sample(1:3))
 gtrendBitcoinBan = gtrends("bitcoin ban", geo = location, time = paste0(pullDateStart," ",pullDateEnd), gprop = c("web", "news",
                                                                                                                       "images", "froogle", "youtube"), category = 0, hl = "en-US")
 gtrendBitcoinBan = as.data.frame(gtrendBitcoinBan$interest_over_time[,c(1,2)])
-gtrendBitcoinBan$date = as.character(gtrendBitcoinExchangeBan$date)
+gtrendBitcoinBan$date = as.character(gtrendBitcoinBan$date)
 colnames(gtrendBitcoinBan)[2] ="gtrendBitcoinBan"
 gtrendBitcoinBan= setDT(gtrendBitcoinBan)
 Sys.sleep(sample(1:3))
@@ -360,6 +358,55 @@ setkey(as.data.table(concatenated_Secondary_Predictors), date, join_time)
 test = concatenated_Secondary_Predictors[cleanedWithExchangePrice, roll = T, on = "join_time"]
 tester = test[!duplicated(test$combination),]
 
+tester = final =  tester[,c("cleaned",
+                                "name",
+                                "combination",
+                                "text",
+                                "KrakkenPrice",
+                                "CoinbasePrice",
+                                "gtrendLiteCrash",
+                                "gtrendEtherCrash",
+                                "gtrendEtherBubble",
+                                "gtrendEther",
+                                "gtrendBitcoinPrice",
+                                "gtrendBitcoinTether",
+                                "gtrendBitcoinBubble",
+                                "gtrendBitcoin",
+                                "GSPC_Adjusted",
+                                "GSPC_Volume",
+                                "GSPC_Close",
+                                "GSPC_Low",
+                                "GSPC_High",
+                                "GSPC_Open",
+                                "VIX_Adjusted",
+                                "VIX_Close",
+                                "VIX_Low",
+                                "VIX_High",
+                                "VIX_Open",
+                                "GOLD_Adjusted",
+                                "GOLD_Volume",
+                                "GOLD_Close",
+                                "GOLD_Low",
+                                "GOLD_High",
+                                "GOLD_Open",
+                                "BTCUSDX_Adjusted",
+                                "BTCUSDX_Volume", 
+                                "BTCUSDX_Close",
+                                "BTCUSDX_Low",
+                                "BTCUSDX_High",
+                                "BTCUSDX_Open",
+                                "BTC_LTC_Adjusted",
+                                "BTC_LTC_Volume",
+                                "BTC_LTC_Close",
+                                "BTC_LTC_Low",
+                                "BTC_LTC_High",
+                                "BTC_LTC_Open",
+                                "BTC_ETH_Adjusted",
+                                "BTC_ETH_Volume",
+                                "BTC_ETH_Close",
+                                "BTC_ETH_Low",
+                                "BTC_ETH_High",
+                                "BTC_ETH_Open")]
 # Write to GZ file
 z <- gzfile("secondary_Predictor_Pull.csv.gz")
 write.csv(tester, z)
