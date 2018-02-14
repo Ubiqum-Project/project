@@ -22,8 +22,9 @@
   usePackage("wordnet")
   usePackage("scales")
   usePackage("igraph")
-  usePackage("ggraph")  
-  
+  usePackage("ggraph")
+  usePackage("syuzhet")
+
   
 }
 
@@ -43,7 +44,7 @@
     source.ratio$ratio<-1
 
   #SENTIMENT INDICATOR
-  Sentiment.list<-c("afinn","nrc","bing","syuzhet")
+  Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
   NegationWords<-c("isnt","cannot","cant","wont","wasnt")
 
