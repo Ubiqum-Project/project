@@ -1,4 +1,4 @@
-#INDEX 0_1
+#INDEX 1_0
 
 #Number of appearance of theses words per day
 TARGET_WORDS.article<-Text.word %>%

@@ -116,10 +116,7 @@
     Text.art<-tibble(article=seq_along(cleaned$text),source=cleaned$name,text=cleaned$text,time=cleaned$cleaned)
     Text.art$source <- factor(Text.art$source)
     Text.art$time <- as.Date(Text.art$time)
-    
 
-    Text.art<-Text.art%>%
-      filter(time>=as.Date("2017-11-29"))
   }
   # ---ONE WORD--- TOKENS +++++++++++++++++++++++++++++++
   {
