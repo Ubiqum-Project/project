@@ -68,7 +68,6 @@ Final.table<-Final.table%>%
   
   #Index_0_1
   Index0_1 <- function (TARGET_WORDS.article, Text.art)
-    
    {
     
   working.table <- TARGET_WORDS.article  %>%
@@ -120,19 +119,22 @@ Final.table<-Final.table%>%
         left_join(IsNot)%>%
         mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
         group_by(nTrigram,time,word1)%>%
-        summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
+        summarise(score1=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
       
       sentim.end<-quatrigrams_filtered.end%>%
         mutate(nTrigram = 1:n())%>%
         left_join(IsNot.end)%>%
         mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
         group_by(nTrigram,time,word4)%>%
-        summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
+        summarise(score2=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
       
       colnames(sentim)[3]<-"tword"
       colnames(sentim.end)[3]<-"tword"
       
-      sentim.around <- full_join(sentim, sentim.end)
+      sentim.around <- full_join(sentim, sentim.end)%>%
+        mutate(score=score1+score2)%>%
+        select(nTrigram,time,tword,score)
+      
       rm(sentim,sentim.end)
       
       sentim.around<-sentim.around%>%
