@@ -12,6 +12,11 @@ TARGET_WORDS.count<-Text.word %>%
   count(word, sort = TRUE)%>%
   filter(word%in% TARGET_WORDS) 
 
+TARGET_WORDS.article<-Text.word %>%
+  filter(word%in% TARGET_WORDS)%>%
+  count(article)%>%
+  select(article)
+
 #GRAPH==============================================================
 ggplot()+geom_line(data=TARGET_WORDS.count,aes(x=time,y=n*100+10000,color=word))+
   geom_line(data=Price,aes(x = Date,y=Close))+scale_x_date(breaks = date_breaks("3 days"),labels=date_format("%d-%m"))
