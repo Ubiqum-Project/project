@@ -8,11 +8,13 @@ T1<-Sys.time()
 Final.table<-Index_0(Text.art) 
 
 #Final.table[,6:10]<-NULL#TO delete only for test the next function
-Final.table<-Final.table%>%
-  left_join(Index0_1(TARGET_WORDS.article, Text.art))
+
 
 
 #RUN INDEX SOURCE 1
+#INDEX1_0
+Final.table<-Final.table%>%
+  left_join(Index1_0(TARGET_WORDS.article, Text.art))
 #INDEX1_1
 Final.table<-Final.table%>%
   left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))%>%
@@ -85,9 +87,9 @@ print(difftime(T1, Sys.time()))
       return(result)
     }
   
-#Index_0_1____________________________________________________________________________________________
+#Index_1_0____________________________________________________________________________________________
   
-  Index0_1 <- function (TARGET_WORDS.article, Text.art)
+  Index1_0 <- function (TARGET_WORDS.article, Text.art)
    {
     
   working.table <- TARGET_WORDS.article  %>%
