@@ -1,8 +1,5 @@
-
 #INDEX 1 IRARTIONAL INDEX 
 #It is a reverse sentiment analysis, we targeted irrationality and we want some insight
-TARGET_MACROLEG<-c("trump")
-
 TARGET_COUNTRY<-tolower(countrycode_data$country.name.en)
 TARGET_WORDS<-TARGET_MACROLEG
 
