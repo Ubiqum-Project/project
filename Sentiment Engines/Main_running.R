@@ -1,6 +1,5 @@
 #MAIN RUNNING
 
-source("filename.r")
 
 #TIME
 T1<-Sys.time()
