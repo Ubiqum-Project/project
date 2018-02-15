@@ -1,12 +1,12 @@
 #MAIN RUNNING
 
 #RUN Index Common
-x<-Text.art[554,]
-
 Final.table<-Index_0(Text.art)
 
 
 #RUN INDEX SOURCE 1
+x<-Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered)
+
 Final.table<-Final.table%>%
   left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered))%>%
   left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered))%>%
@@ -133,13 +133,8 @@ Final.table<-Final.table%>%
         group_by(time)%>%
         summarise(index.value=mean(score,na.rm=TRUE))#Not a weighted average because the weight is already comprise in the score
       
-      Index.article<-full_join(quatrigrams_filtered, quatrigrams_filtered.end)%>%
-        left_join(Index)%>%
-        count(article,index.value)%>%
-        select(article, index.value)
-      
       Result<-Text.art%>%
-        left_join(Index.article)%>%
+        left_join(Index)%>%
         select(article,index.value)
       
       colnames(Result)[2]<-paste(c("Indexe1_1",sentiment.used),collapse="_")

@@ -1,28 +1,37 @@
 
 #INDEX 2 INFLUENCER
 #https://steemit.com/bitcoin/@dainisg/40-best-blockchain-influencers-and-cryptocurrency-experts-to-follow-in-2018-on-steemit-too
-TARGET_INFLUENCER<-c("Nick Szabo","Andreas","Roger Ver","Andreas M. Antonopoulos","Vitalik Buterin","Gavin Andresen",
-                     "Barry Silbert","Clif High","Don Tapscott","Vincent Briatore","Nicolas Cary","Tuur Demeester",
-                     "Emin Gün Sirer","Ameer Rosic","Charlie Shrem","LedgerSatus","Brian Krogsgard","Josh Olszewicz",
-                     "Ritchie Etwaru","CryptoYoda","Teeka Tiwari","ivanli","crypt0","boxmining","cryptographic","scandinavianlife",
-                     "intelliguy","jrcornel","KingsCrown","staticinstance","steempower")
-TARGET_INFLUENCER<-c("Nick","Szabo","Andreas","Roger","Ver","Andreas","Antonopoulos","Vitalik","Buterin","Gavin","Andresen",
-                     "Barry","Silbert","Clif","High","Don","Tapscott","Vincent","Briatore","Nicolas","Cary","Tuur","Demeester",
-                     "Emin","gun","Sirer","Ameer","Rosic","Charlie","Shrem","LedgerSatus","Brian","Krogsgard","Josh","Olszewicz",
-                     "Ritchie","Etwaru","CryptoYoda","Teeka","Tiwari","ivanli","crypt0","boxmining","cryptographic","scandinavianlife",
-                     "intelliguy","jrcornel","KingsCrown","staticinstance","steempower")
+TARGET_INFLUENCER.bigram<-c("nick szabo","roger ver","andreas m","m antonopoulos","andreas antonopoulos","vitalik buterin","gavin andresen",
+                            "barry silbert","clif high","don tapscott","vincent briatore","nicolas cary","tuur demeester",
+                            "emin gün","emin sirer","ameer rosic","charlie shrem","ledgersatus","brian krogsgard","josh olszewicz",
+                            "ritchie etwaru","teeka tiwari")
+TARGET_INFLUENCER.monogram<-c("LedgerSatus","CryptoYoda","ivanli","crypt0","boxmining","cryptographic","scandinavianlife",
+                      "intelliguy","jrcornel","KingsCrown","staticinstance","steempower")
 
-TARGET_WORDS<-TARGET_INFLUENCER
+TARGET_INFLUENCER<-c("nick","szabo","andreas","roger","ver","andreas","antonopoulos","vitalik","buterin","gavin","andresen",
+                     "barry","silbert","clif","high","don","tapscott","vincent","briatore","nicolas","cary","tuur","demeester",
+                     "emin","gun","sirer","ameer","rosic","charlie","shrem","ledgersatus","brian","krogsgard","josh","olszewicz",
+                     "ritchie","etwaru","cryptoyoda","teeka","tiwari","ivanli","crypt0","boxmining","cryptographic","scandinavianlife",
+                     "intelliguy","jrcornel","kingscrown","staticinstance","steempower")
 
-#Number of appearance of theses words per day
+TARGET_WORDS<-TARGET_INFLUENCER.monogram
+
+#Number of appearance of theses words per day MONOGRAM
 TARGET_WORDS.count<-Text.word %>%
   anti_join(stop_words) %>%
   group_by(time)%>%
   count(word, sort = TRUE)%>%
-  filter(word%in% TARGET_WORDS) 
+  filter(word%in% TARGET_INFLUENCER.monogram) 
+#Number of appearance of theses words per day BIGRAM
+TARGET_BIGRAM.count<-Text.bigram %>%
+  group_by(time)%>%
+  count(bigram, sort = TRUE)%>%
+  filter(bigram%in% TARGET_INFLUENCER.bigram) 
 
 #GRAPH==============================================================
 ggplot()+geom_line(data=TARGET_WORDS.count,aes(x=time,y=n*100+10000,color=word))+
+  geom_line(data=Price,aes(x = Date,y=Close))+scale_x_date(breaks = date_breaks("3 days"),labels=date_format("%d-%m"))
+ggplot()+geom_line(data=TARGET_BIGRAM.count,aes(x=time,y=n*100+10000,color=bigram))+
   geom_line(data=Price,aes(x = Date,y=Close))+scale_x_date(breaks = date_breaks("3 days"),labels=date_format("%d-%m"))
 #===================================================================
 #GENERAL PREPROCESS
@@ -131,6 +140,9 @@ ggplot()+geom_line(data=TARGET_WORDS.count,aes(x=time,y=n*100+10000,color=word))
   }
 }
 
+
+
+#---------------------------------------------------------------------------------------------
 #PREPROCESS: Analyze sentiment around the Target word
 {
   
