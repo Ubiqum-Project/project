@@ -62,7 +62,7 @@
                      "overrule", "governable", "unruled", "state", "limiting", "regulations",
                      "guidelines", "laws", "measures", "procedures", "requiring", "licit",
                      "oversight", "stricter", "requires", "taxation", "restrict", "lawlessness",
-                     "restrictions", "tighter", "necessary", "regiment", "policies", "restrictive",
+                     "restrictions", "tighter", "regiment", "policies", "restrictive",
                      "legal", "restricting", "impose", "stringent", "federal", "required",
                      "compliance", "strict", "reform", "prohibit", "violate", "contravention",
                      "penalties", "protection", "blocking", "reducing", "tougher", "safeguards",
