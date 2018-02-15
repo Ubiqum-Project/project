@@ -31,7 +31,7 @@
 #DATA ---------------------------------------------------------------------------------
 #SOURCE
 {
-  cleaned <- read_csv("~/Desktop/Bitcoin project/Project bitcoin/cleaned.csv")
+  #cleaned <- read_csv("~/Desktop/Bitcoin project/Project bitcoin/cleaned.csv")
   cleaned <- read_csv(gzfile("cleaned_with_dates.csv.gz"))
 }
 #Other information
