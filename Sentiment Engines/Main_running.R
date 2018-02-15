@@ -3,10 +3,7 @@
 #RUN Index Common
 Final.table<-Index_0(Text.art)
 
-
 #RUN INDEX SOURCE 1
-x<-Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered)
-
 Final.table<-Final.table%>%
   left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered))%>%
   left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered))%>%
