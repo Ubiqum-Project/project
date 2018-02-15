@@ -46,7 +46,7 @@
   #SENTIMENT INDICATOR
   Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
-  NegationWords<-c("isnt","cannot","cant","wont","wasnt")
+  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends")
 
 }
 #INDEX TABLE CREATION-------------------------------------------------------------------
