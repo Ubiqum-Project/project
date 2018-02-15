@@ -28,11 +28,8 @@ Final.table<-Final.table%>%
 
 #RUN INDEX SOURCE 2
 
-#RUN DUMMY VARIABLES
-dummies <- createDummyFeatures(cleaned$name, cols = "name-dummy")
-cbind(Final.table, dummies)
-
-
+#RUN DUMMY VARIABLES INDICATING SOURCE
+Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
 
 
 #TIME
