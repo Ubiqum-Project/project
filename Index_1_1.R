@@ -10,7 +10,7 @@
 #Result: a sentiment score of the top 3 most used countries name every day + An index factor giving the reason of the mention
 
 
-#Index1_1 <- function(sentiment.used,TARGET_WORDS.count,quatrigrams_filtered) 
+#Index1_1 <- function(sentiment.used,TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords) 
 #Base
 sentiment.used<-"bing"
 
@@ -69,7 +69,7 @@ colnames(sentim)[2]<-"tword"
 colnames(sentim.end)[2]<-"tword"
 
 sentim.around <- full_join(sentim, sentim.end)%>%
-  mutate(score=score1+score2)%>%
+  mutate(score=ifelse(is.na(score1),0,score1)+ifelse(is.na(score2),0,score2))%>%
   select(time,tword,score)
   
 rm(sentim,sentim.end)

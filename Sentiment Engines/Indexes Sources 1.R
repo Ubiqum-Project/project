@@ -2,7 +2,7 @@
 #INDEX 1 Countries
 #
 TARGET_COUNTRY<-tolower(countrycode_data$country.name.en)
-TARGET_COUNTRY<-c(TARGET_COUNTRY,"south-korean","vietnam","usa","unitedstates")
+TARGET_COUNTRY<-c(TARGET_COUNTRY,"south-korean","vietnam","usa","unitedstates","europe","americas","asia")
 TARGET_WORDS<-TARGET_COUNTRY
 
 #Number of appearance of theses words per day
@@ -125,7 +125,3 @@ TARGET_WORDS.article<-Text.word %>%
   }
 }
 
-#PREPROCESS: Analyze sentiment around the Target word
-{
-  
-}
