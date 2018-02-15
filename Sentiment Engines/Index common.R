@@ -47,6 +47,9 @@
   Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
   NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends")
+  #SEARCH WORDS
+  SEARCH_WORD<-c("bubble", "tether", "hack", "crisis", "record", "fork")
+  
   #### IMPACT WORDS START ####
   {
     ImpactWords <- c("legalize", "banning", "ban", "bans", "regulate", "regulation", "tax", "taxes",
