@@ -70,7 +70,7 @@
                    "delinquent", "yardstick", "authoritarian", "legislate", "metalaw",
                    "clandestinely", "code of conduct", "certiorari", "authoritarianism",
                    "legislator", "rulebound", "oversit", "eviction", "compliant", "impoundment",
-                   "imperious", "lawgiver", "social control", "economics", "elderdom", "lawbook",
+                   "imperious", "lawgiver", "social control", "economics", "lawbook",
                    "rule of law", "bewield", "code enforcement", "market", "mandatory",
                    "mandator", "jurisconsult", "preterlegal", "nomic", "rule of evidence",
                    "black letter law", "golden rule", "sociolegal", "blawg", "salic law",
@@ -92,8 +92,19 @@
                    "fiduciary relation", "law of land", "penal code", "law and order", "ruling",
                    "unite state code", "united states constitution", "spirit of law", "regula",
                    "judgment in personam", "standardize", "normative", "adjudication",
-                   "standardizing", "administering")
-  
+                   "standardizing", "administering", "prohibition", "interdict", "prohibit",
+                   "banish", "forbid", "embargo", "disallow", "outlaw", "proscription",
+                   "forbidding", "censor", "ostracize", "forbiddance", "interdiction", 
+                   "injunction", "prohibiting", "restriction", "restrict", "banishment",
+                   "suspension", "exclusion", "barred", "prohibited", "prohibits", "bar",
+                   "criminalize", "decree", "edict", "nix", "bans", "restrictions", "imposed",
+                   "banning-order", "criminalise", "enjoinment", "illegalize", "banned",
+                   "sanctions", "impose", "rules", "suspend", "restricting", "sanction",
+                   "illegal", "regulations", "strict", "stricter", "tariffs", "enforce",
+                   "slapped", "guidelines", "abortion", "enforced", "halt", "imposes", "test ban", 
+                   "lawless", "illegality", "illegally", "forbidden", "proscribed", "blockade",
+                   "prohibitory", "abolition", "closure", "eliminate", "suppression", "prevented",
+                   "preclude", "clampdown", "impossibility")
   
 }
 #INDEX TABLE CREATION-------------------------------------------------------------------
