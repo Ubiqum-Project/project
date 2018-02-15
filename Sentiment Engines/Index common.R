@@ -31,7 +31,7 @@
 #DATA ---------------------------------------------------------------------------------
 #SOURCE
 {
-  cleaned <- read_csv("~/Desktop/Bitcoin project/Project bitcoin/cleaned.csv")
+  #cleaned <- read_csv("~/Desktop/Bitcoin project/Project bitcoin/cleaned.csv")
   cleaned <- read_csv(gzfile("cleaned_with_dates.csv.gz"))
 }
 #Other information
@@ -116,10 +116,7 @@
     Text.art<-tibble(article=seq_along(cleaned$text),source=cleaned$name,text=cleaned$text,time=cleaned$cleaned)
     Text.art$source <- factor(Text.art$source)
     Text.art$time <- as.Date(Text.art$time)
-    
 
-    Text.art<-Text.art%>%
-      filter(time>=as.Date("2017-11-29"))
   }
   # ---ONE WORD--- TOKENS +++++++++++++++++++++++++++++++
   {
