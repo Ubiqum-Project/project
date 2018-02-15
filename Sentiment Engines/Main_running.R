@@ -1,8 +1,11 @@
 #MAIN RUNNING
 
 #RUN Index Common
-Final.table<-Index_0(Text.art)
-
+Final.table<-Index_0(Text.art) 
+  
+Final.table<-Final.table%>%
+  left_join(Index0_1(TARGET_WORDS.article, Text.art))
+  
 #RUN INDEX SOURCE 1
 Final.table<-Final.table%>%
   left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered))%>%
@@ -16,7 +19,7 @@ Final.table<-Final.table%>%
 #Function used+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 {
   #IndexMain
-  
+
 #Index0
   {
     Index_0 <- function(Text.art) 
@@ -61,6 +64,20 @@ Final.table<-Final.table%>%
 
       return(result)
     }
+  }
+  
+  #Index_0_1
+  Index0_1 <- function (TARGET_WORDS.article, Text.art)
+    
+   {
+    
+  working.table <- TARGET_WORDS.article  %>%
+    mutate(countryT = 1)
+  
+  result <- Text.art   %>%
+    left_join (working.table)   %>%
+    select(article,countryT)
+  return(result)
   }
   
 #Index1_1
