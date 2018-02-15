@@ -47,30 +47,37 @@ get_sentiment(sentiment.used)
 }
 
 #Sentiment material
-
 sentim<-quatrigrams_filtered%>%
   mutate(nTrigram = 1:n())%>%
   left_join(IsNot)%>%
   mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
   group_by(nTrigram,time,word1)%>%
-  summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
+  summarise(score1=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))%>%
+  group_by(time,word1)%>%
+  summarise(score1=sum(score1))
 
 sentim.end<-quatrigrams_filtered.end%>%
   mutate(nTrigram = 1:n())%>%
   left_join(IsNot.end)%>%
   mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
   group_by(nTrigram,time,word4)%>%
-  summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
+  summarise(score2=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))%>%
+  group_by(time,word4)%>%
+  summarise(score2=sum(score2))
 
-colnames(sentim)[3]<-"tword"
-colnames(sentim.end)[3]<-"tword"
+colnames(sentim)[2]<-"tword"
+colnames(sentim.end)[2]<-"tword"
 
-sentim.around <- full_join(sentim, sentim.end)
+sentim.around <- full_join(sentim, sentim.end)%>%
+  mutate(score=score1+score2)%>%
+  select(time,tword,score)
+  
 rm(sentim,sentim.end)
 
 sentim.around<-sentim.around%>%
   group_by(time,tword)%>%
   summarise(score=sum(score))
+
 
 Working_Table<-Working_Table%>%
   left_join(sentim.around)
@@ -103,6 +110,7 @@ Working_Table<-Working_Table%>%
 }
 
 #3)Index formula
+Working_Table
 Index<-Working_Table%>%
   group_by(time)%>%
   summarise(index.value=mean(score,na.rm=TRUE))#Not a weighted average because the weight is already comprise in the score
@@ -116,7 +124,6 @@ Result<-Text.art%>%
   left_join(Index)%>%
   select(article,index.value)
 
-Index
 Result
 colnames(Result)[2]<-paste(c("Indexe1_1",sentiment.used),collapse="_")
 
