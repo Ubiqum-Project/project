@@ -115,7 +115,8 @@ Index.article<-full_join(quatrigrams_filtered, quatrigrams_filtered.end)%>%
 Result<-Text.art%>%
   left_join(Index.article)%>%
   select(article,index.value)
-
+Result
+colnames(Result)[2]<-paste(c("Indexe1_1",sentiment.used),collapse="_")
 
 #return(Result)
 
