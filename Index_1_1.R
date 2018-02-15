@@ -107,15 +107,18 @@ Index<-Working_Table%>%
   group_by(time)%>%
   summarise(index.value=mean(score,na.rm=TRUE))#Not a weighted average because the weight is already comprise in the score
 
-Index.article<-full_join(quatrigrams_filtered, quatrigrams_filtered.end)%>%
-  left_join(Index)%>%
-  count(article,index.value)%>%
-  select(article, index.value)
+# Index.article<-full_join(quatrigrams_filtered, quatrigrams_filtered.end)%>%
+#   left_join(Index)%>%
+#   count(article,index.value)%>%
+#   select(article, index.value)
 
 Result<-Text.art%>%
-  left_join(Index.article)%>%
+  left_join(Index)%>%
   select(article,index.value)
 
+Index
+Result
+colnames(Result)[2]<-paste(c("Indexe1_1",sentiment.used),collapse="_")
 
 #return(Result)
 

@@ -72,6 +72,7 @@ ggplot()+geom_line(data=TARGET_WORDS.count,aes(x=time,y=n*100+10000,color=word))
   }
 }
 
+#------------------------------------------------------------------------------------------------
 #PREPROCESS: CREATE SPECIFIC TABLE NUMBER OF APPEARANCE
 #No need for quatrigram
 {

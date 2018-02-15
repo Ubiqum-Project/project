@@ -1,54 +1,78 @@
 #MAIN RUNNING
+
+#RUN Index Common
 Final.table<-Index_0(Text.art)
 
-Sentiment.list[1]
+
+#RUN INDEX SOURCE 1
+x<-Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered)
 
 Final.table<-Final.table%>%
   left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered))%>%
   left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered))%>%
   left_join(Index1_1(Text.art,Sentiment.list[3],TARGET_WORDS.count,quatrigrams_filtered))%>%
-  left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered))%>%
+  left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered))
+
+#RUN INDEX SOURCE 2
 
 
-
-
-colnames(Final.table)[length(Final.table)]<-paste("Index1_1",sentiment.used)
-
-
-#Function used
+#Function used+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 {
   #IndexMain
   
-  #Index0
+#Index0
   {
     Index_0 <- function(Text.art) 
     {
-      #List of data used
+      #TIME
+      T1<-Sys.time()
+      
       print("bing 1/4")
       result <- cbind(Text.art$article, as.data.frame(get_sentiment(Text.art$text, method="bing")))
+      #TIME
+      print(difftime(T1, Sys.time()))
+      
       print("nrc 2/4")
       result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="nrc")))
+      #TIME
+      print(difftime(T1, Sys.time()))
+      
       print("afinn 3/4")
       result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="afinn")))
+      #TIME
+      print(difftime(T1, Sys.time()))
+      
       print("syuzhet 4/4")
       result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="syuzhet")))
+      #TIME
+      print(difftime(T1, Sys.time()))
+      
       print("merge")
-      sentimentr <- sentiment(Text.art$text)
-      result <- cbind(result,sentimentr[,4])
-      rm(sentimentr)
+      #sentimentr <- sentiment(Text.art$text)
+      #result <- cbind(result,sentimentr[,4])
+      #rm(sentimentr)
       colnames(result)[1] <- "article"
       colnames(result)[2] <- "total_bing"
       colnames(result)[3] <- "total_nrc"
       colnames(result)[4] <- "total_afinn"
       colnames(result)[5] <- "total_syuzhet"
-      colnames(result)[6] <- "total_sentimentr"
+      #colnames(result)[6] <- "total_sentimentr"
+      
+      #TIME
+      print(difftime(T1, Sys.time()))
+  
+
+      return(result)
     }
   }
   
-  #Index1_1
+#Index1_1
   {
     Index1_1 <- function(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered) 
-    {  #Base
+    {  
+      #TIME
+      T1<-Sys.time()
+      #Base
       print(sentiment.used)
       #1)
       Working_Table<-TARGET_WORDS.count%>%
@@ -109,14 +133,13 @@ colnames(Final.table)[length(Final.table)]<-paste("Index1_1",sentiment.used)
         group_by(time)%>%
         summarise(index.value=mean(score,na.rm=TRUE))#Not a weighted average because the weight is already comprise in the score
       
-      Index.article<-full_join(quatrigrams_filtered, quatrigrams_filtered.end)%>%
-        left_join(Index)%>%
-        count(article,index.value)%>%
-        select(article, index.value)
-      
       Result<-Text.art%>%
-        left_join(Index.article)%>%
+        left_join(Index)%>%
         select(article,index.value)
+      
+      colnames(Result)[2]<-paste(c("Indexe1_1",sentiment.used),collapse="_")
+      #TIME
+      print(difftime(T1, Sys.time()))
       
       return(Result)
     }
