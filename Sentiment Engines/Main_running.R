@@ -1,12 +1,14 @@
 #MAIN RUNNING
 
 #RUN Index Common
-Final.table<-Index_0(Text.art)
+Final.table<-Index_0(Text.art) 
+
+Final.table[,6:10]<-NULL#TO delete only for test the next function
+Final.table<-Final.table%>%
+  left_join(Index0_1(TARGET_WORDS.article, Text.art))
 
 
 #RUN INDEX SOURCE 1
-x<-Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered)
-
 Final.table<-Final.table%>%
   left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered))%>%
   left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered))%>%
@@ -19,7 +21,7 @@ Final.table<-Final.table%>%
 #Function used+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 {
   #IndexMain
-  
+
 #Index0
   {
     Index_0 <- function(Text.art) 
@@ -66,6 +68,19 @@ Final.table<-Final.table%>%
     }
   }
   
+  #Index_0_1
+  Index0_1 <- function (TARGET_WORDS.article, Text.art)
+   {
+    
+  working.table <- TARGET_WORDS.article  %>%
+    mutate(countryT = 1)
+  
+  result <- Text.art   %>%
+    left_join (working.table)   %>%
+    select(article,countryT)
+  return(result)
+  }
+  
 #Index1_1
   {
     Index1_1 <- function(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered) 
@@ -106,19 +121,26 @@ Final.table<-Final.table%>%
         left_join(IsNot)%>%
         mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
         group_by(nTrigram,time,word1)%>%
-        summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
+        summarise(score1=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))%>%
+        group_by(time,word1)%>%
+        summarise(score1=sum(score1))
       
       sentim.end<-quatrigrams_filtered.end%>%
         mutate(nTrigram = 1:n())%>%
         left_join(IsNot.end)%>%
         mutate(sentiment=get_sentiment(trigram, method=sentiment.used))%>%
         group_by(nTrigram,time,word4)%>%
-        summarise(score=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))
+        summarise(score2=sum(sentiment*ifelse(is.na(TestIsNot),1,-1)))%>%
+        group_by(time,word4)%>%
+        summarise(score2=sum(score2))
       
-      colnames(sentim)[3]<-"tword"
-      colnames(sentim.end)[3]<-"tword"
+      colnames(sentim)[2]<-"tword"
+      colnames(sentim.end)[2]<-"tword"
       
-      sentim.around <- full_join(sentim, sentim.end)
+      sentim.around <- full_join(sentim, sentim.end)%>%
+        mutate(score=score1+score2)%>%
+        select(time,tword,score)
+      
       rm(sentim,sentim.end)
       
       sentim.around<-sentim.around%>%

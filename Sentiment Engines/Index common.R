@@ -32,7 +32,7 @@
 #SOURCE
 {
   cleaned <- read_csv("~/Desktop/Bitcoin project/Project bitcoin/cleaned.csv")
-  cleaned <- read_csv("~/Desktop/final5.csv")
+  cleaned <- read_csv(gzfile("cleaned_with_dates.csv.gz"))
 }
 #Other information
 {
@@ -46,14 +46,14 @@
   #SENTIMENT INDICATOR
   Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
-  NegationWords<-c("isnt","cannot","cant","wont","wasnt")
+  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends")
 
 }
 #INDEX TABLE CREATION-------------------------------------------------------------------
 {
   #BASE DATA FRAME : TEXT+TIME+ARTICLE+SOURCE
   {
-    Text.art<-tibble(article=seq_along(cleaned$paragraph),source=cleaned$name,text=cleaned$text,time=cleaned$cleaned)
+    Text.art<-tibble(article=seq_along(cleaned$text),source=cleaned$name,text=cleaned$text,time=cleaned$cleaned)
     Text.art$source <- factor(Text.art$source)
     Text.art$time <- as.Date(Text.art$time)
     
