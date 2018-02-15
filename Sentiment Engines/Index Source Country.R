@@ -1,4 +1,3 @@
-
 #INDEX 1 IRARTIONAL INDEX 
 #It is a reverse sentiment analysis, we targeted irrationality and we want some insight
 TARGET_MACROLEG<-c("trump")
