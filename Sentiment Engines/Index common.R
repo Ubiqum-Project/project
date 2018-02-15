@@ -47,7 +47,7 @@
   Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
   NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends")
-  #IMPACT WORDS
+  #### IMPACT WORDS START ####
   ImpactWords <- c("legalize", "banning", "ban", "bans", "regulate", "regulation", "tax", "taxes",
                    "control", "rule", "law", "restriction", "regulating", "ordinance", "regulate",
                    "norm", "policy", "legislation", "limitation", "regularization", 
@@ -105,7 +105,7 @@
                    "lawless", "illegality", "illegally", "forbidden", "proscribed", "blockade",
                    "prohibitory", "abolition", "closure", "eliminate", "suppression", "prevented",
                    "preclude", "clampdown", "impossibility")
-  
+  #### IMPACT WORDS END
 }
 #INDEX TABLE CREATION-------------------------------------------------------------------
 {
