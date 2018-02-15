@@ -5,33 +5,39 @@
 T1<-Sys.time()
 
 #RUN Index Common
-Final.table<-Index_0(Text.art) 
-
-#Final.table[,6:10]<-NULL#TO delete only for test the next function
-
+  Final.table<-Index_0(Text.art) 
+  #Sources dummys
+  Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
+  
+  
+Final.table[,6:length(Final.table)]<-NULL#TO delete only for test the next function
 
 
 #RUN INDEX SOURCE 1
-#INDEX1_0
-Final.table<-Final.table%>%
-  left_join(Index1_0(TARGET_WORDS.article, Text.art))
-#INDEX1_1
-Final.table<-Final.table%>%
-  left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))%>%
-  left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))%>%
-  left_join(Index1_1(Text.art,Sentiment.list[3],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))%>%
-  left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))
-#INDEX1_2
-Final.table<-Final.table%>%
-  left_join(Index1_2(Text.art,Sentiment.list[1],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))%>%
-  left_join(Index1_2(Text.art,Sentiment.list[2],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))%>%
-  left_join(Index1_2(Text.art,Sentiment.list[3],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))%>%
-  left_join(Index1_2(Text.art,Sentiment.list[4],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords))
+  target_name<-"Country"
+  #INDEX1_0
+  Final.table<-Final.table%>%
+    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))%>%
+    left_join(Index1_0_TOP(TARGET_WORDS.count, Text.word,target_name))
+  
+  #INDEX1_1
+  Final.table<-Final.table%>%
+    left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[3],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
+  #INDEX1_2
+  Final.table<-Final.table%>%
+    left_join(Index1_2(Text.art,Sentiment.list[1],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_2(Text.art,Sentiment.list[2],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_2(Text.art,Sentiment.list[3],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_2(Text.art,Sentiment.list[4],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
 
 #RUN INDEX SOURCE 2
+  target_name<-"Influencer"
 
 #RUN DUMMY VARIABLES INDICATING SOURCE
-Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
+
 
 
 #TIME
@@ -89,20 +95,43 @@ print(difftime(T1, Sys.time()))
   
 #Index_1_0____________________________________________________________________________________________
   
-  Index1_0 <- function (TARGET_WORDS.article, Text.art)
+  Index1_0 <- function (TARGET_WORDS.article, Text.art,target_name)
    {
     
   working.table <- TARGET_WORDS.article  %>%
-    mutate(countryT = 1)
+    mutate(Test = 1)
   
   result <- Text.art   %>%
     left_join (working.table)   %>%
-    select(article,countryT)
+    select(article,Test)
+  
+  colnames(result)[2]<-paste(c(target_name,"Mention"),collapse="_")
   return(result)
   }
+#Index_1_0TOP___________________________________________________________________________________________
   
+  Index1_0_TOP <- function (TARGET_WORDS.count, Text.word,target_name)
+  {
+    Working_Table<-TARGET_WORDS.count%>%
+      top_n(3)
+    
+    Working_Table2<-Text.word %>%
+      filter(word%in% TARGET_WORDS)
+    
+    result <- Working_Table%>%
+      left_join (Working_Table2)%>%
+      group_by(article)%>%
+      count(article)%>%
+      mutate(Test=1)%>%
+      select(article,Test)
+    
+    colnames(result)[2]<-paste(c(target_name,"TOP_Mention"),collapse="_")
+    return(result)
+    
+  }
+    
 #Index1_1____________________________________________________________________________________________
-  Index1_1 <- function(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords) 
+  Index1_1 <- function(Text.art,sentiment.used,TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name) 
     {  
       #TIME
       T1<-Sys.time()
@@ -178,7 +207,7 @@ print(difftime(T1, Sys.time()))
         left_join(Index)%>%
         select(article,index.value)
       
-      colnames(Result)[2]<-paste(c("Indexe1_1",sentiment.used),collapse="_")
+      colnames(Result)[2]<-paste(c(target_name,"Indexe1_1",sentiment.used),collapse="_")
       #TIME
       print(difftime(T1, Sys.time()))
       
@@ -187,7 +216,7 @@ print(difftime(T1, Sys.time()))
   
 #Index1_2____________________________________________________________________________________________
   
-  Index1_2 <- function(Text.art,sentiment.used,Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords) 
+  Index1_2 <- function(Text.art,sentiment.used,Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name) 
     {
       #TIME
       T1<-Sys.time()
@@ -237,7 +266,7 @@ print(difftime(T1, Sys.time()))
         left_join(Index)%>%
         select(article,score)
       
-      colnames(Result)[2]<-paste(c("Indexe1_2",sentiment.used),collapse="_")
+      colnames(Result)[2]<-paste(c(target_name,"Indexe1_2",sentiment.used),collapse="_")
       
       return(Result)
       #TIME
