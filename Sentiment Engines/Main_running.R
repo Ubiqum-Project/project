@@ -16,8 +16,7 @@ T1<-Sys.time()
  
   #Indexes 0 search words
   Final.table<-Final.table%>%
-    left_join(Index0_SearchWord(Text.art,Text.word,SEARCH_WORD))%>%
-  
+    left_join(Index0_SearchWord(Text.art,Text.word,SEARCH_WORD))
     
 #RUN INDEX SOURCE 1
   target_name<-"Country"
@@ -44,8 +43,11 @@ T1<-Sys.time()
 
 #RUN DUMMY VARIABLES INDICATING SOURCE
 
-
-
+#MERGE TABLE
+  Merge_Table<-Final.table%>%
+    left_join(Time.art)
+write
+    
 #TIME
 print(difftime(T1, Sys.time()))
 
@@ -98,7 +100,6 @@ print(difftime(T1, Sys.time()))
 
       return(result)
   }
-  
   
   Index_0_maturity <- function(Text.art,Time.art)
   {

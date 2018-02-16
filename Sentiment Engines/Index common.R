@@ -125,6 +125,9 @@
     
     Time.art<-tibble(article=seq_along(cleaned$text),time_Posixt=cleaned$cleaned)
     Time.art$time_Posixt<-as.POSIXlt(Time.art$time_Posixt)
+    
+    #Time article Table
+    Time.art2<-tibble(article=seq_along(cleaned$text),cleaned=cleaned$cleaned)
   }
   # ---ONE WORD--- TOKENS +++++++++++++++++++++++++++++++
   {
