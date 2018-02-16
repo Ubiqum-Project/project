@@ -6,6 +6,7 @@ library(gridExtra)
 intervalTime = 4
 interval = paste(intervalTime,"hour")
 
+sentimentValues = read.csv(gzfile("secondary_Predictor_Pull.csv.gz"))
 
 toBeNormalized = read.csv(gzfile("secondary_Predictor_Pull.csv.gz"))
 toBeNormalized = toBeNormalized[,2:ncol(toBeNormalized)] #----> Removes the stupid X column
