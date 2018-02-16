@@ -23,5 +23,3 @@ for(i in 2:length(SEARCH_WORD)){
     left_join(working.table_tmp)
 
 }
-
-xxx <- as.data.frame(sapply(working.table, function(x) sum(is.na(x))))
