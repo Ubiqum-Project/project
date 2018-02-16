@@ -57,7 +57,7 @@
                      "norm", "policy", "legislation", "limitation", "regularization", 
                      "regularisation", "bylaw", "regulator", "governance", "regulatory",
                      "decree", "provisions", "provision", "standards", "requirements", "controls",
-                     "supervision", "regulators", "statute", "statutes", "procedure", "act",
+                     "supervision", "regulators", "statute", "statutes", "procedure",
                      "administrative law", "rulemaking", "govern", "decalogue", "metarule", "rulable",
                      "overrule", "governable", "unruled", "state", "limiting", "regulations",
                      "guidelines", "laws", "measures", "procedures", "requiring", "licit",
@@ -75,7 +75,7 @@
                      "clandestinely", "code of conduct", "certiorari", "authoritarianism",
                      "legislator", "rulebound", "oversit", "eviction", "compliant", "impoundment",
                      "imperious", "lawgiver", "social control", "economics", "lawbook",
-                     "rule of law", "bewield", "code enforcement", "market", "mandatory",
+                     "rule of law", "bewield", "code enforcement", "mandatory",
                      "mandator", "jurisconsult", "preterlegal", "nomic", "rule of evidence",
                      "black letter law", "golden rule", "sociolegal", "blawg", "salic law",
                      "revertible", "lawing", "astrolaw", "intralegal", "legist", "lawmonger",
@@ -85,7 +85,7 @@
                      "consent decree", "zero tolerance", "point of order", "regulated",
                      "deregulation", "public policy", "order in council", "regulates", 
                      "eminent domain", "governing", "measure length", "special master", 
-                     "directive", "legislating", "life estate", "legal system", "bar association",
+                     "directive", "legislating", "life estate", "legal system",
                      "legal principle", "stand order", "pascal's law", "ordinances", "controlling", 
                      "ohm's law", "pauli exclusion principle", "supervisory", "lawmaking",
                      "statute book", "fundamental law", "power of attorney", "feudal law",
@@ -107,8 +107,8 @@
                      "illegal", "regulations", "strict", "stricter", "tariffs", "enforce",
                      "slapped", "guidelines", "abortion", "enforced", "halt", "imposes", "test ban", 
                      "lawless", "illegality", "illegally", "forbidden", "proscribed", "blockade",
-                     "prohibitory", "abolition", "closure", "eliminate", "suppression", "prevented",
-                     "preclude", "clampdown", "impossibility")
+                     "prohibitory", "abolition", "closure", "suppression", "prevented",
+                     "preclude", "clampdown")
   }
   
 }
