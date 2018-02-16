@@ -8,11 +8,12 @@ T1<-Sys.time()
   Final.table<-Index_0(Text.art) 
   #Sources dummys
   Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
-  
-  
-Final.table[,6:length(Final.table)]<-NULL#TO delete only for test the next function
-
-
+  #Maturity/Countarticle last 4 hours/Last 24h
+  Final.table<-Final.table%>%
+    left_join(Index_0_maturity(Text.art,Time.art))%>%
+    left_join(Index_0_countart(Text.art,Time.art,hour=4))%>%
+    left_join(Index_0_countart(Text.art,Time.art,hour=24))
+ 
 #RUN INDEX SOURCE 1
   target_name<-"Country"
   #INDEX1_0
@@ -50,7 +51,7 @@ print(difftime(T1, Sys.time()))
 
 #Index0____________________________________________________________________________________________
   
-  Index_0 <- function(Text.art) 
+  Index_0 <- function(Text.art,Text.art) 
   {
       #TIME
       T1<-Sys.time()
@@ -91,7 +92,52 @@ print(difftime(T1, Sys.time()))
   
 
       return(result)
-    }
+  }
+  
+  
+  Index_0_maturity <- function(Text.art,Time.art)
+  {
+    Working_Table<-Time.art%>%
+      mutate(maturity=as.POSIXlt(Sys.time())-Time.art$time_Posixt)%>%
+      select(article,maturity)
+    
+    result<-Text.art%>%
+      left_join(Working_Table)%>%
+      select(article,maturity)
+    
+    return(result)
+  }
+  
+  Index_0_countart <- function(Text.art,Time.art,hour=24)
+  {
+    Working_Table<-Time.art%>%
+      mutate(maturity=difftime(Sys.time(), Time.art$time_Posixt,units = "hours"))%>%
+      select(article,maturity)%>%
+      arrange(maturity)%>%
+      mutate(article_TOrder = 1:n())%>%
+      mutate(maturity=round(maturity,0))%>%
+      mutate(lastday=maturity+hour)
+    
+    Working_Table2<-Working_Table%>%
+      select(maturity,article_TOrder)%>%
+      group_by(maturity)%>%
+      summarise(article_n=min(article_TOrder))
+    
+    colnames(Working_Table2)[1]<-colnames(Working_Table)[4]
+    
+    Working_Table<-Working_Table%>%
+      left_join(Working_Table2)%>%
+      mutate(article_n=rev(na.locf(rev(article_n),na.rm=FALSE)))%>%
+      mutate(count_art=article_n-article_TOrder)%>%
+      select(article,count_art)
+    
+    result<-Text.art%>%
+      left_join(Working_Table)%>%
+      select(article,count_art)
+    
+    colnames(result)[2]<-paste(c("count_art",hour),collapse="_")
+    return(result)
+  }
   
 #Index_1_0____________________________________________________________________________________________
   

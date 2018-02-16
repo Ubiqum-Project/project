@@ -22,4 +22,3 @@ DeltaCol.sub <- function(Table,Attribute)
   return(Table)
 }
 
-
