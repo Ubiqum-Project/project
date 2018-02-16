@@ -21,7 +21,8 @@ for(i in 2:length(SEARCH_WORD)){
   
   working.table<-working.table%>%
     left_join(working.table_tmp)
-
 }
-
-xxx <- as.data.frame(sapply(working.table, function(x) sum(is.na(x))))
+Result<-Text.art%>%
+  left_join(working.table)%>%
+  select(article,bubble,tether,hack,crisis,record,fork)
+return(Result)

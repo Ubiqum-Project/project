@@ -121,7 +121,7 @@ TARGET_WORDS.article<-Text.word %>%
       mutate(ratio = n/ntrigram) %>%
       ungroup()
     trigrams_united.count.end<-trigrams_united.count.end[order(as.Date(trigrams_united.count.end$time)),]
-    trigrams_united.count.end
+    
   }
 }
 

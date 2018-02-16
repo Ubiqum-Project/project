@@ -14,6 +14,11 @@ T1<-Sys.time()
     left_join(Index_0_countart(Text.art,Time.art,hour=4))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=24))
  
+  #Indexes 0 search words
+  Final.table<-Final.table%>%
+    left_join(Index0_SearchWord(Text.art,Text.word,SEARCH_WORD))%>%
+  
+    
 #RUN INDEX SOURCE 1
   target_name<-"Country"
   #INDEX1_0
@@ -51,7 +56,7 @@ print(difftime(T1, Sys.time()))
 
 #Index0____________________________________________________________________________________________
   
-  Index_0 <- function(Text.art,Text.art) 
+  Index_0 <- function(Text.art) 
   {
       #TIME
       T1<-Sys.time()
@@ -138,6 +143,37 @@ print(difftime(T1, Sys.time()))
     colnames(result)[2]<-paste(c("count_art",hour),collapse="_")
     return(result)
   }
+  
+  Index0_SearchWord<-function(Text.art,Text.word,SEARCH_WORD)
+  {
+    SEARCH_WORD.article<-Text.word %>%
+      filter(word%in% SEARCH_WORD)  %>%
+      group_by(time) %>%
+      count(word)
+    
+    working.table<-SEARCH_WORD.article%>%
+      filter(word%in% SEARCH_WORD[1])%>%
+      select(time,n)
+    
+    colnames(working.table)[2] <- SEARCH_WORD[1]
+    
+    
+    for(i in 2:length(SEARCH_WORD)){
+      working.table_tmp<-SEARCH_WORD.article%>%
+        filter(word%in% SEARCH_WORD[i])%>%
+        select(time,n)
+      
+      colnames(working.table_tmp)[2] <- SEARCH_WORD[i]
+      
+      working.table<-working.table%>%
+        left_join(working.table_tmp)
+    }
+    Result<-Text.art%>%
+      left_join(working.table)%>%
+      select(article,bubble,tether,hack,crisis,record,fork)
+    return(Result)
+  }
+  
   
 #Index_1_0____________________________________________________________________________________________
   
