@@ -48,7 +48,7 @@
   #NEGATIVE WORDS
   NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends")
   #SEARCH WORDS
-  SEARCH_WORD<-c("bubble", "tether", "hack", "crisis", "record", "fork")
+  SEARCH_WORD<-c("bubble", "tether", "hack", "crisis", "record", "fork", "whale")
   
   #### IMPACT WORDS START ####
   {
