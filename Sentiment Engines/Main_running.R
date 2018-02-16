@@ -45,9 +45,10 @@ T1<-Sys.time()
 
 #MERGE TABLE
   Merge_Table<-Final.table%>%
-    left_join(Time.art)
-write
-    
+    left_join(Time.art2)
+
+  z <- gzfile("TITLE OF YOU FILE.csv.gz")
+  write.csv(Merge_Table, z)
 #TIME
 print(difftime(T1, Sys.time()))
 
