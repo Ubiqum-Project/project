@@ -120,6 +120,10 @@
     Text.art$source <- factor(Text.art$source)
     Text.art$time <- as.Date(Text.art$time)
 
+    #Time article Table
+    
+    Time.art<-tibble(article=seq_along(cleaned$text),time_Posixt=cleaned$cleaned)
+    Time.art$time_Posixt<-as.POSIXlt(Time.art$time_Posixt)
   }
   # ---ONE WORD--- TOKENS +++++++++++++++++++++++++++++++
   {
