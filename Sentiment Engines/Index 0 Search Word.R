@@ -3,7 +3,7 @@
 SEARCH_WORD.article<-Text.word %>%
   filter(word%in% SEARCH_WORD)  %>%
   group_by(time) %>%
-  count(word) %>%
+  count(word)
 
 working.table<-SEARCH_WORD.article%>%
   filter(word%in% SEARCH_WORD[1])%>%
