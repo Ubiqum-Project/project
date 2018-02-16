@@ -22,7 +22,10 @@ for(i in 2:length(SEARCH_WORD)){
   working.table<-working.table%>%
     left_join(working.table_tmp)
 }
+<<<<<<< HEAD
 Result<-Text.art%>%
   left_join(working.table)%>%
   select(article,bubble,tether,hack,crisis,record,fork)
 return(Result)
+=======
+>>>>>>> 12b73884500aaf494940eb9df763c12a1dc732bd
