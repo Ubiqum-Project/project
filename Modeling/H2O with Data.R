@@ -1,15 +1,16 @@
+library(h2o)
 data = read.csv(gzfile("finalRate.csv.gz"))
 
 
 
 # Split into training, validation and test sets
-train_tbl <- data[1:1500]
-valid_tbl <-data[1501:2000]
-test_tbl  <- data[2001:nrow(data)]
+train_tbl <- data[1:1501,]
+valid_tbl <-data[1701:nrow(data),]
+test_tbl  <- data[1:nrow(data),]
 
 h2o.init()        # Fire up h2o
 
-h2o.no_progress() # Turn off progress bars
+#h2o.no_progress() # Turn off progress bars
 
 train_h2o <- as.h2o(train_tbl)
 valid_h2o <- as.h2o(valid_tbl)
@@ -26,7 +27,7 @@ automl_models_h2o <- h2o.automl(
   training_frame = train_h2o, 
   validation_frame = valid_h2o, 
   leaderboard_frame = test_h2o, 
-  max_runtime_secs = 60, 
+  max_runtime_secs = 180, 
   stopping_metric = "deviance")
 
 # Extract leader model
@@ -35,6 +36,13 @@ automl_leader <- automl_models_h2o@leader
 pred_h2o <- h2o.predict(automl_leader, newdata = test_h2o)
 
 h2o.performance(automl_leader, newdata = test_h2o)
+
+variableImportance = as.data.frame(h2o.varimp(automl_leader))
+
+h2o.r2(automl_leader, train = FALSE, valid = T, xval = F)
+
+
+write.csv(variableImportance, "variableImportance.csv")
 # 
 # # Investigate test error
 # error_tbl <- data %>% 
