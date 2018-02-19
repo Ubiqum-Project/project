@@ -10,6 +10,9 @@ source("Sentiment Engines/Function Used.R")
 print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 
 #RUN Index Common
+  #--------Time for the Index Common Start
+  T2<-Sys.time()
+  
   Final.table<-Index_0(Text.art) 
   #Sources dummys
   Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
@@ -18,17 +21,21 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     left_join(Index_0_maturity(Text.art,Time.art))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=4))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=24))
- 
   #Indexes 0 search words
   Final.table<-Final.table%>%
     left_join(Index0_SearchWord(Text.art,Text.word,SEARCH_WORD))
+  
+  #--------Time for the Index Common end
+  print(paste("Main sources and functions : ",difftime(T2, Sys.time())))
+  
     
 #RUN INDEX SOURCE 1
-    #Time for the Indexes source
-    T2<-Sys.time()
+  #--------Time for the Indexes source 1 Start
+  T2<-Sys.time()
+    
     source("Sentiment Engines/Indexes Sources 1.R")
     #Time for the Indexes source
-    print(paste("Indexes sources 1 : ",difftime(T2, Sys.time())))
+    print(paste("Indexes sources 1==>data frame creation : ",difftime(T2, Sys.time())))
     target_name<-"Country"
   #INDEX1_0
   Final.table<-Final.table%>%
@@ -48,12 +55,16 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     left_join(Index1_2(Text.art,Sentiment.list[3],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
     left_join(Index1_2(Text.art,Sentiment.list[4],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
 
+  #--------Time for the Indexes source 1 End
+  print(paste("Time for Indexes Source 1 : ",difftime(T2, Sys.time())))
+  
+  
 #RUN INDEX SOURCE 2
   target_name<-"Influencer"
 
 
 #TIME
-  print(difftime(T1, Sys.time()))
+  print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
   
 #MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   Merge_Table<-Final.table%>%
