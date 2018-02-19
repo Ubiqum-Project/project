@@ -3,8 +3,9 @@ library(tm)
 library(tidyr)
 library(gtools)
 
+#ADJUST FILENAME TO OUTPUT SCRAPER!! AND WRITE OUTPUT AS REQUIRED!
 
-cleaned <- read.csv("~/Desktop/final5.csv")
+#cleaned <- read.csv("~/Desktop/final5.csv")
 # cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
 # cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
 # cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
@@ -82,15 +83,15 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # Text stemming
 #docs <- tm_map(docs, stemDocument)
 # other country corrections
-s.korea <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
+s.korea <- content_transformer(function (x, pattern) gsub(pattern, "southkorea", x, fixed=TRUE))
 docs <- tm_map(docs, s.korea, "south korea")
-s.korean <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
+s.korean <- content_transformer(function (x, pattern) gsub(pattern, "southkorea", x, fixed=TRUE))
 docs <- tm_map(docs, s.korean, "south korean")
-n.korea <- content_transformer(function (x, pattern) gsub(pattern, "north-korea", x, fixed=TRUE))
+n.korea <- content_transformer(function (x, pattern) gsub(pattern, "northkorea", x, fixed=TRUE))
 docs <- tm_map(docs, n.korea, "north korea")
-s.africa <- content_transformer(function (x, pattern) gsub(pattern, "south-africa", x, fixed=TRUE))
+s.africa <- content_transformer(function (x, pattern) gsub(pattern, "southafrica", x, fixed=TRUE))
 docs <- tm_map(docs, s.africa, "south africa")
-s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "south-sudan", x, fixed=TRUE))
+s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "southsudan", x, fixed=TRUE))
 docs <- tm_map(docs, s.sudan, "south sudan")
 # Eliminate extra white spaces
 docs <- tm_map(docs, stripWhitespace)
