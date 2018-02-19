@@ -2,7 +2,7 @@
 library(C50)
 library(caret)
 library(ggplot2)
-library(pls)
+
 
 data = read.csv(gzfile("finalRate.csv.gz"))
 data=data[,3:ncol(data)]
@@ -30,13 +30,13 @@ data$gtrendBitcoinPrice
 
 as.factor(data$AveragedExchange)
 
-plsFitTime <- train( as.factor(AveragedExchange) ~ .,
+trainedModel <- train( as.factor(AveragedExchange) ~ .,
                     data = data,
                     method = "C5.0",
                     preProc = c("center", "scale"),
                     trControl = myTimeControl)
 
-pred <- predict(plsFitTime,data)
+pred <- predict(trainedModel,data)
 
 true <- data$AveragedExchange
 
