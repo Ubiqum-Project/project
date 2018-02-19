@@ -47,7 +47,7 @@
   #SENTIMENT INDICATOR
   Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
-  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends")
+  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends","doesnt","not")
   #SEARCH WORDS
   SEARCH_WORD<-c("bubble", "tether", "hack", "crisis", "record", "fork", "whale")
   
