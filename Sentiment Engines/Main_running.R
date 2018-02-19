@@ -67,8 +67,7 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   source("Sentiment Engines/Index Source.R")
   #INDEX1_0
   Final.table<-Final.table%>%
-    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))%>%
-    left_join(Index1_0_TOP(TARGET_WORDS.count, Text.word,target_name))
+    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
 
 #TIME
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
