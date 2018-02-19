@@ -1,5 +1,5 @@
 # Model Building With Caret
-
+library(C50)
 library(caret)
 library(ggplot2)
 library(pls)
@@ -21,8 +21,8 @@ summary(data)
 
 
 myTimeControl <- trainControl(method = "timeslice",
-                              initialWindow = 36,
-                              horizon = 12,
+                              initialWindow = 360,
+                              horizon = 50,
                               fixedWindow = TRUE)
 
 
@@ -30,9 +30,9 @@ data$gtrendBitcoinPrice
 
 as.factor(data$AveragedExchange)
 
-plsFitTime <- train( AveragedExchange ~ .,
+plsFitTime <- train( as.factor(AveragedExchange) ~ .,
                     data = data,
-                    method = "c50",
+                    method = "C5.0",
                     preProc = c("center", "scale"),
                     trControl = myTimeControl)
 
