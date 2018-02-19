@@ -34,10 +34,11 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   #--------Time for the Indexes source 1 Start
   T2<-Sys.time()
     TARGET_WORDS<-TARGET_COUNTRY
+    target_name<-"Country"
     source("Sentiment Engines/Index Source.R")
     #Time for the Indexes source
     print(paste("Indexes sources 1==>data frame creation : ",difftime(T2, Sys.time())))
-    target_name<-"Country"
+    
   #INDEX1_0
   Final.table<-Final.table%>%
     left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))%>%
@@ -62,15 +63,20 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   
 #RUN INDEX SOURCE 2
   TARGET_WORDS<-TARGET_INFLUENCER
+  target_name<-"Influencer"
   source("Sentiment Engines/Index Source.R")
-
+  #INDEX1_0
+  Final.table<-Final.table%>%
+    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))%>%
+    left_join(Index1_0_TOP(TARGET_WORDS.count, Text.word,target_name))
+  
 #TIME
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
   
-#MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  Merge_Table<-Final.table%>%
-    left_join(Time.art2)
-
-  z <- gzfile("TITLE OF YOU FILE.csv.gz")
-  write.csv(Merge_Table, z)
+# #MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#   Merge_Table<-Final.table%>%
+#     left_join(Time.art2)
+# 
+#   z <- gzfile("TITLE OF YOU FILE.csv.gz")
+#   write.csv(Merge_Table, z)
 

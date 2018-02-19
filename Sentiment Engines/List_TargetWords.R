@@ -19,3 +19,10 @@ TARGET_INFLUENCER<-c("nick","szabo","andreas","roger","ver","andreas","antonopou
                      "ritchie","etwaru","cryptoyoda","teeka","tiwari","ivanli","crypt0","boxmining","cryptographic","scandinavianlife",
                      "intelliguy","jrcornel","kingscrown","staticinstance","steempower")
 
+#BITCOIN LINKED
+
+TARGET_BITCOIN<-c()
+
+#OTHER MARKET INDICATION
+
+TARGET_MKTINDICATOR<-c()
