@@ -7,6 +7,8 @@ require(ggplot2)
 require(reshape2)
 library(readr)
 library(data.table)
+library(zoo)
+library(scales)
 
 intervalTime = 30 # <<<<<-------------- Change this to adjust hourly sample interval
 interval = paste(intervalTime,"mins")
@@ -122,6 +124,7 @@ toBeNormalized$cleaned = as_datetime(toBeNormalized$cleaned)  #----> resetting d
 #-------------> export, tweak, import csv file to yank bad values
 
 rateNormalization = data.frame(toBeNormalized[1:nrow(toBeNormalized)-1,])  #----> splitting DF
+
 valueNormalization = data.frame(toBeNormalized) #----> splitting DF
 
 firstSourceIndexMerged = which(colnames(toBeNormalized)==firstSource)  #----> finding new index value for first source
@@ -158,6 +161,18 @@ for (i in 2:ncol(rateNormalization))
   
 }
 close(pb)
+
+pb <- txtProgressBar(min = 0, max = nrow(valueNormalization), style = 3)
+for (i in 2:ncol(rateNormalization))
+{
+  setTxtProgressBar(pb, i)
+  rateNormalization[,i] = rescale(rateNormalization[,i],to=c(-1,1))
+  }
+close(pb)
+
+rateNormalization$AveragedExchange = round(rateNormalization$AveragedExchange, digits = 1)
+
+
 
 library(data.table)
 vN = setDT(valueNormalization, keep.rownames = TRUE)[]
@@ -203,7 +218,7 @@ rateMelt <- melt(rateNormalization ,  id.vars = 'rn', variable.name = 'series')
 seismicRate = ggplot(rateMelt, aes(rn,value)) + geom_line(aes(colour = series))+
   labs(title = "Plot of 4 Hour Normalized Rate (Delta from previous day + or -)")
   
-  
+  seismicRate
   # or plot on different plots
   gridRate =   ggplot(rateMelt, aes(rn,value)) + geom_line() +facet_wrap( ~ series, ncol = 7)+
   labs(title = "Plot of 4 Hour Normalized Rate (Delta from previous day + or -)")
