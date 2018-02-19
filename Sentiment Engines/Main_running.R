@@ -69,13 +69,7 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   Final.table<-Final.table%>%
     left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))%>%
     left_join(Index1_0_TOP(TARGET_WORDS.count, Text.word,target_name))
-  #INDEX1_1
-  Final.table<-Final.table%>%
-    left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
-    left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
-    left_join(Index1_1(Text.art,Sentiment.list[3],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
-    left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
-  
+
 #TIME
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
   
