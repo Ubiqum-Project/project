@@ -6,6 +6,7 @@ T1<-Sys.time()
 #Main Source
 source("Sentiment Engines/Index common.R")
 source("Sentiment Engines/Function Used.R")
+source("Sentiment Engines/List_TargetWords.R")
 #TIME
 print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 
@@ -32,8 +33,8 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 #RUN INDEX SOURCE 1
   #--------Time for the Indexes source 1 Start
   T2<-Sys.time()
-    
-    source("Sentiment Engines/Indexes Sources 1.R")
+    TARGET_WORDS<-TARGET_COUNTRY
+    source("Sentiment Engines/Index Source.R")
     #Time for the Indexes source
     print(paste("Indexes sources 1==>data frame creation : ",difftime(T2, Sys.time())))
     target_name<-"Country"
@@ -60,8 +61,8 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   
   
 #RUN INDEX SOURCE 2
-  target_name<-"Influencer"
-
+  TARGET_WORDS<-TARGET_INFLUENCER
+  source("Sentiment Engines/Index Source.R")
 
 #TIME
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
