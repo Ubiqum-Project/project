@@ -63,7 +63,7 @@ docs <- tm_map(docs, removeNumbers)
 docs <- tm_map(docs, removePunctuation)
 # Remove your own stop word
 # specify your stopwords as a character vector
-docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading",
+docs <- tm_map(docs, removeWords, c("bitcoinallbotcommentsharesavehidereport", "commentsharesavehidereport", "commentssharesavehidereportloading",
                                     "commentsharesavehidereportloading","commentssharesavehidereport",
                                     "submitted", "reddit", "redditcom", "hour ago", "hours ago", 
                                     "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1",
