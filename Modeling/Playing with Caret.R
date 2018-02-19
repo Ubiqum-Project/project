@@ -6,20 +6,43 @@ library(pls)
 
 data = read.csv(gzfile("finalRate.csv.gz"))
 data=data[,3:ncol(data)]
-timeSlices <- createTimeSlices(1:nrow(data), 
-                               initialWindow = 36, horizon = 12, fixedWindow = TRUE)
+#data = na.omit(data)
+data = as.numeric(data)
+#data$AveragedExchange =as.factor(data$AveragedExchange)
 
-trainSlices <- timeSlices[[1]]
-testSlices <- timeSlices[[2]]
-data$AveragedExchange
-plsFitTime <- train(AveragedExchange ~ .,
-                    data = data[trainSlices[[1]],],
-                    method = "pls",
-                    preProc = c("center", "scale"))
+data = data[ , colSums(is.na(data)) == 0]
+summary(data)
 
-pred <- predict(plsFitTime,data[testSlices[[1]],])
+# timeSlices <- createTimeSlices(1:nrow(data), 
+#                                initialWindow = 360, horizon = 120, fixedWindow = TRUE)
+# 
+# trainSlices <- timeSlices[[1]]
+# testSlices <- timeSlices[[2]]
 
-true <- data$unemploy[AveragedExchange[[1]]]
+
+myTimeControl <- trainControl(method = "timeslice",
+                              initialWindow = 36,
+                              horizon = 12,
+                              fixedWindow = TRUE)
+
+
+data$gtrendBitcoinPrice
+
+as.factor(data$AveragedExchange)
+
+plsFitTime <- train( AveragedExchange ~ .,
+                    data = data,
+                    method = "c50",
+                    preProc = c("center", "scale"),
+                    trControl = myTimeControl)
+
+pred <- predict(plsFitTime,data)
+
+true <- data$AveragedExchange
+
 
 plot(true, col = "red", ylab = "true (red) , pred (blue)", ylim = range(c(pred,true)))
 points(pred, col = "blue") 
+
+
+ 
