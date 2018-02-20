@@ -2,37 +2,19 @@
 library(magrittr)
 library(keras)
 
-dir.create("~/Downloads/jena_climate", recursive = TRUE)
-download.file(
-  "https://s3.amazonaws.com/keras-datasets/jena_climate_2009_2016.csv.zip",
-  "~/Downloads/jena_climate/jena_climate_2009_2016.csv.zip"
-)
-unzip(
-  "~/Downloads/jena_climate/jena_climate_2009_2016.csv.zip",
-  exdir = "~/Downloads/jena_climate"
-)
+
 
 library(tibble)
 library(readr)
-
-data_dir <- "~/Downloads/jena_climate"
-fname <- file.path(data_dir, "jena_climate_2009_2016.csv")
-data <- read_csv(fname)
 
 data = read.csv(gzfile("finalRate.csv.gz"))
 glimpse(data)
 
 library(ggplot2)
-ggplot(data, aes(x = 1:nrow(data), y = `T (degC)`)) + geom_line()
 
-#ggplot(data[1:1440,], aes(x = 1:1440, y = `T (degC)`)) + geom_line()
-
-data <- data.matrix(data[,-1])
+data <- data.matrix(data[,3:ncol(data)])
 
 train_data <- data[1:1500,]
-mean <- apply(train_data, 2, mean)
-std <- apply(train_data, 2, sd)
-data <- scale(data, center = mean, scale = std)
 
 generator <- function(data, lookback, delay, min_index, max_index,
                       shuffle = FALSE, batch_size = 128, step = 6) {
@@ -65,8 +47,8 @@ generator <- function(data, lookback, delay, min_index, max_index,
   }
 }
 
-lookback <- 700
-step <- 6
+lookback <- 100
+step <- 10
 delay <- 144
 batch_size <- 128
 
@@ -145,3 +127,4 @@ history <- model %>% fit_generator(
   validation_steps = val_steps
 )
 
+model %>% predict_classes(history)

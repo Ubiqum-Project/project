@@ -10,7 +10,7 @@ library(caret)
 data = read.csv(gzfile("finalRate.csv.gz"))
 data=data[,3:ncol(data)] 
 nzv <- nearZeroVar(data)
- data <- data[,-nzv]
+data <- data[,-nzv]
 
 
 #data = na.omit(data)
@@ -35,12 +35,12 @@ myTimeControl <- trainControl(method = "timeslice",
 
 #numFolds <- trainControl(method = 'cv', number = 10, classProbs = TRUE, verboseIter = TRUE, summaryFunction = twoClassSummary, preProcOptions = list(thresh = 0.75, ICAcomp = 3, k = 5))
 trainedModel <- train( as.factor(AveragedExchange) ~ .,
-                    data = data,
-                    method = "nnet",
-                    preProc = c("center", "scale"),
-                   # trControl = numFolds,
-                                    trControl = myTimeControl,
-                     tuneGrid=expand.grid(size=c(20,10,5), decay=c(0.1)))
+                       data = data,
+                       method = "nnet",
+                       preProc = c("center", "scale"),
+                       # trControl = numFolds,
+                       trControl = myTimeControl,
+                       tuneGrid=expand.grid(size=c(20,10,5), decay=c(0.1)))
 
 #pred <- ((as.numeric(predict(trainedModel,data)))/5)-1.95
 pred = predict(trainedModel,data)

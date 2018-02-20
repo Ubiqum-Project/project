@@ -1,16 +1,18 @@
-# Model Building With Caret
+# RF Model Building With Caret
 library(C50)
 library(nnet)
 library(caret)
 library(ggplot2)
 library(caret)
 
+try(my_model <- readRDS("Modeling/rfModel.rds"))
+
 
 
 data = read.csv(gzfile("finalRate.csv.gz"))
 data=data[,3:ncol(data)] 
-nzv <- nearZeroVar(data)
- data <- data[,-nzv]
+#nzv <- nearZeroVar(data)
+#data <- data[,-nzv]
 
 
 #data = na.omit(data)
@@ -28,19 +30,18 @@ summary(data)
 
 
 myTimeControl <- trainControl(method = "timeslice",
-                              initialWindow = 500,
-                              horizon = 30,
+                              initialWindow = 100,
+                              horizon = 10,
                               fixedWindow = TRUE)
 
 
 #numFolds <- trainControl(method = 'cv', number = 10, classProbs = TRUE, verboseIter = TRUE, summaryFunction = twoClassSummary, preProcOptions = list(thresh = 0.75, ICAcomp = 3, k = 5))
-trainedModel <- train( as.factor(AveragedExchange) ~ .,
-                    data = data,
-                    method = "nnet",
-                    preProc = c("center", "scale"),
-                   # trControl = numFolds,
-                                    trControl = myTimeControl,
-                     tuneGrid=expand.grid(size=c(20,10,5), decay=c(0.1)))
+trainedModel <- train( AveragedExchange ~ .,
+                       data = data,
+                       method = "rf",
+                       preProc = c("center", "scale"),
+                       # trControl = numFolds,
+                       trControl = myTimeControl)
 
 #pred <- ((as.numeric(predict(trainedModel,data)))/5)-1.95
 pred = predict(trainedModel,data)
@@ -53,14 +54,16 @@ conf1
 probs <- predict(pred, newdata=data, type='prob')
 
 (trainedModel)
+trainedModel$results= true-pred
+resid = as.numeric(true)-as.numeric(as.character(pred))
+
+
+
+jpeg('Modeling/plots/rfModel.jpg')
 plot(as.numeric(true), col = "red", ylab = "true (red) , pred (blue)", ylim = range(c(as.numeric(as.character(pred)),true)))
 lines(as.numeric(as.character(pred)), col = "blue") 
 lines(resid)
+dev.off()
 
-trainedModel$results= true-pred
-resid = as.numeric(true)-as.numeric(as.character(pred))
-View(resid)
-pred$`predict(trainedModel, data)`[1] == true$`data$AveragedExchange`[1]
-pred$`predict(trainedModel, data)`
+saveRDS(trainedModel, "Modeling/trainedModels/rfModel.rds")
 
-plot(resid)

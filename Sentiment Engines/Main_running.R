@@ -64,7 +64,10 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     left_join(Index1_2(Text.art,Sentiment.list[2],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
     left_join(Index1_2(Text.art,Sentiment.list[3],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
     left_join(Index1_2(Text.art,Sentiment.list[4],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
-
+  #INDEX1_3
+  Final.table<-Final.table%>%
+    left_join(Index1_3(Sentiment.list,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,ImpactWords,target_name) )
+  
   #--------Time for the Indexes source 1 End
   print(paste("Time for Indexes Source 1 : ",difftime(T2, Sys.time())))
   
