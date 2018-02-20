@@ -19,7 +19,6 @@
   usePackage("tm")
   usePackage("widyr")
   usePackage("countrycode")
-  usePackage("wordnet")
   usePackage("scales")
   usePackage("igraph")
   usePackage("ggraph")
