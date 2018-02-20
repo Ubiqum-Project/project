@@ -459,7 +459,7 @@
     
     #TIME
     print(difftime(T1, Sys.time()))
-    return(result)
+    return(Result)
     
   }
   
