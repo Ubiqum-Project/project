@@ -40,7 +40,7 @@ Working_Table<-Working_Table%>%
 
 result<-Text.art%>%
   left_join(Working_Table)%>%
-  select(article,count_art)
+  select(article,count_art,time)
 
 summary(result)
 

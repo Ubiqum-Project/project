@@ -87,7 +87,7 @@
     
     result<-Text.art%>%
       left_join(Working_Table)%>%
-      select(article,count_art)
+      select(article,count_art,time)
     
     colnames(result)[2]<-paste(c("count_art",hour),collapse="_")
     return(result)
