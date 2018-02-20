@@ -23,14 +23,16 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     left_join(Index_0_maturity(Text.art,Time.art))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=4))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=24))
-  
+  #FIRST ANALYSIS
   #Main sentiment analysis
   Final.table<-Final.table%>%
-    left_join(Index_0(Text.art))
-  
+    left_join(Index_0(Text.art,NegationWords))
   #Indexes 0 search words
   Final.table<-Final.table%>%
     left_join(Index0_SearchWord(Text.art,Text.word,SEARCH_WORD))
+  #FIRST ANALYSIS VARIABLE of VARIABLE
+  Final.table<-Final.table%>%
+    left_join(Index_daily(Final.table,c("total_bing","total_nrc","total_afinn","total_syuzhet")))
   
   #--------Time for the Index Common end
   print(paste("Main sources and functions : ",difftime(T2, Sys.time())))
