@@ -24,11 +24,11 @@
     
     #Do not used the NegationWords text
     Working_table<-Text.art%>%
-      filter(grepl(paste(NegationWords[1],"\\w"),text ))
+      filter(grepl(paste(NegationWords[1],"\\w"),text )==FALSE)
     
     for(i in 2:length(NegationWords))
       {Working_Table<-Text.art%>%
-        filter(grepl(paste(NegationWords[i],"\\w"),text ))
+        filter(grepl(paste(NegationWords[i],"\\w"),text )==FALSE)
       
       Working_table<-Working_table%>%
         full_join(Working_Table)
