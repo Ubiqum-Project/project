@@ -13,8 +13,9 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 #RUN Index Common
   #--------Time for the Index Common Start
   T2<-Sys.time()
-  
-  Final.table<-Index_0(Text.art) 
+  #Final Table creation
+  Final.table<-Text.art%>%
+    select(time,article)
   #Sources dummys
   Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
   #Maturity/Countarticle last 4 hours/Last 24h
@@ -22,6 +23,11 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     left_join(Index_0_maturity(Text.art,Time.art))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=4))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=24))
+  
+  #Main sentiment analysis
+  Final.table<-Final.table%>%
+    left_join(Index_0(Text.art))
+  
   #Indexes 0 search words
   Final.table<-Final.table%>%
     left_join(Index0_SearchWord(Text.art,Text.word,SEARCH_WORD))
