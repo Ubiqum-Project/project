@@ -7,6 +7,11 @@ variable<-c("total_bing","total_nrc","total_afinn","total_syuzhet")
     summarise_all(.funs = c(mean="mean"))
   
   result <-  working.table
-  colnames(result)[2:]<-paste(c("count_art",hour),collapse="_")
- # return(result)
+  colnames(result)[2:length(result)]
+  
+  for(i in 2:length(result))
+    colnames(result)[i]<-paste(c(colnames(result)[i],"d"),collapse="_")
+ 
+  # return(result)
+  result
 
