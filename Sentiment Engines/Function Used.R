@@ -2,6 +2,19 @@
 
 #Function used+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 {
+  #Index_calculation
+  
+  Index_0_daily <- function(Final.table, variable)
+  {
+    working.table <-   Final.table %>% 
+      select(time, variable) %>%
+      group_by(time) %>%
+      summarise_all(.funs = c(mean="mean"))
+    
+    result <-  working.table
+    return(result)
+  }
+  
   #IndexMain
   
   #Index0____________________________________________________________________________________________
@@ -57,7 +70,7 @@
     
     result<-Text.art%>%
       left_join(Working_Table)%>%
-      select(article,maturity)
+      select(article,maturity,time)
     
     return(result)
   }
@@ -87,7 +100,7 @@
     
     result<-Text.art%>%
       left_join(Working_Table)%>%
-      select(article,count_art,time)
+      select(article,count_art)
     
     colnames(result)[2]<-paste(c("count_art",hour),collapse="_")
     return(result)
@@ -123,6 +136,7 @@
     return(Result)
   }
   
+
   
   #Index_1_0____________________________________________________________________________________________
   
