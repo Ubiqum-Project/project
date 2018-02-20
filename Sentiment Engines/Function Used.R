@@ -4,7 +4,7 @@
 {
   #Index_calculation
   
-  Index_0_daily <- function(Final.table, variable)
+  Index_daily <- function(Final.table, variable)
   {
     working.table <-   Final.table %>% 
       select(time, variable) %>%
