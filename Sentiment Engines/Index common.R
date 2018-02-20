@@ -129,6 +129,8 @@
     #Time article Table
     Time.art2<-tibble(article=seq_along(cleaned$text),cleaned=cleaned$cleaned)
   }
+  #Remove cleaned for memory
+  rm(cleaned)
   # ---ONE WORD--- TOKENS +++++++++++++++++++++++++++++++
   {
     #ALL Word used list 

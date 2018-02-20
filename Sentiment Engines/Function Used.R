@@ -12,7 +12,6 @@
       summarise_all(.funs = c(mean="mean"))
     
     result <-  working.table
-    colnames(result)[2:]<-paste(c("count_art",hour),collapse="_")
     return(result)
   }
   
