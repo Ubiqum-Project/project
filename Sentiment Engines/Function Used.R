@@ -2,37 +2,69 @@
 
 #Function used+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 {
+  #Index_calculation
+  
+  Index_daily <- function(Final.table, variable)
+  {
+    working.table <-   Final.table %>% 
+      select(time, variable) %>%
+      group_by(time)%>%
+      summarise_all(.funs = c(mean="mean"), na.rm = TRUE)
+    
+    result <-  working.table
+    colnames(result)[2:length(result)]
+    
+    for(i in 2:length(result))
+      colnames(result)[i]<-paste(c(colnames(result)[i],"d"),collapse="_")
+    
+    return(result)
+  }
+  
   #IndexMain
   
   #Index0____________________________________________________________________________________________
   
-  Index_0 <- function(Text.art) 
+  Index_0 <- function(Text.art,NegationWords) 
   {
+    
+    #Do not used the NegationWords text
+    Working_table<-Text.art%>%
+      filter(grepl(paste(NegationWords[1],"\\w"),text )==FALSE)
+    
+    for(i in 2:length(NegationWords))
+      {Working_Table<-Text.art%>%
+        filter(grepl(paste(NegationWords[i],"\\w"),text )==FALSE)
+      
+      Working_table<-Working_table%>%
+        full_join(Working_Table)
+      }
+    
+    
     #TIME
     T1<-Sys.time()
     
     print("bing 1/4")
-    result <- cbind(Text.art$article, as.data.frame(get_sentiment(Text.art$text, method="bing")))
+    result <- cbind(Working_Table$article, as.data.frame(get_sentiment(Working_Table$text, method="bing")))
     #TIME
     print(difftime(T1, Sys.time()))
     
     print("nrc 2/4")
-    result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="nrc")))
+    result <- cbind(result, as.data.frame(get_sentiment(Working_Table$text, method="nrc")))
     #TIME
     print(difftime(T1, Sys.time()))
     
     print("afinn 3/4")
-    result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="afinn")))
+    result <- cbind(result, as.data.frame(get_sentiment(Working_Table$text, method="afinn")))
     #TIME
     print(difftime(T1, Sys.time()))
     
     print("syuzhet 4/4")
-    result <- cbind(result, as.data.frame(get_sentiment(Text.art$text, method="syuzhet")))
+    result <- cbind(result, as.data.frame(get_sentiment(Working_Table$text, method="syuzhet")))
     #TIME
     print(difftime(T1, Sys.time()))
     
     print("merge")
-    #sentimentr <- sentiment(Text.art$text)
+    #sentimentr <- sentiment(Working_Table$text)
     #result <- cbind(result,sentimentr[,4])
     #rm(sentimentr)
     colnames(result)[1] <- "article"
@@ -57,7 +89,7 @@
     
     result<-Text.art%>%
       left_join(Working_Table)%>%
-      select(article,maturity)
+      select(article,maturity,time)
     
     return(result)
   }
@@ -123,6 +155,7 @@
     return(Result)
   }
   
+
   
   #Index_1_0____________________________________________________________________________________________
   

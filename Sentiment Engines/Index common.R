@@ -19,7 +19,6 @@
   usePackage("tm")
   usePackage("widyr")
   usePackage("countrycode")
-  usePackage("wordnet")
   usePackage("scales")
   usePackage("igraph")
   usePackage("ggraph")
@@ -47,7 +46,7 @@
   #SENTIMENT INDICATOR
   Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
-  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends")
+  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends","doesnt","not")
   #SEARCH WORDS
   SEARCH_WORD<-c("bubble", "tether", "hack", "crisis", "record", "fork", "whale")
   
@@ -129,6 +128,8 @@
     #Time article Table
     Time.art2<-tibble(article=seq_along(cleaned$text),cleaned=cleaned$cleaned)
   }
+  #Remove cleaned for memory
+  rm(cleaned)
   # ---ONE WORD--- TOKENS +++++++++++++++++++++++++++++++
   {
     #ALL Word used list 

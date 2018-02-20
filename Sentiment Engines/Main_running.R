@@ -6,14 +6,16 @@ T1<-Sys.time()
 #Main Source
 source("Sentiment Engines/Index common.R")
 source("Sentiment Engines/Function Used.R")
+source("Sentiment Engines/List_TargetWords.R")
 #TIME
 print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 
 #RUN Index Common
   #--------Time for the Index Common Start
   T2<-Sys.time()
-  
-  Final.table<-Index_0(Text.art) 
+  #Final Table creation
+  Final.table<-Text.art%>%
+    select(time,article)
   #Sources dummys
   Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
   #Maturity/Countarticle last 4 hours/Last 24h
@@ -21,9 +23,16 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     left_join(Index_0_maturity(Text.art,Time.art))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=4))%>%
     left_join(Index_0_countart(Text.art,Time.art,hour=24))
+  #FIRST ANALYSIS
+  #Main sentiment analysis
+  Final.table<-Final.table%>%
+    left_join(Index_0(Text.art,NegationWords))
   #Indexes 0 search words
   Final.table<-Final.table%>%
     left_join(Index0_SearchWord(Text.art,Text.word,SEARCH_WORD))
+  #FIRST ANALYSIS VARIABLE of VARIABLE
+  Final.table<-Final.table%>%
+    left_join(Index_daily(Final.table,c("total_bing","total_nrc","total_afinn","total_syuzhet")))
   
   #--------Time for the Index Common end
   print(paste("Main sources and functions : ",difftime(T2, Sys.time())))
@@ -32,11 +41,12 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 #RUN INDEX SOURCE 1
   #--------Time for the Indexes source 1 Start
   T2<-Sys.time()
-    
-    source("Sentiment Engines/Indexes Sources 1.R")
+    TARGET_WORDS<-TARGET_COUNTRY
+    target_name<-"Country"
+    source("Sentiment Engines/Index Source.R")
     #Time for the Indexes source
     print(paste("Indexes sources 1==>data frame creation : ",difftime(T2, Sys.time())))
-    target_name<-"Country"
+    
   #INDEX1_0
   Final.table<-Final.table%>%
     left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))%>%
@@ -60,16 +70,20 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   
   
 #RUN INDEX SOURCE 2
+  TARGET_WORDS<-TARGET_INFLUENCER
   target_name<-"Influencer"
-
+  source("Sentiment Engines/Index Source.R")
+  #INDEX1_0
+  Final.table<-Final.table%>%
+    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
 
 #TIME
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
   
-#MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  Merge_Table<-Final.table%>%
-    left_join(Time.art2)
-
-  z <- gzfile("TITLE OF YOU FILE.csv.gz")
-  write.csv(Merge_Table, z)
+# #MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#   Merge_Table<-Final.table%>%
+#     left_join(Time.art2)
+# 
+#   z <- gzfile("TITLE OF YOU FILE.csv.gz")
+#   write.csv(Merge_Table, z)
 

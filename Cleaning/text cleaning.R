@@ -63,7 +63,7 @@ docs <- tm_map(docs, removeNumbers)
 docs <- tm_map(docs, removePunctuation)
 # Remove your own stop word
 # specify your stopwords as a character vector
-docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading",
+docs <- tm_map(docs, removeWords, c("newsbitcoincom", "selfbitcoinmarkets", "bitcoinallbotcommentsharesavehidereport", "bitcoinallbot", "newsbitcoincom", "imgurcom", "selfbitcoinmining", "selfbitcoinmarkets", "bitcoinbeginners", "bitcoinallbot", "bitcoinallbotcommentsharesavehidereport", "commentsharesavehidereport", "commentssharesavehidereportloading",
                                     "commentsharesavehidereportloading","commentssharesavehidereport",
                                     "submitted", "reddit", "redditcom", "hour ago", "hours ago", 
                                     "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1",
@@ -85,10 +85,14 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # other country corrections
 s.korea <- content_transformer(function (x, pattern) gsub(pattern, "southkorea", x, fixed=TRUE))
 docs <- tm_map(docs, s.korea, "south korea")
-s.korean <- content_transformer(function (x, pattern) gsub(pattern, "southkorea", x, fixed=TRUE))
-docs <- tm_map(docs, s.korean, "south korean")
+docs <- tm_map(docs, s.korea, "south korean")
+docs <- tm_map(docs, s.korea, "s korea")
+docs <- tm_map(docs, s.korea, "s korean")
 n.korea <- content_transformer(function (x, pattern) gsub(pattern, "northkorea", x, fixed=TRUE))
 docs <- tm_map(docs, n.korea, "north korea")
+docs <- tm_map(docs, n.korea, "north korean")
+docs <- tm_map(docs, n.korea, "n korea")
+docs <- tm_map(docs, n.korea, "n korean")
 s.africa <- content_transformer(function (x, pattern) gsub(pattern, "southafrica", x, fixed=TRUE))
 docs <- tm_map(docs, s.africa, "south africa")
 s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "southsudan", x, fixed=TRUE))
