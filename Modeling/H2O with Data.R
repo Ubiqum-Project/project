@@ -1,6 +1,14 @@
 library(h2o)
 data = read.csv(gzfile("finalRate.csv.gz"))
+data = read.csv(gzfile("finalRate.csv.gz"))
+data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+data=data[,3:ncol(data)]
+data$AveragedExchange = as.numeric(as.character(data$AveragedExchange))
 
+test = data
+test$bin = as.numeric(cut2(data$AveragedExchange, g=20))
+
+data$AveragedExchange = as.numeric(cut2(data$AveragedExchange, g=20))
 
 
 # Split into training, validation and test sets

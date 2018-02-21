@@ -5,42 +5,44 @@ rm(list=ls())
 
 require(rnn)
 
-# Set seed for reproducibility purposes
-set.seed(10)
 
-# Set frequency
-f <- 5
-w <- 2*pi*f
+data = read.csv(gzfile("finalRate.csv.gz"))
+data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+data=data[,3:ncol(data)]
+data$AveragedExchange = as.numeric(as.character(data$AveragedExchange))
 
-# Create sequences
-t <- seq(0.005,2,by=0.005)
-x <- sin(t*w) + rnorm(200, 0, 0.25)
-y <- cos(t*w)
+test = data
+test$bin = as.numeric(cut2(data$AveragedExchange, g=20))
 
-# Samples of 20 time series
-X <- matrix(x, nrow = 40)
-Y <- matrix(y, nrow = 40)
+data$AveragedExchange = as.numeric(cut2(data$AveragedExchange, g=20))
 
-# Plot noisy waves
-plot(as.vector(X), col='blue', type='l', ylab = "X,Y", main = "Noisy waves")
-lines(as.vector(Y), col = "red")
-legend("topright", c("X", "Y"), col = c("blue","red"), lty = c(1,1), lwd = c(1,1))
 
-# Standardize in the interval 0 - 1
-X <- (X - min(X)) / (max(X) - min(X))
-Y <- (Y - min(Y)) / (max(Y) - min(Y))
+data$AveragedExchange = as.factor(data$AveragedExchange)
 
-# Transpose
-X <- t(X)
-Y <- t(Y)
+x_train = (data[1:1700,1:ncol(data)-1]+1)
+y_train = (data[1:1700,ncol(data)])
+x_test = data[1701:nrow(data),1:ncol(data)-1]+1
+y_test = data[1701:nrow(data),ncol(data)]
 
-# Training-testing sets
-train <- 1:8
-test <- 9:10
+x_train <- as.data.frame(x_train)
+y_train <- as.data.frame(y_train)
+x_test <- as.data.frame(x_test)
+y_test <- as.data.frame(y_test)
+
+
+
+x_train <-  as.matrix(x_train  )        #mnist$train$x
+y_train <-    as.matrix(y_train )       #   mnist$train$y
+x_test <-     as.matrix((x_test))       # mnist$test$x
+y_test <-     as.matrix((y_test    ))      # mnist$test$y
+
+# reshape
+#x_train <- array_reshape(x_train, c(nrow(x_train), 93))
+#x_test <- array_reshape(x_test, c(nrow(x_test), 93))
 
 # Train model. Keep out the last two sequences.
-model <- trainr(Y = Y[train,],
-                X = X[train,],
+model <- trainr(Y = y_train,
+                X = x_train,
                 learningrate = 0.05,
                 hidden_dim = 16,
                 numepochs = 10)
