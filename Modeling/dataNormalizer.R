@@ -126,7 +126,7 @@ toBeNormalized$cleaned = as_datetime(toBeNormalized$cleaned)  #----> resetting d
 rateNormalization = data.frame(toBeNormalized[1:nrow(toBeNormalized)-1,])  #----> splitting DF
 
 valueNormalization = data.frame(toBeNormalized) #----> splitting DF
-write.csv(valueNormalization, "for_Bart.csv")
+
 firstSourceIndexMerged = which(colnames(toBeNormalized)==firstSource)  #----> finding new index value for first source
 
 
