@@ -9,15 +9,15 @@ TARGET_COUNTRY<-c(TARGET_COUNTRY,"south-korean","vietnam","usa","unitedstates","
 TARGET_INFLUENCER.bigram<-c("nick szabo","roger ver","andreas m","m antonopoulos","andreas antonopoulos","vitalik buterin","gavin andresen",
                             "barry silbert","clif high","don tapscott","vincent briatore","nicolas cary","tuur demeester",
                             "emin gün","emin sirer","ameer rosic","charlie shrem","ledgersatus","brian krogsgard","josh olszewicz",
-                            "ritchie etwaru","teeka tiwari")
+                            "ritchie etwaru","teeka tiwari", "mcafee")
 TARGET_INFLUENCER.monogram<-c("LedgerSatus","CryptoYoda","ivanli","crypt0","boxmining","cryptographic","scandinavianlife",
-                              "intelliguy","jrcornel","KingsCrown","staticinstance","steempower")
+                              "intelliguy","jrcornel","KingsCrown","staticinstance","steempower", "mcafee")
 
 TARGET_INFLUENCER<-c("nick","szabo","andreas","roger","ver","andreas","antonopoulos","vitalik","buterin","gavin","andresen",
                      "barry","silbert","clif","high","don","tapscott","vincent","briatore","nicolas","cary","tuur","demeester",
                      "emin","gun","sirer","ameer","rosic","charlie","shrem","ledgersatus","brian","krogsgard","josh","olszewicz",
                      "ritchie","etwaru","cryptoyoda","teeka","tiwari","ivanli","crypt0","boxmining","cryptographic","scandinavianlife",
-                     "intelliguy","jrcornel","kingscrown","staticinstance","steempower")
+                     "intelliguy","jrcornel","kingscrown","staticinstance","steempower", "mcafee")
 
 #BITCOIN LINKED
 
