@@ -349,7 +349,7 @@ model <- keras_model_sequential() %>%
   layer_dropout(rate = 0.2)
 
 model %>% compile(
-  optimizer = optimizer_rmsprop(),
+  optimizer = optimizer_adamax(),
   loss = "mae",
   metrics = "accuracy"
 )
