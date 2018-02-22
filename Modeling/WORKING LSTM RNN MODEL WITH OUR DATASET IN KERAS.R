@@ -4,22 +4,21 @@ data = read.csv(gzfile("finalValue.csv.gz"))
 data = data
 data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
 
-# nzv <- nearZeroVar(data)
-# data <- data[,-nzv]
+nzv <- nearZeroVar(data)
+data <- data[,-nzv]
 
 library(tibble)
 library(readr)
 
 
-glimpse(data)
 
 library(ggplot2)
-ggplot(data, aes(x = 1:nrow(data), y = AveragedExchange)) + geom_line()
-
-
-oneDay = 48 #we sample every 30 minutes, so 24*2
-
-ggplot(data[1:oneDay,], aes(x = 1:oneDay, y = AveragedExchange)) + geom_line()
+# ggplot(data, aes(x = 1:nrow(data), y = AveragedExchange)) + geom_line()
+# 
+# 
+# oneDay = 48 #we sample every 30 minutes, so 24*2
+# 
+# ggplot(data[1:oneDay,], aes(x = 1:oneDay, y = AveragedExchange)) + geom_line()
 
 
 # lookback = 480 — Observations will go back 10 days.
@@ -78,7 +77,7 @@ generator <- function(data, lookback, delay, min_index, max_index,
       indices <- seq(rows[[j]] - lookback, rows[[j]], 
                      length.out = dim(samples)[[2]])
       samples[j,,] <- data[indices,]
-      targets[[j]] <- data[rows[[j]] + delay,2]
+      targets[[j]] <- data[rows[[j]] + delay,ncol(data)]
     }            
     
     list(samples, targets)
@@ -97,7 +96,7 @@ generator <- function(data, lookback, delay, min_index, max_index,
 # delay = 48 — we sample every 30 minutes, so 24*2= 1 day in the future
 
 lookback <- 48
-step <- 2
+step <- 10
 delay <- 4
 batch_size <- 10
 
@@ -138,7 +137,7 @@ val_steps <- (2000 - 1601 - lookback) / batch_size
 # How many steps to draw from test_gen in order to see the entire test set
 test_steps <- (nrow(data) - 2001 - lookback) / batch_size
 
-
+train_gen()[[2]]
 
 #--------------------------------Setting up NN --------------------------------------------------------------
 
@@ -161,7 +160,8 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
@@ -229,13 +229,14 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 40,
+  epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
 )
@@ -266,13 +267,14 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 40,
+  epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
 )
@@ -315,15 +317,20 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 2,
+  epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
 )
 
+model %>% evaluate(test_gen()[[1]],test_gen()[[2]])
+model %>% evaluate(val_gen()[[1]],val_gen()[[2]])
+model %>% predict(test_gen()[[1]])
 plot(history)
+

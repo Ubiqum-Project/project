@@ -1,48 +1,75 @@
-dir.create("~/Downloads/jena_climate", recursive = TRUE)
-download.file(
-  "https://s3.amazonaws.com/keras-datasets/jena_climate_2009_2016.csv.zip",
-  "~/Downloads/jena_climate/jena_climate_2009_2016.csv.zip"
-)
-unzip(
-  "~/Downloads/jena_climate/jena_climate_2009_2016.csv.zip",
-  exdir = "~/Downloads/jena_climate"
-)
+library(caret)
+################################################################
+# #data = read.csv(gzfile("finalRate.csv.gz"))
+# data = read.csv(gzfile("finalValue.csv.gz"))
+# data = data
+# data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+# nzv <- nearZeroVar(data)
+# data <- data[,-nzv]
+################################################################
+#--------------> Experimental Merging
 
+data = read.csv(gzfile("finalRate.csv.gz"))
+
+data = data[,-2]
+
+#data=data[,3:ncol(data)-1]
+
+data2 = read.csv(gzfile("finalValue.csv.gz"))
+data2 = data2[,-2]
+data2 = data2[,-ncol(data2)]
+data2 = data2[-1,]
+#data2 = data2[ , apply(data2, 2, function(x) !any(is.na(x)))]
+#data2=data2[,3:ncol(data2)]
+
+data3 = merge(data, data2, by.x = 1, by.y = 1)
+data3 = data3[,-1]
+
+data = data3
+data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+#------------------> experimental merging
 library(tibble)
 library(readr)
 
-data_dir <- "~/Downloads/jena_climate"
-fname <- file.path(data_dir, "jena_climate_2009_2016.csv")
-data <- read_csv(fname)
 
-glimpse(data)
 
 library(ggplot2)
-ggplot(data, aes(x = 1:nrow(data), y = `T (degC)`)) + geom_line()
+# ggplot(data, aes(x = 1:nrow(data), y = AveragedExchange)) + geom_line()
+# 
+# 
+# oneDay = 48 #we sample every 30 minutes, so 24*2
+# 
+# ggplot(data[1:oneDay,], aes(x = 1:oneDay, y = AveragedExchange)) + geom_line()
 
 
-ggplot(data[1:1440,], aes(x = 1:1440, y = `T (degC)`)) + geom_line()
-
-
-# lookback = 1440 — Observations will go back 10 days.
-# steps = 6 — Observations will be sampled at one data point per hour.
-# delay = 144 — Targets will be 24 hours in the future.
+# lookback = 480 — Observations will go back 10 days.
+# steps = 2 — Observations will be sampled at one data point per hour. (we pull 2x per hour...1 hour = 2 samples)
+# delay = 48 — we sample every 30 minutes, so 24*2= 1 day in the future
 
 
 # First, you’ll convert the R data frame which we read earlier into a matrix of floating point values 
-# (we’ll discard the first column which included a text timestamp):
+# 
+#data = data[,-(1:3)]
 
-data <- data.matrix(data[,-1])
+data[,targetColumn] = round(data[,targetColumn] , digits = 1)
+
+
+data[,targetColumn] = as.factor(as.numeric(as.character(data[,targetColumn])))
+
+
+
+summary(data[,targetColumn])
+data <- data.matrix(data)
 
 
 # You’ll then preprocess the data by subtracting the mean of each time series and dividing by the standard deviation. 
 # You’re going to use the first 200,000 timesteps as training data, so compute the mean and standard deviation for 
-# normalization only on this fraction of the data.
+# normalization only on this fraction of the data. (Already did this step)
 
-train_data <- data[1:200000,]
-mean <- apply(train_data, 2, mean)
-std <- apply(train_data, 2, sd)
-data <- scale(data, center = mean, scale = std)
+# train_data <- data[1:1700,]
+# mean <- apply(train_data, 2, mean)
+# std <- apply(train_data, 2, sd)
+# data <- scale(data, center = mean, scale = std)
 
 # The code for the data generator you’ll use is below. It yields a list (samples, targets), where samples is one batch of input data and targets is the corresponding array of target temperatures. It takes the following arguments:
 #   
@@ -79,7 +106,7 @@ generator <- function(data, lookback, delay, min_index, max_index,
       indices <- seq(rows[[j]] - lookback, rows[[j]], 
                      length.out = dim(samples)[[2]])
       samples[j,,] <- data[indices,]
-      targets[[j]] <- data[rows[[j]] + delay,2]
+      targets[[j]] <- data[rows[[j]] + delay,targetColumn]
     }            
     
     list(samples, targets)
@@ -93,17 +120,21 @@ generator <- function(data, lookback, delay, min_index, max_index,
 # testing. Each will look at different temporal segments of the original data: the training generator looks at the first 200,000 
 # timesteps, the validation generator looks at the following 100,000, and the test generator looks at the remainder.
 
-lookback <- 1440
-step <- 6
-delay <- 144
-batch_size <- 128
+# lookback = 480 — Observations will go back 10 days.
+# steps = 2 — Observations will be sampled at one data point per hour. (we pull 2x per hour...1 hour = 2 samples)
+# delay = 48 — we sample every 30 minutes, so 24*2= 1 day in the future
+
+lookback <- 48
+step <- 10
+delay <- 4
+batch_size <- 10
 
 train_gen <- generator(
   data,
   lookback = lookback,
   delay = delay,
   min_index = 1,
-  max_index = 200000,
+  max_index = 1800,
   shuffle = TRUE,
   step = step, 
   batch_size = batch_size
@@ -113,8 +144,8 @@ val_gen = generator(
   data,
   lookback = lookback,
   delay = delay,
-  min_index = 200001,
-  max_index = 300000,
+  min_index = 1801,
+  max_index = 2100,
   step = step,
   batch_size = batch_size
 )
@@ -123,17 +154,19 @@ test_gen <- generator(
   data,
   lookback = lookback,
   delay = delay,
-  min_index = 300001,
-  max_index = NULL,
+  min_index = 2101,
+  max_index = nrow(data),
   step = step,
   batch_size = batch_size
 )
 
 # How many steps to draw from val_gen in order to see the entire validation set
-val_steps <- (300000 - 200001 - lookback) / batch_size
+val_steps <- (2000 - 1601 - lookback) / batch_size
 
 # How many steps to draw from test_gen in order to see the entire test set
-test_steps <- (nrow(data) - 300001 - lookback) / batch_size
+test_steps <- (nrow(data) - 2001 - lookback) / batch_size
+
+train_gen()[[2]]
 
 #--------------------------------Setting up NN --------------------------------------------------------------
 
@@ -156,7 +189,8 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
@@ -168,12 +202,8 @@ history <- model %>% fit_generator(
 )
 plot(history)
 
-model %>% evaluate(test_gen()[[1]],test_gen()[[2]])
-model %>% predict(test_gen()[[1]])
 # Gated Recurrent Network
-test = (train_gen())
-test[[2]]
-test[[1]]
+
 # The first fully connected approach didn’t do well, but that doesn’t mean machine learning isn’t applicable to this problem. 
 # The previous approach first flattened the time series, which removed the notion of time from the input data. Let’s instead look 
 # at the data as what it is: a sequence, where causality and order matter. You’ll try a recurrent-sequence processing model – 
@@ -196,12 +226,12 @@ model %>% compile(
 
 history <- model %>% fit_generator(
   train_gen,
-  steps_per_epoch = 500,
+  steps_per_epoch = 5,
   epochs = 2,
   validation_data = val_gen,
   validation_steps = val_steps
 )
-
+plot(history)
 
 # It’s evident from the training and validation curves that the model is overfitting: the training and validation losses start 
 # to diverge considerably after a few epochs. You’re already familiar with a classic technique for fighting this phenomenon: dropout,
@@ -228,13 +258,14 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 40,
+  epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
 )
@@ -253,7 +284,7 @@ history <- model %>% fit_generator(
 # outputs (a 3D tensor) rather than their output at the last timestep. This is done by specifying return_sequences = TRUE.
 
 model <- keras_model_sequential() %>% 
-  layer_gru(units = 32, 
+  layer_gru(units = 188, 
             dropout = 0.1, 
             recurrent_dropout = 0.5,
             return_sequences = TRUE,
@@ -265,16 +296,21 @@ model <- keras_model_sequential() %>%
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 40,
+  epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
 )
+model %>% evaluate(test_gen()[[1]],test_gen()[[2]])
+model %>% evaluate(val_gen()[[1]],val_gen()[[2]])
+model %>% predict(test_gen()[[1]])
+test_gen()[[2]]
 # 
 # The last technique introduced in this section is called bidirectional RNNs. A bidirectional RNN is a common RNN variant 
 # that can offer greater performance than a regular RNN on certain tasks. It’s frequently used in natural-language processing – 
@@ -306,19 +342,28 @@ history <- model %>% fit_generator(
 
 model <- keras_model_sequential() %>% 
   bidirectional(
-    layer_gru(units = 32), input_shape = list(NULL, dim(data)[[-1]])
+    layer_gru(units = 188), input_shape = list(NULL, dim(data)[[-1]])
   ) %>% 
-  layer_dense(units = 1)
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 1) %>%
+  layer_dropout(rate = 0.2)
 
 model %>% compile(
   optimizer = optimizer_rmsprop(),
-  loss = "mae"
+  loss = "mae",
+  metrics = "accuracy"
 )
 
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 2,
+  epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
 )
+
+model %>% evaluate(test_gen()[[1]],test_gen()[[2]])
+model %>% evaluate(val_gen()[[1]],val_gen()[[2]])
+model %>% predict(test_gen()[[1]])
+plot(history)
+

@@ -124,9 +124,9 @@ toBeNormalized$cleaned = as_datetime(toBeNormalized$cleaned)  #----> resetting d
 #-------------> export, tweak, import csv file to yank bad values
 
 rateNormalization = data.frame(toBeNormalized[1:nrow(toBeNormalized)-1,])  #----> splitting DF
-
+#write.csv(rateNormalization,"rateRaw.csv")
 valueNormalization = data.frame(toBeNormalized) #----> splitting DF
-
+#write.csv(valueNormalization,"valueRaw.csv")
 firstSourceIndexMerged = which(colnames(toBeNormalized)==firstSource)  #----> finding new index value for first source
 
 
