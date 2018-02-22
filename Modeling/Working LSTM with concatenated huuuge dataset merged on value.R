@@ -9,15 +9,15 @@ library(caret)
 ################################################################
 #--------------> Experimental Merging
 
-#--->data = read.csv(gzfile("finalRate.csv.gz"))
-data = read.csv("rateRaw.csv")
+data = read.csv(gzfile("finalRate.csv.gz"))
+#---> data = read.csv("rateRaw.csv")
 
 data = data[,-2]
 
 #data=data[,3:ncol(data)-1]
 
-#--->  data2 = read.csv(gzfile("finalValue.csv.gz"))
-data2 = read.csv("valueRaw.csv")
+ data2 = read.csv(gzfile("finalValue.csv.gz"))
+ #---> data2 = read.csv("valueRaw.csv")
 data2 = data2[,-2]
 data2 = data2[,-ncol(data2)]
 data2 = data2[-1,]
@@ -188,7 +188,7 @@ model %>% compile(
 
 history <- model %>% fit_generator(
   train_gen,
-  steps_per_epoch = 5000,
+  steps_per_epoch = 50,
   epochs = 2,
   validation_data = val_gen,
   validation_steps = val_steps
