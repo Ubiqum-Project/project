@@ -21,7 +21,7 @@ TARGET_INFLUENCER<-c("nick","szabo","andreas","roger","ver","andreas","antonopou
 
 #BITCOIN LINKED
 
-TARGET_BITCOIN<-c()
+TARGET_BITCOIN<-c(SEARCH_WORD)
 
 #OTHER MARKET INDICATION
 
