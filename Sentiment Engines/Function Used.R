@@ -29,11 +29,11 @@
     
     #Do not used the NegationWords text
     Working_table<-Text.art%>%
-      filter(grepl(paste(NegationWords[1],"\\w"),text )==FALSE)
+      filter(grepl(paste("\\b",NegationWords[1],"\\b"),text )==FALSE)
     
     for(i in 2:length(NegationWords))
       {Working_Table<-Text.art%>%
-        filter(grepl(paste(NegationWords[i],"\\w"),text )==FALSE)
+        filter(grepl(paste("\\b",NegationWords[i],"\\b"),text )==FALSE)
       
       Working_table<-Working_table%>%
         full_join(Working_Table)
@@ -80,7 +80,13 @@
     
     return(result)
   }
-  
+  Index_0_nbwords <- function(Text.art)
+  {
+    result<-Text.art%>%
+      mutate(nbwords=sapply(gregexpr("\\W+", text), length) + 1)%>%
+      select(article,nbwords)
+    return(result)
+  }
   Index_0_maturity <- function(Text.art,Time.art)
   {
     Working_Table<-Time.art%>%
