@@ -10,7 +10,7 @@ source("Sentiment Engines/List_TargetWords.R")
 #TIME
 print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 
-#RUN Index Common
+#RUN Index Common--------------------------------------------------------------------------------------------------------------
   #--------Time for the Index Common Start
   T2<-Sys.time()
   #Final Table creation
@@ -81,6 +81,21 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
 
   
+#RUN INDEX SOURCE Bitcoin related--------------------------------------------------------------------------------------------------------------
+  TARGET_WORDS<-TARGET_BITCOIN
+  target_name<-"BitcoinRelated"
+  source("Sentiment Engines/Index Source.R")
+  
+  #INDEX1_0
+  Final.table<-Final.table%>%
+    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
+  #INDEX1_1
+  Final.table<-Final.table%>%
+    left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[3],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
+  
 #RUN INDEX SOURCE Institutions--------------------------------------------------------------------------------------------------------------
   TARGET_WORDS<-TARGET_INSTITUTION
   target_name<-"Institutions"
@@ -102,10 +117,21 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   #INDEX1_0
   Final.table<-Final.table%>%
     left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
-  
+  #INDEX1_1
+  Final.table<-Final.table%>%
+    left_join(Index1_1(Text.art,Sentiment.list[1],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[2],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[3],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_1(Text.art,Sentiment.list[4],TARGET_WORDS.count,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
+  #INDEX1_2
+  Final.table<-Final.table%>%
+    left_join(Index1_2(Text.art,Sentiment.list[1],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_2(Text.art,Sentiment.list[2],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_2(Text.art,Sentiment.list[3],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))%>%
+    left_join(Index1_2(Text.art,Sentiment.list[4],Text.quatrigram,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,target_name))
   #INDEX1_3
   Final.table<-Final.table%>%
-    left_join(Index1_3(Sentiment.list,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,approbation.word,target_name) )
+    left_join(Index1_3(Sentiment.list,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,Marketdirection.word,target_name) )
   
 
 # FINAL TIME--------------------------------------------------------------------------------------------------------------
