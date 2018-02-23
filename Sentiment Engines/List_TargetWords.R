@@ -81,7 +81,10 @@ TARGET_INFLUENCER<-c("szabo","ver","antonopoulos","vitalik","buterin","gavin","a
 
 #BITCOIN LINKED
 
-TARGET_BITCOIN<-c(SEARCH_WORD)
+TARGET_BITCOIN<-c("bubble", "tether", "hack", "crisis", "record", "fork", "whale", "ban", "bankruptcy","legal")
+
+
+
 #INSTITUTION
 TARGET_INSTITUTION<-tolower(c("bank","court","government","governments","politic","politics","ceo","chairman","president"
                               ))
