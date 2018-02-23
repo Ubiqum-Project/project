@@ -18,6 +18,9 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
     select(time,article)
   #Sources dummys
   Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
+  #Number of words
+  Final.table<-Final.table%>%
+    left_join(Index_0_nbwords(Text.art))
   #Maturity/Countarticle last 4 hours/Last 24h
   Final.table<-Final.table%>%
     left_join(Index_0_maturity(Text.art,Time.art))%>%
