@@ -86,7 +86,7 @@ TARGET_BITCOIN<-c("bubble", "tether", "hack", "crisis", "record", "fork", "whale
 
 
 #INSTITUTION
-TARGET_INSTITUTION<-tolower(c("bank","court","government","governments","politic","politics","ceo","chairman","president"
+TARGET_INSTITUTION<-tolower(c("bank","hedgefund","hedgefunds","fund","funds","court","government","governments","politic","politics","ceo","chairman","president"
                               ))
 approbation.word<-tolower(c("authorize", "accept", "approbation", "approval", "approve", "sanction", "authorise", "noncommittal", 
                        "laudatory", "laconic", "jocular", "favourable", "favorable", "approbative", "cryptic", "approving", 
