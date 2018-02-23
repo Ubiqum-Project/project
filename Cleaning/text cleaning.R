@@ -97,6 +97,8 @@ s.africa <- content_transformer(function (x, pattern) gsub(pattern, "southafrica
 docs <- tm_map(docs, s.africa, "south africa")
 s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "southsudan", x, fixed=TRUE))
 docs <- tm_map(docs, s.sudan, "south sudan")
+hedgefund <- content_transformer(function (x, pattern) gsub(pattern, "hedgefund", x, fixed=TRUE))
+docs <- tm_map(docs, hedgefund, "hedge fund")
 # Eliminate extra white spaces
 docs <- tm_map(docs, stripWhitespace)
 
