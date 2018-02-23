@@ -83,10 +83,10 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
 #TIME
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
   
-# #MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#   Merge_Table<-Final.table%>%
-#     left_join(Time.art2)
-# 
-#   z <- gzfile("TITLE OF YOU FILE.csv.gz")
-#   write.csv(Merge_Table, z)
+ #MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   #Merge_Table<-Final.table%>%
+    #left_join(Time.art2)
+ 
+   #z <- gzfile("TITLE OF YOU FILE.csv.gz")
+   #write.csv(Merge_Table, z)
 
