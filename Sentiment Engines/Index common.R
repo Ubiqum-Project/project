@@ -10,7 +10,6 @@
   
   usePackage("ggplot2")
   usePackage("dplyr")
-  usePackage("caret")
   usePackage("readr")
   usePackage("tidytext")
   usePackage("tidyverse")    # data manipulation & plotting
@@ -23,6 +22,8 @@
   usePackage("igraph")
   usePackage("ggraph")
   usePackage("syuzhet")
+  usePackage("SentimentAnalysis")
+  usePackage("sentimentr")
   usePackage("mlr")
   usePackage("zoo")
   
