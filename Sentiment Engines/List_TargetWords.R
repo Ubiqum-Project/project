@@ -113,3 +113,14 @@ TARGET_MKTINDICATOR<-tolower(c("Market", "commodity", "stock exchange", "bank", 
                        "bullish", "assets", "derivative", "derivatives", "volatility", "Eurocurrency", "Dollar", 
                        "Euro", "Yen", "Yuan", "Gold", "Sliver", "VIX", "CAC","FTSE","oil","WTI","Brent", "government bond", "Govies", "wall street", "trend"))
 
+Marketdirection.word<-tolower(c("Highest", "Lowest", "rise", "increase", "go up", "climb", "lift", "ascend", "soar", "surge", "uprise", "grow", "mount", "raise",
+                                "arise", "come up", "climb up", "jump", "advance", "heighten", "ascension", "develop", "ascent", "move up", "increment", "get up", 
+                                "heave", "rise up", "boost", "emerge", "growth", "gain", "resurrect", "rising", "levitation", "scend", "move", "travel", "change", 
+                                "heaving", "swell", "wave", "hike", "upheaval", "ascending", "elevation", "fall", "sink", "decline", "plunge", "fell", "go down",
+                                "slump", "cut", "dip", "shed", "decrease", "descend", "drip", "descent", "come down", "teardrop", "dismiss", "fall off", "drop down", 
+                                "send away", "send packing", "plummet", "reduction", "shrinkage", "abate", "shorten", "weaken", "contraction", "drop", "shrivel", "slack", 
+                                "lessen", "decrement", "fall", "boil down", "dwindle", "depreciation", "minimize", "depreciate", "cutback", "lower", "mitigate", "shrinking",
+                                "attrition", "lowering", "amount", "slacken", "depletion"))
+
+
+

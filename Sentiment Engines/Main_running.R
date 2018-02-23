@@ -38,7 +38,7 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   print(paste("Main sources and functions : ",difftime(T2, Sys.time())))
   
     
-#RUN INDEX SOURCE 1
+#RUN INDEX SOURCE Country--------------------------------------------------------------------------------------------------------------
   #--------Time for the Indexes source 1 Start
   T2<-Sys.time()
     TARGET_WORDS<-TARGET_COUNTRY
@@ -72,7 +72,7 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   print(paste("Time for Indexes Source 1 : ",difftime(T2, Sys.time())))
   
   
-#RUN INDEX SOURCE 2
+#RUN INDEX SOURCE Influencer--------------------------------------------------------------------------------------------------------------
   TARGET_WORDS<-TARGET_INFLUENCER
   target_name<-"Influencer"
   source("Sentiment Engines/Index Source.R")
@@ -80,7 +80,35 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   Final.table<-Final.table%>%
     left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
 
-#TIME
+  
+#RUN INDEX SOURCE Institutions--------------------------------------------------------------------------------------------------------------
+  TARGET_WORDS<-TARGET_INSTITUTION
+  target_name<-"Institutions"
+  source("Sentiment Engines/Index Source.R")
+  
+  #INDEX1_0
+  Final.table<-Final.table%>%
+    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
+  #INDEX1_3
+  Final.table<-Final.table%>%
+    left_join(Index1_3(Sentiment.list,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,approbation.word,target_name) )
+  
+  
+#RUN INDEX SOURCE Market related--------------------------------------------------------------------------------------------------------------
+  TARGET_WORDS<-TARGET_MKTINDICATOR
+  target_name<-"Market"
+  source("Sentiment Engines/Index Source.R")
+  
+  #INDEX1_0
+  Final.table<-Final.table%>%
+    left_join(Index1_0(TARGET_WORDS.article, Text.art,target_name))
+  
+  #INDEX1_3
+  Final.table<-Final.table%>%
+    left_join(Index1_3(Sentiment.list,quatrigrams_filtered,quatrigrams_filtered.end,NegationWords,approbation.word,target_name) )
+  
+
+# FINAL TIME--------------------------------------------------------------------------------------------------------------
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
   
  #MERGE TABLE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

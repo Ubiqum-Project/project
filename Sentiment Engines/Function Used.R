@@ -411,7 +411,7 @@
         print(j)
         Working_Table<-quatrigram_merge.impact%>%
           filter(grepl(Positive_Impact.list$ImpactWords[i],trigram ))%>%
-          filter(grepl(paste(NegationWords[j],"\\w"),trigram )==TRUE)%>%
+          filter(grepl(paste("\\b",NegationWords[j],"\\b"),trigram )==TRUE)%>%
           group_by(time)%>%
           count(trigram)%>%
           summarise(Negativetmp=sum(n))
@@ -442,7 +442,7 @@
         print(j)
         Working_Table<-quatrigram_merge.impact%>%
           filter(grepl(Negative_Impact.list$ImpactWords[i],trigram ))%>%
-          filter(grepl(paste(NegationWords[j],"\\w"),trigram )==TRUE)%>%
+          filter(grepl(paste("\\b",NegationWords[j],"\\b"),trigram )==TRUE)%>%
           group_by(time)%>%
           count(trigram)%>%
           summarise(Positivetmp=sum(n))

@@ -86,8 +86,8 @@
     
     #Total words every day
     Text.word.Daily.Total<-Text.word%>%
-      group_by(time)%>%
-      summarize(nwords = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(nwords = n())
     Text.word.Daily.Total<-Text.word.Daily.Total[order(as.Date(Text.word.Daily.Total$time)),]
     
   }
@@ -109,8 +109,8 @@
     
     #Total bigram every day
     Text.bigram.Daily.Total<-Text.bigram%>%
-      group_by(time)%>%
-      summarize(nbigram = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(nbigram = n())
     Text.bigram.Daily.Total<-Text.bigram.Daily.Total[order(as.Date(Text.bigram.Daily.Total$time)),]
   }
   # ---TRIGRAM--- TOKENS +++++++++++++++++++++++++++++++
@@ -133,14 +133,14 @@
     
     #Daily count each trigram (possible to change the time frame)
     Text.trigram.Daily.count<-Text.trigram%>%
-      group_by(time)%>%
-      count(trigram, sort = TRUE)
+      dplyr::group_by(time)%>%
+      dplyr::count(trigram, sort = TRUE)
     Text.trigram.Daily.count<-Text.trigram.Daily.count[order(as.Date(Text.trigram.Daily.count$time)),]
     
     #Total trigram every day
     Text.trigram.Daily.Total<-Text.trigram%>%
-      group_by(time)%>%
-      summarize(ntrigram = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(ntrigram = n())
     Text.trigram.Daily.Total<-Text.trigram.Daily.Total[order(as.Date(Text.trigram.Daily.Total$time)),]
   }
   # ---QUADRIGRAM--- TOKENS +++++++++++++++++++++++++++++++ For pure sentiment analysis
@@ -163,14 +163,14 @@
     
     #Daily count each quatrigram (possible to change the time frame)
     Text.quatrigram.Daily.count<-Text.quatrigram%>%
-      group_by(time)%>%
-      count(quatrigram, sort = TRUE)
+      dplyr::group_by(time)%>%
+      dplyr::count(quatrigram, sort = TRUE)
     Text.quatrigram.Daily.count<-Text.quatrigram.Daily.count[order(as.Date(Text.quatrigram.Daily.count$time)),]
     
     #Total quatrigram every day
     Text.quatrigram.Daily.Total<-Text.quatrigram%>%
-      group_by(time)%>%
-      summarize(nquatrigram = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(nquatrigram = n())
     Text.quatrigram.Daily.Total<-Text.quatrigram.Daily.Total[order(as.Date(Text.quatrigram.Daily.Total$time)),]
   }
 }
