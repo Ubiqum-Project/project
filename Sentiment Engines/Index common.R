@@ -10,7 +10,6 @@
   
   usePackage("ggplot2")
   usePackage("dplyr")
-  usePackage("caret")
   usePackage("readr")
   usePackage("tidytext")
   usePackage("tidyverse")    # data manipulation & plotting
