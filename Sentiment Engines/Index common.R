@@ -10,7 +10,6 @@
   
   usePackage("ggplot2")
   usePackage("dplyr")
-  usePackage("caret")
   usePackage("readr")
   usePackage("tidytext")
   usePackage("tidyverse")    # data manipulation & plotting
@@ -23,6 +22,7 @@
   usePackage("igraph")
   usePackage("ggraph")
   usePackage("syuzhet")
+  usePackage("sentimentr")
   usePackage("mlr")
   usePackage("zoo")
   
@@ -46,70 +46,13 @@
   #SENTIMENT INDICATOR
   Sentiment.list<-c("afinn","bing","syuzhet","nrc")
   #NEGATIVE WORDS
-  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends","doesnt","not")
+  NegationWords<-c("isnt","cannot","cant","wont","wasnt","ends","doesnt","not", "nowhere", 
+                   "nomeans", "notime", "never", "nolonger", "aint", "arent", 
+                   "couldnt", "didnt", "hadnt", "hasnt", "nobody", "none", "wont","wouldnt")
   #SEARCH WORDS
-  SEARCH_WORD<-c("bubble", "tether", "hack", "crisis", "record", "fork", "whale")
+  SEARCH_WORD<-c("bubble", "tether", "hack", "crisis", "record", "fork", "whale", "ban", "bankruptcy","legal")
   
-  #### IMPACT WORDS START ####
-  {
-    ImpactWords <- c("legalize", "banning", "ban", "bans", "regulate", "regulation", "tax", "taxes",
-                     "control", "rule", "law", "restriction", "regulating", "ordinance", "regulate",
-                     "norm", "policy", "legislation", "limitation", "regularization", 
-                     "regularisation", "bylaw", "regulator", "governance", "regulatory",
-                     "decree", "provisions", "provision", "standards", "requirements", "controls",
-                     "supervision", "regulators", "statute", "statutes", "procedure",
-                     "administrative law", "rulemaking", "govern", "decalogue", "metarule", "rulable",
-                     "overrule", "governable", "unruled", "state", "limiting", "regulations",
-                     "guidelines", "laws", "measures", "procedures", "requiring", "licit",
-                     "oversight", "stricter", "requires", "taxation", "restrict", "lawlessness",
-                     "restrictions", "tighter", "regiment", "policies", "restrictive",
-                     "legal", "restricting", "impose", "stringent", "federal", "required",
-                     "compliance", "strict", "reform", "prohibit", "violate", "contravention",
-                     "penalties", "protection", "blocking", "reducing", "tougher", "safeguards",
-                     "enforcement", "enforce", "lawless", "mandatory", "processes", "issues",
-                     "specific", "judicially", "mandate", "curfew", "recursion", "jurisdiction",
-                     "danelaw", "sedition", "writ", "disciplinarian", "governor", "disapply",
-                     "organic process", "game law", "nomy", "penalize", "legislative", "dictate",
-                     "rulebreaker", "injunction", "dominant", "formularize", "regency", "extralegal",
-                     "delinquent", "yardstick", "authoritarian", "legislate", "metalaw",
-                     "clandestinely", "code of conduct", "certiorari", "authoritarianism",
-                     "legislator", "rulebound", "oversit", "eviction", "compliant", "impoundment",
-                     "imperious", "lawgiver", "social control", "economics", "lawbook",
-                     "rule of law", "bewield", "code enforcement", "mandatory",
-                     "mandator", "jurisconsult", "preterlegal", "nomic", "rule of evidence",
-                     "black letter law", "golden rule", "sociolegal", "blawg", "salic law",
-                     "revertible", "lawing", "astrolaw", "intralegal", "legist", "lawmonger",
-                     "executive order", "grind rule", "rule out", "gag order", "law of nature",
-                     "canon law", "letter of law", "constitutional amendment", 
-                     "power of appointment", "court order", "judicial review",
-                     "consent decree", "zero tolerance", "point of order", "regulated",
-                     "deregulation", "public policy", "order in council", "regulates", 
-                     "eminent domain", "governing", "measure length", "special master", 
-                     "directive", "legislating", "life estate", "legal system",
-                     "legal principle", "stand order", "pascal's law", "ordinances", "controlling", 
-                     "ohm's law", "pauli exclusion principle", "supervisory", "lawmaking",
-                     "statute book", "fundamental law", "power of attorney", "feudal law",
-                     "anti authoritarianism", "bylaws", "department of justice", "statute law", 
-                     "statute of limitation", "fifth amendment", "natural law", "blue sky law",
-                     "policing", "diplomatic immunity", "clause", "hubble's law", "gag law",
-                     "blue law", "tax system", "sus law", "international law", "supreme court",
-                     "fiduciary relation", "law of land", "penal code", "law and order", "ruling",
-                     "unite state code", "united states constitution", "spirit of law", "regula",
-                     "judgment in personam", "standardize", "normative", "adjudication",
-                     "standardizing", "administering", "prohibition", "interdict", "prohibit",
-                     "banish", "forbid", "embargo", "disallow", "outlaw", "proscription",
-                     "forbidding", "censor", "ostracize", "forbiddance", "interdiction", 
-                     "injunction", "prohibiting", "restriction", "restrict", "banishment",
-                     "suspension", "exclusion", "barred", "prohibited", "prohibits", "bar",
-                     "criminalize", "decree", "edict", "nix", "bans", "restrictions", "imposed",
-                     "banning-order", "criminalise", "enjoinment", "illegalize", "banned",
-                     "sanctions", "impose", "rules", "suspend", "restricting", "sanction",
-                     "illegal", "regulations", "strict", "stricter", "tariffs", "enforce",
-                     "slapped", "guidelines", "abortion", "enforced", "halt", "imposes", "test ban", 
-                     "lawless", "illegality", "illegally", "forbidden", "proscribed", "blockade",
-                     "prohibitory", "abolition", "closure", "suppression", "prevented",
-                     "preclude", "clampdown")
-  }
+ 
   
 }
 #INDEX TABLE CREATION-------------------------------------------------------------------
@@ -145,8 +88,8 @@
     
     #Total words every day
     Text.word.Daily.Total<-Text.word%>%
-      group_by(time)%>%
-      summarize(nwords = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(nwords = n())
     Text.word.Daily.Total<-Text.word.Daily.Total[order(as.Date(Text.word.Daily.Total$time)),]
     
   }
@@ -168,8 +111,8 @@
     
     #Total bigram every day
     Text.bigram.Daily.Total<-Text.bigram%>%
-      group_by(time)%>%
-      summarize(nbigram = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(nbigram = n())
     Text.bigram.Daily.Total<-Text.bigram.Daily.Total[order(as.Date(Text.bigram.Daily.Total$time)),]
   }
   # ---TRIGRAM--- TOKENS +++++++++++++++++++++++++++++++
@@ -192,14 +135,14 @@
     
     #Daily count each trigram (possible to change the time frame)
     Text.trigram.Daily.count<-Text.trigram%>%
-      group_by(time)%>%
-      count(trigram, sort = TRUE)
+      dplyr::group_by(time)%>%
+      dplyr::count(trigram, sort = TRUE)
     Text.trigram.Daily.count<-Text.trigram.Daily.count[order(as.Date(Text.trigram.Daily.count$time)),]
     
     #Total trigram every day
     Text.trigram.Daily.Total<-Text.trigram%>%
-      group_by(time)%>%
-      summarize(ntrigram = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(ntrigram = n())
     Text.trigram.Daily.Total<-Text.trigram.Daily.Total[order(as.Date(Text.trigram.Daily.Total$time)),]
   }
   # ---QUADRIGRAM--- TOKENS +++++++++++++++++++++++++++++++ For pure sentiment analysis
@@ -222,14 +165,14 @@
     
     #Daily count each quatrigram (possible to change the time frame)
     Text.quatrigram.Daily.count<-Text.quatrigram%>%
-      group_by(time)%>%
-      count(quatrigram, sort = TRUE)
+      dplyr::group_by(time)%>%
+      dplyr::count(quatrigram, sort = TRUE)
     Text.quatrigram.Daily.count<-Text.quatrigram.Daily.count[order(as.Date(Text.quatrigram.Daily.count$time)),]
     
     #Total quatrigram every day
     Text.quatrigram.Daily.Total<-Text.quatrigram%>%
-      group_by(time)%>%
-      summarize(nquatrigram = n())
+      dplyr::group_by(time)%>%
+      dplyr::summarize(nquatrigram = n())
     Text.quatrigram.Daily.Total<-Text.quatrigram.Daily.Total[order(as.Date(Text.quatrigram.Daily.Total$time)),]
   }
 }
