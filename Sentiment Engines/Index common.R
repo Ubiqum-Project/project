@@ -22,7 +22,6 @@
   usePackage("igraph")
   usePackage("ggraph")
   usePackage("syuzhet")
-  usePackage("SentimentAnalysis")
   usePackage("sentimentr")
   usePackage("mlr")
   usePackage("zoo")
