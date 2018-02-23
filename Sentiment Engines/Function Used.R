@@ -43,7 +43,7 @@
     Working_table1<-Working_table1%>%
       full_join(Working_table1tmp)
     }
-    Working_table<-Text.art%>%
+    Working_Table<-Text.art%>%
       left_join(Working_table1)%>%
       filter(is.na(test))%>%
       select(article,source,text,time)
