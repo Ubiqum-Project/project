@@ -28,17 +28,25 @@
   {
     
     #Do not used the NegationWords text
-    Working_table<-Text.art%>%
-      filter(grepl(paste("\\b",NegationWords[1],"\\b"),text )==FALSE)
+    Working_table1<-Text.art%>%
+      filter(grepl(paste("\\b",NegationWords[1],"\\b"),text ))%>%
+      mutate(test=TRUE)%>%
+      select(article,test)
     
     for(i in 2:length(NegationWords))
-      {Working_Table<-Text.art%>%
-        filter(grepl(paste("\\b",NegationWords[i],"\\b"),text )==FALSE)
-      
-      Working_table<-Working_table%>%
-        full_join(Working_Table)
-      }
+    {Working_table1tmp<-Text.art%>%
+      filter(grepl(paste("\\b",NegationWords[i],"\\b"),text ))%>%
+      mutate(word=NegationWords[i])%>%
+      mutate(test=TRUE)%>%
+      select(article,test)
     
+    Working_table1<-Working_table1%>%
+      full_join(Working_table1tmp)
+    }
+    Working_Table<-Text.art%>%
+      left_join(Working_table1)%>%
+      filter(is.na(test))%>%
+      select(article,source,text,time)
     
     #TIME
     T1<-Sys.time()
