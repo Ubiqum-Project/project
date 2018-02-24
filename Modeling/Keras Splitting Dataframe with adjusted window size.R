@@ -315,7 +315,7 @@ history <- model %>% fit_generator(
 # outputs (a 3D tensor) rather than their output at the last timestep. This is done by specifying return_sequences = TRUE.
 
 model <- keras_model_sequential() %>% 
-  layer_gru(units = 45, 
+  layer_gru(units = dim(data)[[-1]], 
             dropout = 0.1, 
             recurrent_dropout = 0.5,
             return_sequences = TRUE,
@@ -326,7 +326,7 @@ model <- keras_model_sequential() %>%
   layer_dense(units = 1)
 
 model %>% compile(
-  optimizer = optimizer_rmsprop(),
+  optimizer = optimizer_nadam(),
   loss = "mae",
   metrics = "accuracy"
 )
@@ -334,7 +334,7 @@ model %>% compile(
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 50,
-  epochs = 50,
+  epochs = 15,
   validation_data = val_gen,
   validation_steps = val_steps
 )

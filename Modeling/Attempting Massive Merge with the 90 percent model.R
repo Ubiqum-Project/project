@@ -2,9 +2,9 @@ library(caret)
 library(keras)
 
 ################################################################
-data = read.csv(gzfile("finalRate.csv.gz"))
+#data = read.csv(gzfile("finalRate.csv.gz"))
 #data = read.csv("rateRaw.csv")
-#data = read.csv(gzfile("finalValue.csv.gz"))
+data = read.csv(gzfile("finalValue.csv.gz"))
 data = data
 which(data$AveragedExchange==0)
 data$AveragedExchange = as.numeric(data$AveragedExchange) 
@@ -46,25 +46,20 @@ data = data[,which( colnames(data)=="article" ):ncol(data)]
 ################################################################
 #--------------> Experimental Merging
 
-# data = read.csv(gzfile("finalRate.csv.gz"))
-# #---> data = read.csv("rateRaw.csv")
 # 
-# data = data[,-2]
-# 
-# #data=data[,3:ncol(data)-1]
-# 
-# data2 = read.csv(gzfile("finalValue.csv.gz"))
-# #---> data2 = read.csv("valueRaw.csv")
-# data2 = data2[,-2]
-# data2 = data2[,-ncol(data2)]
-# data2 = data2[-1,]
-# #data2 = data2[ , apply(data2, 2, function(x) !any(is.na(x)))]
-# #data2=data2[,3:ncol(data2)]
-# 
-# data3 = merge(data, data2, by.x = 1, by.y = 1)
+data2 = read.csv(gzfile("finalRate.csv.gz"))
+
+#data2 = data2[,-3]
+data2 = data2[,-ncol(data2)]
+
+data2 = data2[,which( colnames(data2)=="article" ):ncol(data2)]
+data2 = data2[ , apply(data2, 2, function(x) !any(is.na(x)))]
+
+
+ data3 = cbind(data, data2)
 # data3 = data3[,-1]
 # 
-# data = data3
+ data = data3
 #data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
 
 targetColumn = which( colnames(data)=="AveragedExchange" )
@@ -382,7 +377,7 @@ model %>% compile(
 
 history <- model %>% fit_generator(
   train_gen,
-  steps_per_epoch = 5000,
+  steps_per_epoch = 500,
   epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
