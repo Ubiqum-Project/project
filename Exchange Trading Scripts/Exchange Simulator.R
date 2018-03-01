@@ -1,37 +1,37 @@
 
 library(rgdax)
 
-
-current = public_ticker(product_id = "BTC-USD")
-bid = current$bid
-ask = current$ask
-price = current$price
-vol = current$volume
-
-date =as.character(current$time)
-technical= 1
-sentiment = 1
-
-riskBTC = .1        #User defined value (basically percentage of wallet available for transaction)
-riskUSD = .1        #User defined value (basically percentage of wallet available for transaction)
-
-sentVtech = 5       #User defined value (the amount of weight each algo will receive: 1 = full sentiment, 9 = full technical, 5 = equal mix)
-
-
-
-btcXaction = +.1
-usdXaction = -1000
-
-walletBTC = 5    +btcXaction   #amount of BTC in the wallet
-walletUSD = 3000 + usdXaction    #amount of USD in the wallet
-
-walletValue = price*walletBTC+walletUSD
-delta = 0
-
-transaction= data.frame(date, bid, ask, price, vol, technical, sentiment, sentVtech, riskBTC, riskUSD, btcXaction, usdXaction,walletBTC,walletUSD, walletValue, delta)
-
-write.csv(transaction, file = "transactions.csv")
-#----------------------------------------------------------
+#----->Seeding Code for Empty Database...DO NOT RUN ------------------------
+# current = public_ticker(product_id = "BTC-USD")
+# bid = current$bid
+# ask = current$ask
+# price = current$price
+# vol = current$volume
+# 
+# date =as.character(current$time)
+# technical= 1
+# sentiment = 1
+# 
+# riskBTC = .1        #User defined value (basically percentage of wallet available for transaction)
+# riskUSD = .1        #User defined value (basically percentage of wallet available for transaction)
+# 
+# sentVtech = 5       #User defined value (the amount of weight each algo will receive: 1 = full sentiment, 9 = full technical, 5 = equal mix)
+# 
+# 
+# 
+# btcXaction = +.1
+# usdXaction = -1000
+# 
+# walletBTC = 5    +btcXaction   #amount of BTC in the wallet
+# walletUSD = 3000 + usdXaction    #amount of USD in the wallet
+# 
+# walletValue = price*walletBTC+walletUSD
+# delta = 0
+# 
+# transaction= data.frame(date, bid, ask, price, vol, technical, sentiment, sentVtech, riskBTC, riskUSD, btcXaction, usdXaction,walletBTC,walletUSD, walletValue, delta)
+# 
+# write.csv(transaction, file = "transactions.csv")
+#-----------------------------------------------------RUN ME ONLY!!!!!!-----
 
 transactions = read.csv("transactions.csv")[,-1]
 transactions$date = as.character(transactions$date)
