@@ -157,7 +157,7 @@ val_gen = generator(
   data,
   lookback = lookback,
   delay = delay,
-  min_index = 2001,
+  min_index = 1,
   max_index = nrow(data),
   step = step,
   batch_size = batch_size
@@ -167,17 +167,17 @@ test_gen <- generator(
   data,
   lookback = lookback,
   delay = delay,
-  min_index = 1000,
+  min_index = 1,
   max_index = nrow(data),
   step = step,
   batch_size = batch_size
 )
 
 # How many steps to draw from val_gen in order to see the entire validation set
-val_steps <- (nrow(data) - 2001 - lookback) / batch_size
+val_steps <- (nrow(data) - 1 - lookback) / batch_size
 
 # How many steps to draw from test_gen in order to see the entire test set
-test_steps <- (nrow(data) - 1000 - lookback) / batch_size
+test_steps <- (nrow(data) - 1 - lookback) / batch_size
 
 
 
@@ -213,6 +213,9 @@ testing = test_gen()
 x =as.data.frame(as.integer(round(model %>% predict(testing[[1]]), digits = 0)))
 y =as.data.frame(as.integer(testing[[2]]))
 
+
 resid = x-y
+
+answ = data.frame(x,y,resid)
 
 resid
