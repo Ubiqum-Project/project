@@ -6,13 +6,13 @@
 #
 #    http://shiny.rstudio.com/
 #
-install.packages('shiny')
-install.packages('coindeskr')
-install.packages('rgdax')
-install.packages('shinydashboard')
-install.packages('shinyjs')
-install.packages('plotly')
-install.packages('quantmod')
+# install.packages('shiny')
+# install.packages('coindeskr')
+# install.packages('rgdax')
+# install.packages('shinydashboard')
+# install.packages('shinyjs')
+# install.packages('plotly')
+# install.packages('quantmod')
 
 library(shiny) #To build the shiny App
 library(coindeskr) #R-Package connecting to Coindesk API 
