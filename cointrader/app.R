@@ -12,9 +12,15 @@
 
 library(shiny) #To build the shiny App
 library(coindeskr) #R-Package connecting to Coindesk API 
+library(rgdax)
 library(dygraphs) #For interactive Time-series graphs
 library(shinydashboard)
 library(ggplot2)
+library(shinyjs)
+library(plotly)
+library(quantmod)
+
+jscode <- "shinyjs.refresh = function() { history.go(0); }"
 #----------------------------------------------------------
 
 
@@ -46,11 +52,96 @@ gg.gauge <- function(pos,breaks=c(0,30,50,70,100)) {
           panel.border=element_blank()) 
 }
 
+#-----------------------------------------------------------
+
+getSymbols("BTC-USD",src='yahoo')
+df <- data.frame(Date=index(`BTC-USD`),coredata(`BTC-USD`))
+
+
+# create Bollinger Bands
+bbands <- BBands(`BTC-USD`[,c("BTC-USD.High","BTC-USD.Low","BTC-USD.Close")])
+
+# join and subset data
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+
+# colors column for increasing and decreasing
+for (i in 1:length(df[,1])) {
+  if (df$BTC.USD.Close[i] >= df$BTC.USD.Open[i]) {
+    df$direction[i] = 'Increasing'
+  } else {
+    df$direction[i] = 'Decreasing'
+  }
+}
+
+i <- list(line = list(color = '#17BECF'))
+d <- list(line = list(color = '#7F7F7F'))
+
+# plot candlestick chart
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~BTC.USD.Open, close = ~BTC.USD.Close,
+          high = ~BTC.USD.High, low = ~BTC.USD.Low, name = "BTC.USD",
+          increasing = i, decreasing = d) %>%
+  add_lines(x = ~Date, y = ~up , name = "B Bands",
+            line = list(color = '#ccc', width = 0.5),
+            legendgroup = "Bollinger Bands",
+            hoverinfo = "none", inherit = F) %>%
+  add_lines(x = ~Date, y = ~dn, name = "B Bands",
+            line = list(color = '#ccc', width = 0.5),
+            legendgroup = "Bollinger Bands", inherit = F,
+            showlegend = FALSE, hoverinfo = "none") %>%
+  add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
+            line = list(color = '#E377C2', width = 0.5),
+            hoverinfo = "none", inherit = F) %>%
+  layout(yaxis = list(title = "Price"))
+
+# plot volume bar chart
+pp <- df %>%
+  plot_ly(x=~Date, y=~BTC.USD.Volume, type='bar', name = "BTC.USD Volume",
+          color = ~direction, colors = c('#17BECF','#7F7F7F')) %>%
+  layout(yaxis = list(title = "Volume"))
+
+# create rangeselector buttons
+rs <- list(visible = TRUE, x = 0.5, y = -0.055,
+           xanchor = 'center', yref = 'paper',
+           font = list(size = 9),
+           buttons = list(
+             list(count=1,
+                  label='RESET',
+                  step='all'),
+             list(count=3,
+                  label='3 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label='1 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label=' WK',
+                  step='week',
+                  stepmode='backward')
+           ))
+
+# subplot with shared x axis
+p <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
+             shareX = TRUE, titleY = TRUE) %>%
+  layout(title = paste("Bitcoin to USD: 2017-10-14 -",Sys.Date()),
+         xaxis = list(rangeselector = rs),
+         legend = list(orientation = 'h', x = 0.5, y = 1,
+                       xanchor = 'center', yref = 'paper',
+                       font = list(size = 10),
+                       bgcolor = 'transparent'))
+
+
+
+
 
 #-----------------------------------------------------------
 
 transactions = read.csv("transactions.csv")[,-1]
-last31 <- get_last31days_price()
+
+
 transactions$date = as.character(transactions$date)
 transactions$walletValue= as.numeric(transactions$walletValue)
 
@@ -63,18 +154,22 @@ current = public_ticker(product_id = "BTC-USD")
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
+  
   dashboardHeader(),
   dashboardSidebar(),
   dashboardBody(
+    useShinyjs(),
+    extendShinyjs(text = jscode),
     fluidRow(
-    titlePanel('Bitcoin USD Price for Last 31 days'),
-    tableOutput("values"),
+    
+      box( plotlyOutput("btcprice"))
+    ),
+   
+    fluidRow(
+    titlePanel('Robot Advisor Settings'),
+ 
     mainPanel(
-      h3('Minimum'),
-      h3(htmlOutput('minprice')),
-      h3('Maximum'),
-      h3(htmlOutput('maxprice')),
-     box( dygraphOutput("btcprice")),
+           
      box(
        title = "Controls",
        sliderInput("sentiment",  label = div(style='width:250px;', 
@@ -105,7 +200,8 @@ ui <- dashboardPage(
                                             div(style='float:left;', 'Sentiment'), 
                                             div(style='float:right;', 'Technical')), 1, 10, 5.5, step = .5),
        plotOutput('combiGauge'),
-       textOutput('recommendation')
+       textOutput('recommendation'),
+       actionButton("submitButton","Submit Order!")
        
      )
     )
@@ -122,8 +218,6 @@ server <- function(input,output){
     vol = current$volume
     
     date =as.character(current$time)
-    
-    
     
     btcAlert = "No BTC Wallet Constraints!"
     usdAlert = "No USD Wallet Constraints!"
@@ -275,23 +369,25 @@ server <- function(input,output){
     combiGauge
   })
   #------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  output$minprice <- renderText(
-    paste('Price : $', min(last31), '
-          Date :', rownames(last31)[which.min(last31$Price)] )
-    )
-  
-  
-  output$maxprice <- renderText(
-    paste('Price : $', max(last31), '
-          Date :', rownames(last31)[which.max(last31$Price)] )
-    )
-  output$btcprice <- renderDygraph(
-    dygraph(data = last31, main = "Bitcoin USD Price for Last 31 days") %>% 
-      dyHighlight(highlightCircleSize = 5, 
-                  highlightSeriesBackgroundAlpha = 0.2,
-                  hideOnMouseOut = FALSE, highlightSeriesOpts = list(strokeWidth = 3)) %>%
-      dyRangeSelector()
+
+  output$btcprice <- renderPlotly(
+   
+    p
   )
+  
+  writeCSV <- observe({
+    if(input$submitButton == 0) return()
+    data = sliderValues()
+    data = data[,1:ncol(data)-1]
+    data[,1] = as.character(data[,1])
+    print(data)
+    print(transactions)
+     transactions[nrow(transactions) + 1,] = data[1,]
+     print(transactions)
+     write.csv(transactions, file = "transactions.csv")
+     print("writing Complete")
+     js$refresh();
+  })
 }
 
 # Run the application 
