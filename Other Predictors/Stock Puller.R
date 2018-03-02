@@ -16,7 +16,7 @@ library(gtrendsR)
 ############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
 
 
-final = read_csv(gzfile("cleaned_with_dates.csv.gz"))
+final.test = read_csv(gzfile("FINAL.csv.gz"))
 final$cleaned = as_datetime(final$cleaned)
 
 
@@ -27,13 +27,14 @@ final$cleaned = as_datetime(final$cleaned)
 # temp <- tempfile()
 # download.file("http://api.bitcoincharts.com/v1/csv/krakenUSD.csv.gz",temp)
 # historicPriceKrakkenDL <- read.csv(gzfile(temp, ".krakenUSD.csv"))
-# rm(temp)
+# # rm(temp)
 
 #---------> Or Read file 
 
 historicPriceKrakkenDL <- read.csv(".krakenUSD.csv", skip =4580000 )
-colnames(historicPriceKrakkenDL) = c("krakkenDate", "KrakkenPrice")
 historicPriceKrakkenDL = historicPriceKrakkenDL[1:2]
+colnames(historicPriceKrakkenDL) = c("krakkenDate", "KrakkenPrice")
+
 #---------> End File Input 
 
 final$cleaned = as_datetime(final$cleaned)
@@ -52,8 +53,7 @@ setkey(as.data.table(historicPriceKrakkenDL), krakkenDate, join_time)
 
 testKrakken = unique(historicPriceKrakkenDL[final, roll = T, on = "join_time"])
 
-testedKrakken = testKrakken[!duplicated(testKrakken$combination),]
-
+testedKrakken = testKrakken[!duplicated(testKrakken$text),]
 
 colnames(testedKrakken)[1] = "KrakkenDate" #--> For Quality Control Purposes
 colnames(testedKrakken)[2] = "KrakkenPrice"
@@ -61,6 +61,7 @@ colnames(testedKrakken)[2] = "KrakkenPrice"
 testedKrakken = testedKrakken[,-c(3,4)]
 
 final = testedKrakken
+
 
 #############################--->Coinbase<------####################################
 #---------------------Access Coinbase Historical Price Info
@@ -95,7 +96,7 @@ setkey(as.data.table(historicPriceCoinbaseDL), coinbaseDate, join_time)
 
 testCoin = unique(historicPriceCoinbaseDL[final, roll = T, on = "join_time"])
 
-testedCoin = testCoin[!duplicated(testCoin$combination),]
+testedCoin = testCoin[!duplicated(testCoin$text),]
 
 colnames(testedCoin)[1] = "CoinbaseDate" #--> For Quality Control Purposes
 colnames(testedCoin)[2] = "CoinbasePrice"
@@ -320,9 +321,11 @@ gOut = gOut[gtrendLite, on = "date"]
 gOut = gOut[gtrendLiteCrash, on = "date"]
 gOut = gOut[gtrendBitcoinBan, on = "date"]
 
+gOut$date <- as.character(as.Date(gOut$date))
 
 # Begin merging gTrends and Stocks into a single dataframe
 
+out = gOut[FALSE,]
 out = ( SP500[c(gOut), on = c("date")])
 out =  ( VIX[c(out), on = c("date")])
 out = ( GOLD[c(out), on = c("date")])
@@ -356,57 +359,58 @@ setkey(as.data.table(cleanedWithExchangePrice), cleaned, join_time)
 setkey(as.data.table(concatenated_Secondary_Predictors), date, join_time)
 
 test = concatenated_Secondary_Predictors[cleanedWithExchangePrice, roll = T, on = "join_time"]
-tester = test[!duplicated(test$combination),]
+tester = test[!duplicated(test$text),]
 
-tester = final =  tester[,c("cleaned",
-                                "name",
-                                "combination",
-                                "text",
-                                "KrakkenPrice",
-                                "CoinbasePrice",
-                                "gtrendLiteCrash",
-                                "gtrendEtherCrash",
-                                "gtrendEtherBubble",
-                                "gtrendEther",
-                                "gtrendBitcoinPrice",
-                                "gtrendBitcoinTether",
-                                "gtrendBitcoinBubble",
-                                "gtrendBitcoin",
-                                "GSPC_Adjusted",
-                                "GSPC_Volume",
-                                "GSPC_Close",
-                                "GSPC_Low",
-                                "GSPC_High",
-                                "GSPC_Open",
-                                "VIX_Adjusted",
-                                "VIX_Close",
-                                "VIX_Low",
-                                "VIX_High",
-                                "VIX_Open",
-                                "GOLD_Adjusted",
-                                "GOLD_Volume",
-                                "GOLD_Close",
-                                "GOLD_Low",
-                                "GOLD_High",
-                                "GOLD_Open",
-                                "BTCUSDX_Adjusted",
-                                "BTCUSDX_Volume", 
-                                "BTCUSDX_Close",
-                                "BTCUSDX_Low",
-                                "BTCUSDX_High",
-                                "BTCUSDX_Open",
-                                "BTC_LTC_Adjusted",
-                                "BTC_LTC_Volume",
-                                "BTC_LTC_Close",
-                                "BTC_LTC_Low",
-                                "BTC_LTC_High",
-                                "BTC_LTC_Open",
-                                "BTC_ETH_Adjusted",
-                                "BTC_ETH_Volume",
-                                "BTC_ETH_Close",
-                                "BTC_ETH_Low",
-                                "BTC_ETH_High",
-                                "BTC_ETH_Open")]
+# tester = final =  tester[,c("cleaned",
+#                                 "name",
+#                                 "combination",
+#                                 "text",
+#                                 "KrakkenPrice",
+#                                 "CoinbasePrice",
+#                                 "gtrendLiteCrash",
+#                                 "gtrendEtherCrash",
+#                                 "gtrendEtherBubble",
+#                                 "gtrendEther",
+#                                 "gtrendBitcoinPrice",
+#                                 "gtrendBitcoinTether",
+#                                 "gtrendBitcoinBubble",
+#                                 "gtrendBitcoin",
+#                                 "GSPC_Adjusted",
+#                                 "GSPC_Volume",
+#                                 "GSPC_Close",
+#                                 "GSPC_Low",
+#                                 "GSPC_High",
+#                                 "GSPC_Open",
+#                                 "VIX_Adjusted",
+#                                 "VIX_Close",
+#                                 "VIX_Low",
+#                                 "VIX_High",
+#                                 "VIX_Open",
+#                                 "GOLD_Adjusted",
+#                                 "GOLD_Volume",
+#                                 "GOLD_Close",
+#                                 "GOLD_Low",
+#                                 "GOLD_High",
+#                                 "GOLD_Open",
+#                                 "BTCUSDX_Adjusted",
+#                                 "BTCUSDX_Volume", 
+#                                 "BTCUSDX_Close",
+#                                 "BTCUSDX_Low",
+#                                 "BTCUSDX_High",
+#                                 "BTCUSDX_Open",
+#                                 "BTC_LTC_Adjusted",
+#                                 "BTC_LTC_Volume",
+#                                 "BTC_LTC_Close",
+#                                 "BTC_LTC_Low",
+#                                 "BTC_LTC_High",
+#                                 "BTC_LTC_Open",
+#                                 "BTC_ETH_Adjusted",
+#                                 "BTC_ETH_Volume",
+#                                 "BTC_ETH_Close",
+#                                 "BTC_ETH_Low",
+#                                 "BTC_ETH_High",
+#                                 "BTC_ETH_Open")]
+
 # Write to GZ file
 z <- gzfile("secondary_Predictor_Pull.csv.gz")
 write.csv(tester, z)

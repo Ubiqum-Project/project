@@ -66,8 +66,6 @@ cleaned$combination<-cleaned$title
     paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph
           [which(cleaned$title != cleaned$paragraph)])}
 
-
-
 docs <- Corpus(VectorSource(cleaned$combination))
 
 #cleaned.x <- cleaned[1:100000,]
@@ -100,21 +98,20 @@ docs <- tm_map(docs, toSpace, "-")
 docs <- tm_map(docs, toSpace, "_")
 docs <- tm_map(docs, toSpace, "\r")
 docs <- tm_map(docs, toSpace, "\n")
-
-
-docs <- tm_map(docs, function(x) iconv(docs$content, "UTF-8", "UTF-8",sub=''))
+docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
 
 # united states correction
 us <- content_transformer(function (x, pattern) gsub(pattern, "unitedstates", x, fixed=TRUE))
 docs <- tm_map(docs, us, "U.S.")
-
+# Convert the text to lower case
+docs <- tm_map(docs, content_transformer(tolower))
 # Remove numbers (not required?)
 docs <- tm_map(docs, removeNumbers)
 # Remove punctuations
 docs <- tm_map(docs, removePunctuation)
 # Remove your own stop word
 # specify your stopwords as a character vector
-docs <- tm_map(docs, removeWords, c("commentsharesavehidereport", "commentssharesavehidereportloading",
+docs <- tm_map(docs, removeWords, c("newsbitcoincom", "selfbitcoinmarkets", "bitcoinallbotcommentsharesavehidereport", "bitcoinallbot", "newsbitcoincom", "imgurcom", "selfbitcoinmining", "selfbitcoinmarkets", "bitcoinbeginners", "bitcoinallbot", "bitcoinallbotcommentsharesavehidereport", "commentsharesavehidereport", "commentssharesavehidereportloading",
                                     "commentsharesavehidereportloading","commentssharesavehidereport",
                                     "submitted", "reddit", "redditcom", "hour ago", "hours ago", 
                                     "pictwittercom", "just", "now", "minutes", "ago", "bitcoinallbot1",
@@ -134,24 +131,22 @@ docs <- tm_map(docs, removeWords, stopwords("english"))
 # Text stemming
 #docs <- tm_map(docs, stemDocument)
 # other country corrections
-s.korea <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
+s.korea <- content_transformer(function (x, pattern) gsub(pattern, "southkorea", x, fixed=TRUE))
 docs <- tm_map(docs, s.korea, "south korea")
-s.korean <- content_transformer(function (x, pattern) gsub(pattern, "south-korea", x, fixed=TRUE))
-docs <- tm_map(docs, s.korean, "south korean")
-n.korea <- content_transformer(function (x, pattern) gsub(pattern, "north-korea", x, fixed=TRUE))
+docs <- tm_map(docs, s.korea, "south korean")
+docs <- tm_map(docs, s.korea, "s korea")
+docs <- tm_map(docs, s.korea, "s korean")
+n.korea <- content_transformer(function (x, pattern) gsub(pattern, "northkorea", x, fixed=TRUE))
 docs <- tm_map(docs, n.korea, "north korea")
-s.africa <- content_transformer(function (x, pattern) gsub(pattern, "south-africa", x, fixed=TRUE))
+docs <- tm_map(docs, n.korea, "north korean")
+docs <- tm_map(docs, n.korea, "n korea")
+docs <- tm_map(docs, n.korea, "n korean")
+s.africa <- content_transformer(function (x, pattern) gsub(pattern, "southafrica", x, fixed=TRUE))
 docs <- tm_map(docs, s.africa, "south africa")
-s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "south-sudan", x, fixed=TRUE))
+s.sudan <- content_transformer(function (x, pattern) gsub(pattern, "southsudan", x, fixed=TRUE))
 docs <- tm_map(docs, s.sudan, "south sudan")
-
-
-emo = content_transformer(function (x) gsub("[^\x01-\x7F]", "", x))
-docs <- tm_map(docs, emo)
-
-
-# Convert the text to lower case
-docs <- tm_map(docs, content_transformer(tolower))
+hedgefund <- content_transformer(function (x, pattern) gsub(pattern, "hedgefund", x, fixed=TRUE))
+docs <- tm_map(docs, hedgefund, "hedge fund")
 # Eliminate extra white spaces
 docs <- tm_map(docs, stripWhitespace)
 
