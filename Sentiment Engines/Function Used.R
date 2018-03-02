@@ -165,7 +165,7 @@
     }
     Result<-Text.art%>%
       left_join(working.table)%>%
-      select(article,bubble,tether,hack,crisis,record,fork)
+      select(article,bubble,tether,hack,crisis,record,fork,whale,ban,bankruptcy,legal)
     return(Result)
   }
   
