@@ -19,11 +19,11 @@ library(coindeskr) #R-Package connecting to Coindesk API
 library(rgdax)
 library(shinydashboard)
 library(ggplot2)
-library(shinyjs)
+#library(shinyjs)
 library(plotly)
 library(quantmod)
 
-jscode <- "shinyjs.refresh = function() { history.go(0); }"
+#jscode <- "shinyjs.refresh = function() { history.go(0); }"
 #----------------------------------------------------------
 
 
@@ -404,7 +404,7 @@ server <- function(input,output){
      print(transactions)
      write.csv(transactions, file = "transactions.csv")
      print("writing Complete")
-     js$refresh();
+   #  js$refresh();
   })
 }
 
