@@ -642,26 +642,26 @@ ui <- dashboardPage(
               h1(icon("android"), align="center" ),
               h2("Welcome to Crypto-Prophet: Your Cryptocurrency Robot Trading Advisor", align="center"),
               hr(),
-              p(" "),
+              p(" This is our final project from Ubiqum Big Data.  We wanted something unique, so we decided to  make a crypto currency robot trader...but with a twist..."),
               
               hr(),
-              p(" "),
+              p(" Most Bitcoin Robot Traders are high frequency traders or use some combination of standard financial analysis tools to make decisions (Bollinger Bands, Moving Averages, etc.).  Those are well and good, but we thought: 'What really makes Bitcoin go up or down?'  The answer struck us...."),
               
               hr(),
              
               h1(icon("comments"), align="center" ),
               hr(),
-              p(" "),
+              p("Market Sentiment!  Bitcoin is an emotionally traded commodity.  So, we decided to scrape the web and analyze how people felt about Bitcoin at certain periods of time.  Looking at these online conversations, we hypothesised that we could potentially predict trends which might be useful for trading. "),
               hr(),
               h1(icon("line-chart"), align="center" ),
               hr(),
-              p(" "),
+              p("Combining sentiment with other predictors, we built several unique algorithms to project the potential for the market to increase or decrease 24 hours out. "),
               hr(),
-              p(" "),
+              p("Obviously I don't have to spell it out for you, but if you knew the market would increase tomorrow, then you might want to buy, and vice versa.  What if you had a crystal ball to read the crypto prophecies? "),
               hr(),
               h1(icon("money"), align="center" ),
               hr(),
-              p(" "),
+              p(" Well, this is our current iteration of that attempt.  While we continue to iterate over the models, we hope this product provides some entertainment and inspiration for smarter people to leverage.  Thank's for viewing our App!"),
               hr(),
               
               h1(icon("bitcoin"), align="center" )
