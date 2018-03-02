@@ -60,22 +60,21 @@ gg.gauge <- function(pos,breaks=c(0,30,50,70,100)) {
 getSymbols("BTC-USD",src='yahoo')
 getSymbols("ETH-USD",src='yahoo')
 getSymbols("LTC-USD",src='yahoo')
-
-
-df <- data.frame(Date=index(`BTC-USD`),coredata(`BTC-USD`))
+getSymbols("XRP-USD",src='yahoo')
+getSymbols("^GSPC",src='yahoo')
+getSymbols("^VIX",src='yahoo')
 ETH <- data.frame(Date=index(`ETH-USD`),coredata(`ETH-USD`))
 LTC <- data.frame(Date=index(`LTC-USD`),coredata(`LTC-USD`))
-
 ETH = subset(ETH,Date >= "2017-10-14")
 ETH = data.frame(ETH$Date ,((ETH$ETH.USD.Close+ETH$ETH.USD.Open)/2))
 colnames(ETH) = c("date","dailyAvgETH")
-
 
 LTC = subset(LTC,Date >= "2017-10-14")
 LTC = data.frame(LTC$Date ,((LTC$LTC.USD.Close+LTC$LTC.USD.Open)/2))
 colnames(LTC) = c("date","dailyAvgLTC")
 
-
+#-----------------------> Bitcoin Chart <----------------------------
+df <- data.frame(Date=index(`BTC-USD`),coredata(`BTC-USD`))
 # create Bollinger Bands
 bbands <- BBands(`BTC-USD`[,c("BTC-USD.High","BTC-USD.Low","BTC-USD.Close")])
 
@@ -101,11 +100,11 @@ p <- df %>%
           high = ~BTC.USD.High, low = ~BTC.USD.Low, name = "BTC.USD",
           increasing = i, decreasing = d) %>%
   add_lines(x = ~Date, y = ~up , name = "B Bands",
-            line = list(color = '#ccc', width = 0.5),
+            line = list(color = 'black', width = 0.5),
             legendgroup = "Bollinger Bands",
             hoverinfo = "none", inherit = F) %>%
   add_lines(x = ~Date, y = ~dn, name = "B Bands",
-            line = list(color = '#ccc', width = 0.5),
+            line = list(color = 'black', width = 0.5),
             legendgroup = "Bollinger Bands", inherit = F,
             showlegend = FALSE, hoverinfo = "none") %>%
   add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
@@ -142,7 +141,7 @@ rs <- list(visible = TRUE, x = 0.5, y = -0.055,
            ))
 
 # subplot with shared x axis
-p <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
+bitcoinChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
              shareX = TRUE, titleY = TRUE) %>%
   layout(title = paste("Bitcoin to USD: 2017-10-14 -",Sys.Date()),
          xaxis = list(rangeselector = rs),
@@ -150,13 +149,408 @@ p <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
                        xanchor = 'center', yref = 'paper',
                        font = list(size = 10),
                        bgcolor = 'transparent'))
-
-
-
-
-
+bitcoinChart
 #-----------------------------------------------------------
+#-----------------------> Ether Chart <----------------------------
+df <- data.frame(Date=index(`ETH-USD`),coredata(`ETH-USD`))
+# create Bollinger Bands
+bbands <- BBands(`ETH-USD`[,c("ETH-USD.High","ETH-USD.Low","ETH-USD.Close")])
 
+# join and subset data
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+
+# colors column for increasing and decreasing
+for (i in 1:length(df[,1])) {
+  if (df$ETH.USD.Close[i] >= df$ETH.USD.Open[i]) {
+    df$direction[i] = 'Increasing'
+  } else {
+    df$direction[i] = 'Decreasing'
+  }
+}
+
+i <- list(line = list(color = '#17BECF'))
+d <- list(line = list(color = '#7F7F7F'))
+
+# plot candlestick chart
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~ETH.USD.Open, close = ~ETH.USD.Close,
+          high = ~ETH.USD.High, low = ~ETH.USD.Low, name = "ETH.USD",
+          increasing = i, decreasing = d) %>%
+  add_lines(x = ~Date, y = ~up , name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands",
+            hoverinfo = "none", inherit = F) %>%
+  add_lines(x = ~Date, y = ~dn, name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands", inherit = F,
+            showlegend = FALSE, hoverinfo = "none") %>%
+  add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
+            line = list(color = '#E377C2', width = 0.5),
+            hoverinfo = "none", inherit = F)%>%
+  layout(yaxis = list(title = "Price"))
+
+# plot volume bar chart
+pp <- df %>%
+  plot_ly(x=~Date, y=~ETH.USD.Volume, type='bar', name = "ETH.USD Volume",
+          color = ~direction, colors = c('#17BECF','#7F7F7F')) %>%
+  layout(yaxis = list(title = "Volume"))
+
+# create rangeselector buttons
+rs <- list(visible = TRUE, x = 0.5, y = -0.055,
+           xanchor = 'center', yref = 'paper',
+           font = list(size = 9),
+           buttons = list(
+             list(count=1,
+                  label='RESET',
+                  step='all'),
+             list(count=3,
+                  label='3 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label='1 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label=' WK',
+                  step='week',
+                  stepmode='backward')
+           ))
+
+# subplot with shared x axis
+etherChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
+             shareX = TRUE, titleY = TRUE) %>%
+  layout(title = paste("Ethereum to USD: 2017-10-14 -",Sys.Date()),
+         xaxis = list(rangeselector = rs),
+         legend = list(orientation = 'h', x = 0.5, y = 1,
+                       xanchor = 'center', yref = 'paper',
+                       font = list(size = 10),
+                       bgcolor = 'transparent'))
+
+
+etherChart
+#-----------------------------------------------------------
+#-----------------------> Litecoin Chart <----------------------------
+df <- data.frame(Date=index(`LTC-USD`),coredata(`LTC-USD`))
+# create Bollinger Bands
+bbands <- BBands(`LTC-USD`[,c("LTC-USD.High","LTC-USD.Low","LTC-USD.Close")])
+
+# join and subset data
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+
+# colors column for increasing and decreasing
+for (i in 1:length(df[,1])) {
+  if (df$LTC.USD.Close[i] >= df$LTC.USD.Open[i]) {
+    df$direction[i] = 'Increasing'
+  } else {
+    df$direction[i] = 'Decreasing'
+  }
+}
+
+i <- list(line = list(color = '#17BECF'))
+d <- list(line = list(color = '#7F7F7F'))
+
+# plot candlestick chart
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~LTC.USD.Open, close = ~LTC.USD.Close,
+          high = ~LTC.USD.High, low = ~LTC.USD.Low, name = "LTC.USD",
+          increasing = i, decreasing = d) %>%
+  add_lines(x = ~Date, y = ~up , name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands",
+            hoverinfo = "none", inherit = F) %>%
+  add_lines(x = ~Date, y = ~dn, name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands", inherit = F,
+            showlegend = FALSE, hoverinfo = "none") %>%
+  add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
+            line = list(color = '#E377C2', width = 0.5),
+            hoverinfo = "none", inherit = F)%>%
+  layout(yaxis = list(title = "Price"))
+
+# plot volume bar chart
+pp <- df %>%
+  plot_ly(x=~Date, y=~LTC.USD.Volume, type='bar', name = "LTC.USD Volume",
+          color = ~direction, colors = c('#17BECF','#7F7F7F')) %>%
+  layout(yaxis = list(title = "Volume"))
+
+# create rangeselector buttons
+rs <- list(visible = TRUE, x = 0.5, y = -0.055,
+           xanchor = 'center', yref = 'paper',
+           font = list(size = 9),
+           buttons = list(
+             list(count=1,
+                  label='RESET',
+                  step='all'),
+             list(count=3,
+                  label='3 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label='1 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label=' WK',
+                  step='week',
+                  stepmode='backward')
+           ))
+
+# subplot with shared x axis
+liteChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
+             shareX = TRUE, titleY = TRUE) %>%
+  layout(title = paste("Litecoin to USD: 2017-10-14 -",Sys.Date()),
+         xaxis = list(rangeselector = rs),
+         legend = list(orientation = 'h', x = 0.5, y = 1,
+                       xanchor = 'center', yref = 'paper',
+                       font = list(size = 10),
+                       bgcolor = 'transparent'))
+
+
+liteChart
+#-----------------------------------------------------------
+#-----------------------> Ripple Chart <----------------------------
+df <- data.frame(Date=index(`XRP-USD`),coredata(`XRP-USD`))
+# create Bollinger Bands
+bbands <- BBands(`XRP-USD`[,c("XRP-USD.High","XRP-USD.Low","XRP-USD.Close")])
+
+# join and subset data
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+
+# colors column for increasing and decreasing
+for (i in 1:length(df[,1])) {
+  if (df$XRP.USD.Close[i] >= df$XRP.USD.Open[i]) {
+    df$direction[i] = 'Increasing'
+  } else {
+    df$direction[i] = 'Decreasing'
+  }
+}
+
+i <- list(line = list(color = '#17BECF'))
+d <- list(line = list(color = '#7F7F7F'))
+
+# plot candlestick chart
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~XRP.USD.Open, close = ~XRP.USD.Close,
+          high = ~XRP.USD.High, low = ~XRP.USD.Low, name = "XRP.USD",
+          increasing = i, decreasing = d) %>%
+  add_lines(x = ~Date, y = ~up , name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands",
+            hoverinfo = "none", inherit = F) %>%
+  add_lines(x = ~Date, y = ~dn, name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands", inherit = F,
+            showlegend = FALSE, hoverinfo = "none") %>%
+  add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
+            line = list(color = '#E377C2', width = 0.5),
+            hoverinfo = "none", inherit = F)%>%
+  layout(yaxis = list(title = "Price"))
+
+# plot volume bar chart
+pp <- df %>%
+  plot_ly(x=~Date, y=~XRP.USD.Volume, type='bar', name = "XRP.USD Volume",
+          color = ~direction, colors = c('#17BECF','#7F7F7F')) %>%
+  layout(yaxis = list(title = "Volume"))
+
+# create rangeselector buttons
+rs <- list(visible = TRUE, x = 0.5, y = -0.055,
+           xanchor = 'center', yref = 'paper',
+           font = list(size = 9),
+           buttons = list(
+             list(count=1,
+                  label='RESET',
+                  step='all'),
+             list(count=3,
+                  label='3 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label='1 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label=' WK',
+                  step='week',
+                  stepmode='backward')
+           ))
+
+# subplot with shared x axis
+rippleChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
+             shareX = TRUE, titleY = TRUE) %>%
+  layout(title = paste("Ripple to USD: 2017-10-14 -",Sys.Date()),
+         xaxis = list(rangeselector = rs),
+         legend = list(orientation = 'h', x = 0.5, y = 1,
+                       xanchor = 'center', yref = 'paper',
+                       font = list(size = 10),
+                       bgcolor = 'transparent'))
+
+
+rippleChart
+#-----------------------------------------------------------
+#-----------------------> VIX Chart <----------------------------
+df <- data.frame(Date=index(`VIX`),coredata(`VIX`))
+# create Bollinger Bands
+bbands <- BBands(`VIX`[,c("VIX.High","VIX.Low","VIX.Close")])
+
+# join and subset data
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+
+# colors column for increasing and decreasing
+for (i in 1:length(df[,1])) {
+  if (df$VIX.Close[i] >= df$VIX.Open[i]) {
+    df$direction[i] = 'Increasing'
+  } else {
+    df$direction[i] = 'Decreasing'
+  }
+}
+
+i <- list(line = list(color = '#17BECF'))
+d <- list(line = list(color = '#7F7F7F'))
+
+# plot candlestick chart
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~VIX.Open, close = ~VIX.Close,
+          high = ~VIX.High, low = ~VIX.Low, name = "VIX",
+          increasing = i, decreasing = d) %>%
+  add_lines(x = ~Date, y = ~up , name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands",
+            hoverinfo = "none", inherit = F) %>%
+  add_lines(x = ~Date, y = ~dn, name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands", inherit = F,
+            showlegend = FALSE, hoverinfo = "none") %>%
+  add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
+            line = list(color = '#E377C2', width = 0.5),
+            hoverinfo = "none", inherit = F)%>%
+  layout(yaxis = list(title = "Price"))
+
+# plot volume bar chart
+pp <- df %>%
+  plot_ly(x=~Date, y=~VIX.Volume, type='bar', name = "VIX Volume",
+          color = ~direction, colors = c('#17BECF','#7F7F7F')) %>%
+  layout(yaxis = list(title = "Volume"))
+
+# create rangeselector buttons
+rs <- list(visible = TRUE, x = 0.5, y = -0.055,
+           xanchor = 'center', yref = 'paper',
+           font = list(size = 9),
+           buttons = list(
+             list(count=1,
+                  label='RESET',
+                  step='all'),
+             list(count=3,
+                  label='3 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label='1 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label=' WK',
+                  step='week',
+                  stepmode='backward')
+           ))
+
+# subplot with shared x axis
+vixChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
+                       shareX = TRUE, titleY = TRUE) %>%
+  layout(title = paste("VIX: 2017-10-14 -",Sys.Date()),
+         xaxis = list(rangeselector = rs),
+         legend = list(orientation = 'h', x = 0.5, y = 1,
+                       xanchor = 'center', yref = 'paper',
+                       font = list(size = 10),
+                       bgcolor = 'transparent'))
+
+
+vixChart
+#-----------------------------------------------------------
+#-----------------------> SP500 Chart <----------------------------
+df <- data.frame(Date=index(`GSPC`),coredata(`GSPC`))
+# create Bollinger Bands
+bbands <- BBands(`GSPC`[,c("GSPC.High","GSPC.Low","GSPC.Close")])
+
+# join and subset data
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+
+# colors column for increasing and decreasing
+for (i in 1:length(df[,1])) {
+  if (df$GSPC.Close[i] >= df$GSPC.Open[i]) {
+    df$direction[i] = 'Increasing'
+  } else {
+    df$direction[i] = 'Decreasing'
+  }
+}
+
+i <- list(line = list(color = '#17BECF'))
+d <- list(line = list(color = '#7F7F7F'))
+
+# plot candlestick chart
+p <- df %>%
+  plot_ly(x = ~Date, type="candlestick",
+          open = ~GSPC.Open, close = ~GSPC.Close,
+          high = ~GSPC.High, low = ~GSPC.Low, name = "GSPC",
+          increasing = i, decreasing = d) %>%
+  add_lines(x = ~Date, y = ~up , name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands",
+            hoverinfo = "none", inherit = F) %>%
+  add_lines(x = ~Date, y = ~dn, name = "B Bands",
+            line = list(color = 'black', width = 0.5),
+            legendgroup = "Bollinger Bands", inherit = F,
+            showlegend = FALSE, hoverinfo = "none") %>%
+  add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
+            line = list(color = '#E377C2', width = 0.5),
+            hoverinfo = "none", inherit = F)%>%
+  layout(yaxis = list(title = "Price"))
+
+# plot volume bar chart
+pp <- df %>%
+  plot_ly(x=~Date, y=~GSPC.Volume, type='bar', name = "GSPC Volume",
+          color = ~direction, colors = c('#17BECF','#7F7F7F')) %>%
+  layout(yaxis = list(title = "Volume"))
+
+# create rangeselector buttons
+rs <- list(visible = TRUE, x = 0.5, y = -0.055,
+           xanchor = 'center', yref = 'paper',
+           font = list(size = 9),
+           buttons = list(
+             list(count=1,
+                  label='RESET',
+                  step='all'),
+             list(count=3,
+                  label='3 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label='1 MO',
+                  step='month',
+                  stepmode='backward'),
+             list(count=1,
+                  label=' WK',
+                  step='week',
+                  stepmode='backward')
+           ))
+
+# subplot with shared x axis
+sp500Chart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
+                    shareX = TRUE, titleY = TRUE) %>%
+  layout(title = paste("S&P 500: 2017-10-14 -",Sys.Date()),
+         xaxis = list(rangeselector = rs),
+         legend = list(orientation = 'h', x = 0.5, y = 1,
+                       xanchor = 'center', yref = 'paper',
+                       font = list(size = 10),
+                       bgcolor = 'transparent'))
+
+
+sp500Chart
+#-----------------------------------------------------------
 transactions = read.csv("transactions.csv")[,-1]
 
 
@@ -173,57 +567,110 @@ current = public_ticker(product_id = "BTC-USD")
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
   
-  dashboardHeader(),
-  dashboardSidebar(),
+  dashboardHeader(title = "Crypto-Prophet"),
+  dashboardSidebar(sidebarMenu(
+    a(h4("Data Home"), href = paste0("http://www.joe-data.com/")),
+    menuItem("Welcome!!", tabName = "home", icon = icon("home")),
+    menuItem("Dashboard", tabName = "dashboard", icon = icon("tachometer")),
+    menuItem("Chart Corner", tabName = "chart", icon = icon("bar-chart")),
+    menuItem("Wallet Ledger", tabName = "ledger", icon = icon("money"))
+    
+  )),
   dashboardBody(
+    tabItems(
+      tabItem(tabName = "home",
+              
+              h1(icon("android"), align="center" ),
+              h2("Welcome to Crypto-Prophet: Your Cryptocurrency Robot Trading Advisor", align="center"),
+              hr(),
+              p(" "),
+              
+              hr(),
+              p(" "),
+              
+              hr(),
+             
+              h1(icon("comments"), align="center" ),
+              hr(),
+              p(" "),
+              hr(),
+              h1(icon("line-chart"), align="center" ),
+              hr(),
+              p(" "),
+              hr(),
+              p(" "),
+              hr(),
+              h1(icon("money"), align="center" ),
+              hr(),
+              p(" "),
+              hr(),
+              
+              h1(icon("bitcoin"), align="center" )
+              ),
+      tabItem(tabName = "dashboard",
+             
+              
+              fluidRow(
+                titlePanel('Robot Advisor Settings'),
+                
+                mainPanel(
+                  
+                  box(
+                    title = "Controls",
+                    sliderInput("sentiment",  label = div(style='width:250px;', 
+                                                          "This is the Output of the Sentiment Model",
+                                                          br(),
+                                                          div(style='float:left;', 'Decrease'), 
+                                                          div(style='float:right;', 'Increase')),  -1, 1, 0, step = .5),
+                    plotOutput('sentGauge'),
+                    sliderInput("technical",  label = div(style='width:250px;', 
+                                                          "This is the Output of the Technical Model",
+                                                          br(),
+                                                          div(style='float:left;', 'Decrease'), 
+                                                          div(style='float:right;', 'Increase')),  -1, 1, 0, step = .5),
+                    plotOutput('techGauge'),
+                    sliderInput("riskBTC",  label = div(style='width:250px;', 
+                                                        "What % of BTC Wallet Available to Trade?",
+                                                        br(),
+                                                        div(style='float:left;', '0%'), 
+                                                        div(style='float:right;', '100%')),  0, 100, 10),
+                    sliderInput("riskUSD", label = div(style='width:250px;', 
+                                                       "What % of USD Wallet Available to Trade?",
+                                                       br(),
+                                                       div(style='float:left;', '0%'), 
+                                                       div(style='float:right;', '100%')), 1, 100, 10),
+                    sliderInput("sentVtech", label = div(style='width:250px;', 
+                                                         "What Analysis Algorithm Would You Like to Favor (5.5 means equal weight)",
+                                                         br(),
+                                                         div(style='float:left;', 'Sentiment'), 
+                                                         div(style='float:right;', 'Technical')), 1, 10, 5.5, step = .5),
+                    plotOutput('combiGauge'),
+                    textOutput('recommendation'),
+                    actionButton("submitButton","Submit Order!")
+                    
+                  )
+                )
+              )
+              
+              
+              ),
+      tabItem(tabName = "chart",
+              fluidRow(
+                
+                box( plotlyOutput("btcprice")),
+                box( plotlyOutput("ethprice")),
+                box( plotlyOutput("ltcprice")),
+                box( plotlyOutput("xrpprice")),
+                box( plotlyOutput("vixprice")),
+                box( plotlyOutput("sp500price"))
+                
+              )),
+      tabItem(tabName = "ledger",
+              
+              tableOutput("values")))
     # useShinyjs(),
     # extendShinyjs(text = jscode),
-    fluidRow(
-    
-      box( plotlyOutput("btcprice"))
-    ),
-   
-    fluidRow(
-    titlePanel('Robot Advisor Settings'),
- 
-    mainPanel(
-           
-     box(
-       title = "Controls",
-       sliderInput("sentiment",  label = div(style='width:250px;', 
-                                           "This is the Output of the Sentiment Model",
-                                           br(),
-                                           div(style='float:left;', 'Decrease'), 
-                                           div(style='float:right;', 'Increase')),  -1, 1, 0, step = .5),
-       plotOutput('sentGauge'),
-        sliderInput("technical",  label = div(style='width:250px;', 
-                                           "This is the Output of the Technical Model",
-                                           br(),
-                                           div(style='float:left;', 'Decrease'), 
-                                           div(style='float:right;', 'Increase')),  -1, 1, 0, step = .5),
-       plotOutput('techGauge'),
-       sliderInput("riskBTC",  label = div(style='width:250px;', 
-                                           "What % of BTC Wallet Available to Trade?",
-                                           br(),
-                                           div(style='float:left;', '0%'), 
-                                           div(style='float:right;', '100%')),  0, 100, 10),
-       sliderInput("riskUSD", label = div(style='width:250px;', 
-                                          "What % of USD Wallet Available to Trade?",
-                                          br(),
-                                          div(style='float:left;', '0%'), 
-                                          div(style='float:right;', '100%')), 1, 100, 10),
-       sliderInput("sentVtech", label = div(style='width:250px;', 
-                                            "What Analysis Algorithm Would You Like to Favor (5.5 means equal weight)",
-                                            br(),
-                                            div(style='float:left;', 'Sentiment'), 
-                                            div(style='float:right;', 'Technical')), 1, 10, 5.5, step = .5),
-       plotOutput('combiGauge'),
-       textOutput('recommendation'),
-       actionButton("submitButton","Submit Order!")
-       
-     )
-    )
-  )))
+   ))
 
 # Define server logic required to draw a histogram
 server <- function(input,output){
@@ -350,7 +797,9 @@ server <- function(input,output){
     
   })
   output$values <- renderTable({
-    sliderValues()
+   data =  transactions
+   data = data[,c(1,11,12,13,14,15,16)]
+   data
   })
   
   output$recommendation <- renderText({
@@ -390,8 +839,26 @@ server <- function(input,output){
 
   output$btcprice <- renderPlotly(
    
-    p
+    bitcoinChart
   )
+  output$ethprice <- renderPlotly(
+    etherChart
+  )
+  output$ltcprice <- renderPlotly(
+    liteChart
+  )
+  output$xrpprice <- renderPlotly(
+    rippleChart
+  )
+  output$vixprice <- renderPlotly(
+    vixChart
+  )
+  
+  output$sp500price <- renderPlotly(
+   sp500Chart
+  )
+  
+
   
   writeCSV <- observe({
     if(input$submitButton == 0) return()
