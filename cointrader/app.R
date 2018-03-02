@@ -176,8 +176,8 @@ ui <- dashboardPage(
   dashboardHeader(),
   dashboardSidebar(),
   dashboardBody(
-    useShinyjs(),
-    extendShinyjs(text = jscode),
+    # useShinyjs(),
+    # extendShinyjs(text = jscode),
     fluidRow(
     
       box( plotlyOutput("btcprice"))
