@@ -14,6 +14,7 @@
 # install.packages('plotly')
 # install.packages('quantmod')
 
+library(plyr)
 library(shiny) #To build the shiny App
 library(coindeskr) #R-Package connecting to Coindesk API 
 library(rgdax)
@@ -22,6 +23,7 @@ library(ggplot2)
 #library(shinyjs)
 library(plotly)
 library(quantmod)
+library(reshape2)
 
 #jscode <- "shinyjs.refresh = function() { history.go(0); }"
 #----------------------------------------------------------
@@ -63,15 +65,8 @@ getSymbols("LTC-USD",src='yahoo')
 getSymbols("XRP-USD",src='yahoo')
 getSymbols("^GSPC",src='yahoo')
 getSymbols("^VIX",src='yahoo')
-ETH <- data.frame(Date=index(`ETH-USD`),coredata(`ETH-USD`))
-LTC <- data.frame(Date=index(`LTC-USD`),coredata(`LTC-USD`))
-ETH = subset(ETH,Date >= "2017-10-14")
-ETH = data.frame(ETH$Date ,((ETH$ETH.USD.Close+ETH$ETH.USD.Open)/2))
-colnames(ETH) = c("date","dailyAvgETH")
 
-LTC = subset(LTC,Date >= "2017-10-14")
-LTC = data.frame(LTC$Date ,((LTC$LTC.USD.Close+LTC$LTC.USD.Open)/2))
-colnames(LTC) = c("date","dailyAvgLTC")
+
 
 #-----------------------> Bitcoin Chart <----------------------------
 df <- data.frame(Date=index(`BTC-USD`),coredata(`BTC-USD`))
@@ -79,7 +74,7 @@ df <- data.frame(Date=index(`BTC-USD`),coredata(`BTC-USD`))
 bbands <- BBands(`BTC-USD`[,c("BTC-USD.High","BTC-USD.Low","BTC-USD.Close")])
 
 # join and subset data
-df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-11")
 
 # colors column for increasing and decreasing
 for (i in 1:length(df[,1])) {
@@ -143,7 +138,7 @@ rs <- list(visible = TRUE, x = 0.5, y = -0.055,
 # subplot with shared x axis
 bitcoinChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
              shareX = TRUE, titleY = TRUE) %>%
-  layout(title = paste("Bitcoin to USD: 2017-10-14 -",Sys.Date()),
+  layout(title = paste("Bitcoin to USD: 2017-10-11 -",Sys.Date()),
          xaxis = list(rangeselector = rs),
          legend = list(orientation = 'h', x = 0.5, y = 1,
                        xanchor = 'center', yref = 'paper',
@@ -157,7 +152,7 @@ df <- data.frame(Date=index(`ETH-USD`),coredata(`ETH-USD`))
 bbands <- BBands(`ETH-USD`[,c("ETH-USD.High","ETH-USD.Low","ETH-USD.Close")])
 
 # join and subset data
-df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-11")
 
 # colors column for increasing and decreasing
 for (i in 1:length(df[,1])) {
@@ -221,7 +216,7 @@ rs <- list(visible = TRUE, x = 0.5, y = -0.055,
 # subplot with shared x axis
 etherChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
              shareX = TRUE, titleY = TRUE) %>%
-  layout(title = paste("Ethereum to USD: 2017-10-14 -",Sys.Date()),
+  layout(title = paste("Ethereum to USD: 2017-10-11 -",Sys.Date()),
          xaxis = list(rangeselector = rs),
          legend = list(orientation = 'h', x = 0.5, y = 1,
                        xanchor = 'center', yref = 'paper',
@@ -237,7 +232,7 @@ df <- data.frame(Date=index(`LTC-USD`),coredata(`LTC-USD`))
 bbands <- BBands(`LTC-USD`[,c("LTC-USD.High","LTC-USD.Low","LTC-USD.Close")])
 
 # join and subset data
-df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-11")
 
 # colors column for increasing and decreasing
 for (i in 1:length(df[,1])) {
@@ -301,7 +296,7 @@ rs <- list(visible = TRUE, x = 0.5, y = -0.055,
 # subplot with shared x axis
 liteChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
              shareX = TRUE, titleY = TRUE) %>%
-  layout(title = paste("Litecoin to USD: 2017-10-14 -",Sys.Date()),
+  layout(title = paste("Litecoin to USD: 2017-10-11 -",Sys.Date()),
          xaxis = list(rangeselector = rs),
          legend = list(orientation = 'h', x = 0.5, y = 1,
                        xanchor = 'center', yref = 'paper',
@@ -317,7 +312,7 @@ df <- data.frame(Date=index(`XRP-USD`),coredata(`XRP-USD`))
 bbands <- BBands(`XRP-USD`[,c("XRP-USD.High","XRP-USD.Low","XRP-USD.Close")])
 
 # join and subset data
-df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-11")
 
 # colors column for increasing and decreasing
 for (i in 1:length(df[,1])) {
@@ -381,7 +376,7 @@ rs <- list(visible = TRUE, x = 0.5, y = -0.055,
 # subplot with shared x axis
 rippleChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
              shareX = TRUE, titleY = TRUE) %>%
-  layout(title = paste("Ripple to USD: 2017-10-14 -",Sys.Date()),
+  layout(title = paste("Ripple to USD: 2017-10-11 -",Sys.Date()),
          xaxis = list(rangeselector = rs),
          legend = list(orientation = 'h', x = 0.5, y = 1,
                        xanchor = 'center', yref = 'paper',
@@ -397,7 +392,7 @@ df <- data.frame(Date=index(`VIX`),coredata(`VIX`))
 bbands <- BBands(`VIX`[,c("VIX.High","VIX.Low","VIX.Close")])
 
 # join and subset data
-df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-11")
 
 # colors column for increasing and decreasing
 for (i in 1:length(df[,1])) {
@@ -461,7 +456,7 @@ rs <- list(visible = TRUE, x = 0.5, y = -0.055,
 # subplot with shared x axis
 vixChart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
                        shareX = TRUE, titleY = TRUE) %>%
-  layout(title = paste("VIX: 2017-10-14 -",Sys.Date()),
+  layout(title = paste("VIX: 2017-10-11 -",Sys.Date()),
          xaxis = list(rangeselector = rs),
          legend = list(orientation = 'h', x = 0.5, y = 1,
                        xanchor = 'center', yref = 'paper',
@@ -477,7 +472,7 @@ df <- data.frame(Date=index(`GSPC`),coredata(`GSPC`))
 bbands <- BBands(`GSPC`[,c("GSPC.High","GSPC.Low","GSPC.Close")])
 
 # join and subset data
-df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-14")
+df <- subset(cbind(df, data.frame(bbands[,1:3])), Date >= "2017-10-11")
 
 # colors column for increasing and decreasing
 for (i in 1:length(df[,1])) {
@@ -541,7 +536,7 @@ rs <- list(visible = TRUE, x = 0.5, y = -0.055,
 # subplot with shared x axis
 sp500Chart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
                     shareX = TRUE, titleY = TRUE) %>%
-  layout(title = paste("S&P 500: 2017-10-14 -",Sys.Date()),
+  layout(title = paste("S&P 500: 2017-10-11 -",Sys.Date()),
          xaxis = list(rangeselector = rs),
          legend = list(orientation = 'h', x = 0.5, y = 1,
                        xanchor = 'center', yref = 'paper',
@@ -550,6 +545,70 @@ sp500Chart <- subplot(p, pp, heights = c(0.7,0.2), nrows=2,
 
 
 sp500Chart
+#-------------------------------------------------------------
+BTC <- data.frame(Date=index(`BTC-USD`),coredata(`BTC-USD`))
+ETH <- data.frame(Date=index(`ETH-USD`),coredata(`ETH-USD`))
+LTC <- data.frame(Date=index(`LTC-USD`),coredata(`LTC-USD`))
+XRP <- data.frame(Date=index(`XRP-USD`),coredata(`XRP-USD`))
+GSPC <- data.frame(Date=index(`GSPC`),coredata(`GSPC`))
+VIX <- data.frame(Date=index(`VIX`),coredata(`VIX`))
+
+BTC = subset(BTC,Date >= "2017-10-11")
+BTC = data.frame(BTC$Date ,((BTC$BTC.USD.Close+BTC$BTC.USD.Open)/2))
+colnames(BTC) = c("date","dailyAvgBTC")
+BTC$dailyAvgBTC = as.numeric(BTC$dailyAvgBTC)
+
+ETH = subset(ETH,Date >= "2017-10-11")
+ETH = data.frame(ETH$Date ,((ETH$ETH.USD.Close+ETH$ETH.USD.Open)/2))
+colnames(ETH) = c("date","dailyAvgETH")
+BTC$dailyAvgBTC = as.numeric(BTC$dailyAvgBTC)
+
+LTC = subset(LTC,Date >= "2017-10-11")
+LTC = data.frame(LTC$Date ,((LTC$LTC.USD.Close+LTC$LTC.USD.Open)/2))
+colnames(LTC) = c("date","dailyAvgLTC")
+LTC$dailyAvgLTC = as.numeric(LTC$dailyAvgLTC)
+
+XRP = subset(XRP,Date >= "2017-10-11")
+XRP = data.frame(XRP$Date ,((XRP$XRP.USD.Close+XRP$XRP.USD.Open)/2))
+colnames(XRP) = c("date","dailyAvgXRP")
+XRP$dailyAvgXRP = as.numeric(XRP$dailyAvgXRP)
+
+GSPC = subset(GSPC,Date >= "2017-10-11")
+GSPC = data.frame(GSPC$Date ,((GSPC$GSPC.Close+GSPC$GSPC.Open)/2))
+colnames(GSPC) = c("date","dailyAvgGSPC")
+GSPC$dailyAvgGSPC = as.numeric(GSPC$dailyAvgGSPC)
+
+VIX = subset(VIX,Date >= "2017-10-11")
+VIX = data.frame(VIX$Date ,((VIX$VIX.Close+VIX$VIX.Open)/2))
+colnames(VIX) = c("date","dailyAvgVIX")
+VIX$dailyAvgVIX = as.numeric(VIX$dailyAvgVIX)
+
+
+joinedCrypto =join_all(list(BTC, ETH,LTC,XRP,VIX,GSPC), by='date', type='left')
+library(zoo)
+joinedCrypto = na.locf(joinedCrypto)
+
+joinedCrypto$dailyAvgBTC = as.numeric(joinedCrypto$dailyAvgBTC)
+joinedCrypto$dailyAvgETH = as.numeric(joinedCrypto$dailyAvgETH)
+joinedCrypto$dailyAvgLTC = as.numeric(joinedCrypto$dailyAvgLTC)
+joinedCrypto$dailyAvgXRP = as.numeric(joinedCrypto$dailyAvgXRP)
+joinedCrypto$dailyAvgVIX = as.numeric(joinedCrypto$dailyAvgVIX)
+joinedCrypto$dailyAvgGSPC = as.numeric(joinedCrypto$dailyAvgGSPC)
+
+scaledCrypto = joinedCrypto
+scaledCrypto[,2:ncol(scaledCrypto)]= as.data.frame(scale(scaledCrypto[,2:ncol(scaledCrypto)]))
+
+
+scaledCrypto <- melt(scaledCrypto, id.vars="date")
+
+# Everything on the same plot
+allPlot = ggplot(scaledCrypto, aes(date,value, col=variable)) + 
+  geom_point() 
+
+
+#--------------------------------------------------------------
+
+
 #-----------------------------------------------------------
 transactions = read.csv("transactions.csv")[,-1]
 
@@ -656,7 +715,7 @@ ui <- dashboardPage(
               ),
       tabItem(tabName = "chart",
               fluidRow(
-                
+                box( plotOutput("allPlot")),
                 box( plotlyOutput("btcprice")),
                 box( plotlyOutput("ethprice")),
                 box( plotlyOutput("ltcprice")),
@@ -856,6 +915,10 @@ server <- function(input,output){
   
   output$sp500price <- renderPlotly(
    sp500Chart
+  )
+  
+  output$allPlot <- renderPlot(
+    allPlot
   )
   
 
