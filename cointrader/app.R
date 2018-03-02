@@ -6,14 +6,17 @@
 #
 #    http://shiny.rstudio.com/
 #
-#install.packages('shiny')
-#install.packages('coindeskr')
-#install.packages('dygraphs')
+install.packages('shiny')
+install.packages('coindeskr')
+install.packages('rgdax')
+install.packages('shinydashboard')
+install.packages('shinyjs')
+install.packages('plotly')
+install.packages('quantmod')
 
 library(shiny) #To build the shiny App
 library(coindeskr) #R-Package connecting to Coindesk API 
 library(rgdax)
-library(dygraphs) #For interactive Time-series graphs
 library(shinydashboard)
 library(ggplot2)
 library(shinyjs)
@@ -55,7 +58,22 @@ gg.gauge <- function(pos,breaks=c(0,30,50,70,100)) {
 #-----------------------------------------------------------
 
 getSymbols("BTC-USD",src='yahoo')
+getSymbols("ETH-USD",src='yahoo')
+getSymbols("LTC-USD",src='yahoo')
+
+
 df <- data.frame(Date=index(`BTC-USD`),coredata(`BTC-USD`))
+ETH <- data.frame(Date=index(`ETH-USD`),coredata(`ETH-USD`))
+LTC <- data.frame(Date=index(`LTC-USD`),coredata(`LTC-USD`))
+
+ETH = subset(ETH,Date >= "2017-10-14")
+ETH = data.frame(ETH$Date ,((ETH$ETH.USD.Close+ETH$ETH.USD.Open)/2))
+colnames(ETH) = c("date","dailyAvgETH")
+
+
+LTC = subset(LTC,Date >= "2017-10-14")
+LTC = data.frame(LTC$Date ,((LTC$LTC.USD.Close+LTC$LTC.USD.Open)/2))
+colnames(LTC) = c("date","dailyAvgLTC")
 
 
 # create Bollinger Bands
@@ -92,7 +110,7 @@ p <- df %>%
             showlegend = FALSE, hoverinfo = "none") %>%
   add_lines(x = ~Date, y = ~mavg, name = "Mv Avg",
             line = list(color = '#E377C2', width = 0.5),
-            hoverinfo = "none", inherit = F) %>%
+            hoverinfo = "none", inherit = F)%>%
   layout(yaxis = list(title = "Price"))
 
 # plot volume bar chart
