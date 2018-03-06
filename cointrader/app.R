@@ -25,6 +25,13 @@ library(plotly)
 library(quantmod)
 library(reshape2)
 library(caret)
+library(dplyr)
+
+library(e1071)
+library(C50)
+library(nnet)
+library(h2o)
+
 
 #jscode <- "shinyjs.refresh = function() { history.go(0); }"
 
