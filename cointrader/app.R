@@ -31,6 +31,7 @@ library(e1071)
 library(C50)
 library(nnet)
 library(h2o)
+library(ranger)
 
 pdf(NULL)
 
