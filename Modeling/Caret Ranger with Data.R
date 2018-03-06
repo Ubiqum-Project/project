@@ -30,8 +30,8 @@ summary(data)
 
 
 myTimeControl <- trainControl(method = "timeslice",
-                              initialWindow = 100,
-                              horizon = 10,
+                              initialWindow = 960,  #  <-----------  20 days
+                              horizon = 96,         #  <-----------  2 days
                               fixedWindow = TRUE)
 
 
