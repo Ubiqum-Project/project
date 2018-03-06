@@ -225,6 +225,7 @@ print("svm loaded ")
 
 #--------> Generate Predictions from Ranger One Day Out-------------------
 
+h2o.init()
 H2oDay <- h2o.loadModel("Modeling/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
 data1 <- as.h2o(data[(nrow(data)-48):nrow(data),])
 H2oDayPredictData = predict(H2oDay,data1)
@@ -242,6 +243,7 @@ h20TwoDayResults = as.data.frame(H2oTwoDayPredictData)
 H2oTwoDayPredict = as.data.frame(h20TwoDayResults$predict)
 h2oAccuracyTwoDay =(H2oTwoDay@model$validation_metrics@metrics$r2)
 print("h2o loaded ")
+
 #########################################################################
 ##                LSTM                                               ###
 #########################################################################
