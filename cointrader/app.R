@@ -32,6 +32,7 @@ library(C50)
 library(nnet)
 library(h2o)
 
+pdf(NULL)
 
 #jscode <- "shinyjs.refresh = function() { history.go(0); }"
 
