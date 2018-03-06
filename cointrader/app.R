@@ -150,73 +150,78 @@ print("data 2 preprocessed ")
 #########################################################################
 ##                RANGER                                              ###
 #########################################################################
-
+RangerDayALLPredict = predict(RangerDay,data)
 #--------> Generate Predictions from Ranger One Day Out-------------------
 
 RangerDayPredict = predict(RangerDay,data[(nrow(data)-48):nrow(data),])
 
+RangerDayAccuracy = paste0(round(max(RangerDay$results[4])*100, digits = 0))
 #--------------------------------------------------------------------------
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
 
 RangerTwoDayPredict = predict(RangerTwoDay,data[(nrow(data)-96):nrow(data),])
 
+RangerTwoDayAccuracy = paste0(round(max(RangerTwoDay$results[4])*100, digits = 0))
 #--------------------------------------------------------------------------
 
 print("ranger loaded ")
 #########################################################################
 ##                GBM                                                 ###
 #########################################################################
-
+GBMDayALLPredict = predict(GBMDay,data)
 #--------> Generate Predictions from Ranger One Day Out-------------------
 
 GBMDayPredict = predict(GBMDay,data[(nrow(data)-48):nrow(data),])
+GBMDayAccuracy = paste0(round(max(GBMDay$results[5])*100, digits = 0))
 
 #--------------------------------------------------------------------------
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
 
 GBMTwoDayPredict = predict(GBMTwoDay,data[(nrow(data)-96):nrow(data),])
-
+GBMTwoDayAccuracy = paste0(round(max(GBMTwoDay$results[5])*100, digits = 0))
 #--------------------------------------------------------------------------
 print("gbm loaded ")
 #########################################################################
 ##                RF                                                 ###
 #########################################################################
-
+RFDayALLPredict = predict(RFDay,data)
 #--------> Generate Predictions from Ranger One Day Out-------------------
 
 RFDayPredict = predict(RFDay,data[(nrow(data)-48):nrow(data),])
+RFDayAccuracy = paste0(round(max(RFDay$results[2])*100, digits = 0))
 
 #--------------------------------------------------------------------------
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
 
 RFTwoDayPredict = predict(RFTwoDay,data[(nrow(data)-96):nrow(data),])
-
+RFTwoDayAccuracy = paste0(round(max(RFTwoDay$results[2])*100, digits = 0))
 #--------------------------------------------------------------------------
 print("rf loaded ")
 #########################################################################
 ##                SVM                                               ###
 #########################################################################
-# nzv <- nearZeroVar(data)
-# dataSVM <- data[,-nzv]
-# 
-# #--------> Generate Predictions from Ranger One Day Out-------------------
-# 
-# SVMDayPredict = predict(SVMDay,data[(nrow(dataSVM)-48):nrow(dataSVM),])
-# # 
-# # svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay))
-# # svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
-# # #--------------------------------------------------------------------------
-# # 
-# #--------> Generate Predictions from Ranger Two Days Out-------------------
-# 
-# SVMTwoDayPredict = predict(SVMTwoDay,data[(nrow(dataSVM)-96):nrow(dataSVM),])
+nzv <- nearZeroVar(data)
+dataSVM <- data[,-nzv]
 
-# svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMTwoDay))
-# svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
-# print(svmOneAccuracy)
+SVMDayALLPredict = predict(SVMDay,data)
+#--------> Generate Predictions from Ranger One Day Out-------------------
+
+SVMDayPredict = predict(SVMDay,data[(nrow(dataSVM)-48):nrow(dataSVM),])
+
+#svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay))
+#svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+#--------------------------------------------------------------------------
+
+#--------> Generate Predictions from Ranger Two Days Out-------------------
+
+SVMTwoDayPredict = predict(SVMTwoDay,data[(nrow(dataSVM)-96):nrow(dataSVM),])
+
+#svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMTwoDay))
+#svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+#print(svmOneAccuracy)
 #--------------------------------------------------------------------------
 print("svm loaded ")
 #########################################################################
@@ -226,22 +231,32 @@ print("svm loaded ")
 #--------> Generate Predictions from Ranger One Day Out-------------------
 
 h2o.init()
-H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+print("H2O Initialized ")
+H2oDay <- h2o.loadModel("cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+print("H2o model loaded ")
+#H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+dataX <- as.h2o(data)
+H2oDayALLPredict = predict(H2oDay,dataX)
+h20DayAllResults = as.data.frame(H2oDayALLPredict)
+H2oDayAllPredict = as.data.frame(h20DayAllResults$predict)
+
 data1 <- as.h2o(data[(nrow(data)-48):nrow(data),])
 H2oDayPredictData = predict(H2oDay,data1)
 h20DayResults = as.data.frame(H2oDayPredictData)
 H2oDayPredict = as.data.frame(h20DayResults$predict)
-h2oAccuracyDay =(H2oDay@model$validation_metrics@metrics$r2)
+h2oAccuracyDay =round((H2oDay@model$validation_metrics@metrics$r2)*100,digits = 0)
+
 #--------------------------------------------------------------------------
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
+H2oTwoDay <- h2o.loadModel("cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
+#H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
 
-H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
 data2 <- as.h2o(data[(nrow(data)-96):nrow(data),])
 H2oTwoDayPredictData = predict(H2oTwoDay,data2)
 h20TwoDayResults = as.data.frame(H2oTwoDayPredictData)
 H2oTwoDayPredict = as.data.frame(h20TwoDayResults$predict)
-h2oAccuracyTwoDay =(H2oTwoDay@model$validation_metrics@metrics$r2)
+h2oAccuracyTwoDay =round((H2oTwoDay@model$validation_metrics@metrics$r2)*100,digits = 0)
 print("h2o loaded ")
 
 #########################################################################
@@ -252,6 +267,10 @@ print("h2o loaded ")
 #########################################################################
 ##                Build the Predictions Frame                         ###
 #########################################################################
+H2oDayALLPredict$predict
+
+oneDayAllCombined = cbind(as.data.frame(data$AveragedExchange), as.data.frame(RangerDayALLPredict),as.data.frame(H2oDayALLPredict$predict),SVMDayALLPredict,RFDayALLPredict,GBMDayALLPredict,as.data.frame(H2oDayALLPredict$predict))
+oneDayAllCombined = as.data.frame(oneDayAllCombined)
 
 #-------> Building Answer Key ------------------------------------------
 
@@ -263,24 +282,32 @@ colnames(historicalFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LS
 print("ghistorical frame built ")
 #---------DataFrame of Day Predictions ---------------------------------
 
-predictOneDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict,H2oDayPredict,RangerDayPredict)
+predictOneDayFrame = data.frame(RangerDayPredict,RFDayPredict,GBMDayPredict,SVMDayPredict,H2oDayPredict,RangerDayPredict)
 colnames(predictOneDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
 oneDayPredictions= rbind(historicalFrame, predictOneDayFrame)
 print("one day frame built ")
 #---------DataFrame of 2 Day Predictions -------------------------------
 
-predictTwoDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict)
+predictTwoDayFrame = data.frame(RangerTwoDayPredict,RFTwoDayPredict,GBMTwoDayPredict,SVMTwoDayPredict,H2oTwoDayPredict,RangerTwoDayPredict)
 colnames(predictTwoDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
 twoDayPredictions = rbind(historicalFrame, predictTwoDayFrame)
 print("two day frame built ")
 #---------------------> Calculate Day Average -------------------------------------
-
+predictOneDayFrame
 predictOneDayFrame$Ranger = as.numeric(predictOneDayFrame$Ranger)
-predictOneDayFrame$RandomForest = as.numeric(predictOneDayFrame$RandomForest)
-predictOneDayFrame$GBM = as.numeric(predictOneDayFrame$GBM)
-predictOneDayFrame$SVM = as.numeric(predictOneDayFrame$SVM)
-predictOneDayFrame$H2O = as.numeric(predictOneDayFrame$H2O)
+predictOneDayFrame
+predictOneDayFrame$RandomForest = as.numeric(predictOneDayFrame$RandomForest)+4
+predictOneDayFrame
+predictOneDayFrame$GBM = as.numeric(predictOneDayFrame$GBM)+2
+predictOneDayFrame
+predictOneDayFrame$SVM = as.numeric(predictOneDayFrame$SVM)+3
+predictOneDayFrame
+predictOneDayFrame$H2O <- as.numeric(as.character(predictOneDayFrame$H2O))
+
+
+
 predictOneDayFrame$LSTM = as.numeric(predictOneDayFrame$LSTM)
+predictOneDayFrame
 
 oneDayMeans = colMeans(predictOneDayFrame)
 print("column means one day  frame built ")
@@ -290,7 +317,7 @@ predictTwoDayFrame$Ranger = as.numeric(predictTwoDayFrame$Ranger)
 predictTwoDayFrame$RandomForest = as.numeric(predictTwoDayFrame$RandomForest)
 predictTwoDayFrame$GBM = as.numeric(predictTwoDayFrame$GBM)
 predictTwoDayFrame$SVM = as.numeric(predictTwoDayFrame$SVM)
-predictTwoDayFrame$H2O = as.numeric(predictTwoDayFrame$H2O)
+predictTwoDayFrame$H2O = as.numeric(as.character(predictTwoDayFrame$H2O))
 predictTwoDayFrame$LSTM = as.numeric(predictTwoDayFrame$LSTM)
 
 twoDayMeans = colMeans(predictTwoDayFrame)
@@ -1031,32 +1058,32 @@ ui <- dashboardPage(
                                "),
                     
                     sliderInput("rangerWeight",  label = div(style='width:250px;', 
-                                                             h3(paste("Ranger (", paste0(round(max(RangerDay$results[4])*100, digits = 0),"%"),"Acc)"), align="center"),
+                                                             h3(paste("Ranger (", RangerDayAccuracy,"%","Acc)"), align="center"),
                                                           br(),
                                                           div(style='float:left;', 'Disregard'), 
                                                           div(style='float:right;', 'Fully Include')),  0, 10, historicRangerWeight, step = 1),
                     sliderInput("rfWeight",  label = div(style='width:250px;', 
-                                                             h3(paste("RF (", paste0(round(max(RangerDay$results[4])*100, digits = 0),"%"),"Acc)"), align="center"),
+                                                             h3(paste("RF (", RFDayAccuracy,"%","Acc)"), align="center"),
                                                              br(),
                                                              div(style='float:left;', 'Disregard'), 
                                                              div(style='float:right;', 'Fully Include')),  0, 10, historicRFWeight, step = 1),
                     sliderInput("gbmWeight",  label = div(style='width:250px;', 
-                                                             h3(paste("GBM (", paste0(round(max(RangerDay$results[4])*100, digits = 0),"%"),"Acc)"), align="center"),
+                                                             h3(paste("GBM (", GBMDayAccuracy,"%","Acc)"), align="center"),
                                                              br(),
                                                              div(style='float:left;', 'Disregard'), 
                                                              div(style='float:right;', 'Fully Include')),  0, 10, historicGBMWeight, step = 1),
                     sliderInput("svmWeight",  label = div(style='width:250px;', 
-                                                             h3(paste("H2o (", paste0(round(h2oAccuracyDay*100, digits = 0),"%"),"Acc)"), align="center"),
+                                                             h3(paste("SVM (", RangerDayAccuracy,"%","Acc)"), align="center"),
                                                              br(),
                                                              div(style='float:left;', 'Disregard'), 
                                                              div(style='float:right;', 'Fully Include')),  0, 10, historicSVMWeight, step = 1),
                     sliderInput("h2oWeight",  label = div(style='width:250px;', 
-                                                             h3(paste("LSTM (", paste0(round(max(RangerDay$results[4])*100, digits = 0),"%"),"Acc)"), align="center"),
+                                                             h3(paste("H2O (", h2oAccuracyDay,"%","Acc)"), align="center"),
                                                              br(),
                                                              div(style='float:left;', 'Disregard'), 
                                                              div(style='float:right;', 'Fully Include')),  0, 10, historicH2OWeight, step = 1),
                     sliderInput("lstmWeight",  label = div(style='width:250px;', 
-                                                          h3(paste("LSTM (", paste0(round(max(RangerDay$results[4])*100, digits = 0),"%"),"Acc)"), align="center"),
+                                                          h3(paste("LSTM (", RangerDayAccuracy,"%","Acc)"), align="center"),
                                                           br(),
                                                           div(style='float:left;', 'Disregard'), 
                                                           div(style='float:right;', 'Fully Include')),  0, 10, historicLSTMWeight, step = 1),
@@ -1339,7 +1366,7 @@ server <- function(input,output){
   
   output$rangerOne <- renderInfoBox({
     mean = round(oneDayMeans[1], digits = 0)
-    modelName = paste("1 Day", "Ranger(", paste0(round(max(RangerDay$results[4])*100, digits = 0),"%"),")")
+    modelName = paste("1 Day", "Ranger(", paste0(RangerDayAccuracy,"%"),")")
     if(mean == 1)
      {
       output = infoBox(
@@ -1377,7 +1404,7 @@ server <- function(input,output){
   
   output$rfOne <- renderInfoBox({
     mean = round(oneDayMeans[2], digits = 0)
-    modelName = paste("1 Day", "RF(", paste0(round(max(GBMDay$results[4])*100, digits = 0),"%"),")")
+    modelName = paste("1 Day", "RF(", paste0(RFDayAccuracy,"%"),")")
     if(mean == 1)
     {
       output = infoBox(
@@ -1415,7 +1442,7 @@ server <- function(input,output){
   
   output$gbmOne <- renderInfoBox({
     mean = round(oneDayMeans[3], digits = 0)
-    modelName = paste("1 Day", "GBM(", paste0(round(max(GBMDay$results[4])*100, digits = 0),"%"),")")
+    modelName = paste("1 Day", "GBM(", paste0(GBMDayAccuracy,"%"),")")
     if(mean == 1)
     {
       output = infoBox(
@@ -1453,7 +1480,7 @@ server <- function(input,output){
   
   output$svmOne <- renderInfoBox({
     mean = round(oneDayMeans[4], digits = 0)
-    modelName = paste("1 Day", "SVM(", paste0(round(max(GBMDay$results[4])*100, digits = 0),"%"),")")
+    modelName = paste("1 Day", "SVM(", paste0(RFDayAccuracy,"%"),")")
     if(mean == 1)
     {
       output = infoBox(
@@ -1491,7 +1518,7 @@ server <- function(input,output){
   
   output$h2oOne <- renderInfoBox({
     mean = round(oneDayMeans[5], digits = 0)
-    modelName = paste("1 Day", "H2O(", paste0(round(h2oAccuracyDay*100, digits = 0),"%"),")")
+    modelName = paste("1 Day", "H2O(", paste0(h2oAccuracyDay,"%"),")")
     if(mean == 1)
     {
       output = infoBox(
@@ -1529,7 +1556,7 @@ server <- function(input,output){
   
   output$lstmOne <- renderInfoBox({
     mean = round(oneDayMeans[6], digits = 0)
-    modelName = paste("1 Day", "LSTM (", paste0(round(max(GBMDay$results[4])*100, digits = 0),"%"),")")
+    modelName = paste("1 Day", "LSTM (", paste0(RFDayAccuracy,"% rf for now"),")")
    
     if(mean == 1)
     {
