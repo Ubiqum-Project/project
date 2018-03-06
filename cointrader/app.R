@@ -209,19 +209,26 @@ dataSVM <- data[,-nzv]
 SVMDayALLPredict = predict(SVMDay,data)
 #--------> Generate Predictions from Ranger One Day Out-------------------
 
-SVMDayPredict = predict(SVMDay,data[(nrow(dataSVM)-48):nrow(dataSVM),])
+SVMDayPredict = predict(SVMDay,dataSVM[(nrow(dataSVM)-48):nrow(dataSVM),])
 
-#svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay))
-#svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay,dataSVM))
+svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+
 #--------------------------------------------------------------------------
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
 
-SVMTwoDayPredict = predict(SVMTwoDay,data[(nrow(dataSVM)-96):nrow(dataSVM),])
 
-#svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMTwoDay))
-#svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
-#print(svmOneAccuracy)
+SVMTwoDayPredict = predict(SVMTwoDay,dataSVM[(nrow(dataSVM)-96):nrow(dataSVM),])
+
+svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMTwoDay,dataSVM))
+svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+
+
+svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+
+
+
 #--------------------------------------------------------------------------
 print("svm loaded ")
 #########################################################################
@@ -269,8 +276,9 @@ print("h2o loaded ")
 #########################################################################
 H2oDayALLPredict$predict
 
-oneDayAllCombined = cbind(as.data.frame(data$AveragedExchange), as.data.frame(RangerDayALLPredict),as.data.frame(H2oDayALLPredict$predict),SVMDayALLPredict,RFDayALLPredict,GBMDayALLPredict,as.data.frame(H2oDayALLPredict$predict))
+oneDayAllCombined = cbind(as.data.frame(data$AveragedExchange), as.data.frame(RangerDayALLPredict),RFDayALLPredict,GBMDayALLPredict,SVMDayALLPredict,as.data.frame(H2oDayALLPredict$predict),as.data.frame(RangerDayALLPredict))
 oneDayAllCombined = as.data.frame(oneDayAllCombined)
+colnames(oneDayAllCombined) = c("Actual", "Ranger","RandomForest", "GBM", "SVM", "H2O", "LSTM")
 
 #-------> Building Answer Key ------------------------------------------
 
@@ -354,8 +362,12 @@ oneDayPredictPlotWithHist = ggplot(data=test_data_long,
   geom_line()
 print("oneDayPredictPlotWithHist built ")
 
-predict = oneDayPredictions[(nrow(oneDayPredictions)-336):nrow(oneDayPredictions),]
+
+
+predict = oneDayAllCombined
+
 str(predict)
+predict$Actual = as.numeric(predict$Actual)
 predict$Ranger = as.numeric(predict$Ranger)
 predict$RandomForest = as.numeric(predict$RandomForest)
 predict$GBM = as.numeric(predict$GBM)
@@ -368,6 +380,11 @@ twoDayPredictPlotWithHist = ggplot(data=test_data_long,
                                    aes(x=ID, y=value, colour=variable)) +
   geom_line()
 
+twoDayPredictPlotWithHist
+
+ggplot(data=oneDayAllCombined,
+       aes(x=ID, y=Ranger, colour=variable)) +
+  geom_line(aes(y=Actual))
 print("twoDayPredictPlotWithHist built ")
 
 #----------------------------------------------------------------------------------
@@ -1073,7 +1090,7 @@ ui <- dashboardPage(
                                                              div(style='float:left;', 'Disregard'), 
                                                              div(style='float:right;', 'Fully Include')),  0, 10, historicGBMWeight, step = 1),
                     sliderInput("svmWeight",  label = div(style='width:250px;', 
-                                                             h3(paste("SVM (", RangerDayAccuracy,"%","Acc)"), align="center"),
+                                                             h3(paste("SVM (", svmOneAccuracy,"%","Acc)"), align="center"),
                                                              br(),
                                                              div(style='float:left;', 'Disregard'), 
                                                              div(style='float:right;', 'Fully Include')),  0, 10, historicSVMWeight, step = 1),
@@ -1480,7 +1497,7 @@ server <- function(input,output){
   
   output$svmOne <- renderInfoBox({
     mean = round(oneDayMeans[4], digits = 0)
-    modelName = paste("1 Day", "SVM(", paste0(RFDayAccuracy,"%"),")")
+    modelName = paste("1 Day", "SVM(", paste0(svmOneAccuracy,"%"),")")
     if(mean == 1)
     {
       output = infoBox(
