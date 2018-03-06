@@ -32,6 +32,7 @@ library(C50)
 library(nnet)
 library(h2o)
 library(ranger)
+library(gbm)
 
 pdf(NULL)
 
