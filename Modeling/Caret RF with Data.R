@@ -5,12 +5,67 @@ library(caret)
 library(ggplot2)
 library(caret)
 
-try(my_model <- readRDS("Modeling/rfModel.rds"))
+data = read.csv(gzfile("finalValue.csv.gz"))
 
 
+data = data
+which(data$AveragedExchange==0)
+data$AveragedExchange = as.numeric(data$AveragedExchange) 
+str(data$AveragedExchange)
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange<= -.5] = -1
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange> -.5 & data$AveragedExchange< .01] = -.5
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange>= -.2 & data$AveragedExchange<= .2] = 0
+hist(data$AveragedExchange)
 
-data = read.csv(gzfile("finalRate.csv.gz"))
-data=data[,3:ncol(data)] 
+data$AveragedExchange[data$AveragedExchange<= .5 & data$AveragedExchange> .01] = .5
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange> .5 ] = 1
+hist(data$AveragedExchange)
+
+data$AveragedExchange[data$AveragedExchange == 1] = 5
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange== -1] = 1
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange == -.5] = 2
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange==0] = 3
+hist(data$AveragedExchange)
+data$AveragedExchange[data$AveragedExchange== .5] = 4
+hist(data$AveragedExchange)
+
+
+data$AveragedExchange = as.factor(data$AveragedExchange)
+data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+
+
+# nzv <- nearZeroVar(data)
+# data <- data[,-nzv]
+################################################################
+#-----> Removing Low Res Data
+data = data[,which( colnames(data)=="article" ):ncol(data)]
+################################################################
+#--------------> Experimental Merging
+
+# 
+data2 = read.csv(gzfile("finalRate.csv.gz"))
+
+#data2 = data2[,-3]
+data2 = data2[,-ncol(data2)]
+
+data2 = data2[,which( colnames(data2)=="article" ):ncol(data2)]
+data2 = data2[ , apply(data2, 2, function(x) !any(is.na(x)))]
+
+
+data3 = cbind(data, data2)
+# data3 = data3[,-1]
+# 
+data = data3
+#data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+
+targetColumn = which( colnames(data)=="AveragedExchange" )
 #nzv <- nearZeroVar(data)
 #data <- data[,-nzv]
 
@@ -20,6 +75,11 @@ data=data[,3:ncol(data)]
 #data$AveragedExchange =as.factor(data$AveragedExchange)
 
 data = data[ , colSums(is.na(data)) == 0]
+
+train = data[1:1800,]
+test = data[1801:nrow(data),]
+
+data = train
 summary(data)
 
 # timeSlices <- createTimeSlices(1:nrow(data), 
@@ -30,8 +90,8 @@ summary(data)
 
 
 myTimeControl <- trainControl(method = "timeslice",
-                              initialWindow = 100,
-                              horizon = 10,
+                              initialWindow = 960,  #  <-----------  20 days
+                              horizon = 96,         #  <-----------  2 days
                               fixedWindow = TRUE)
 
 
@@ -44,8 +104,21 @@ trainedModel <- train( AveragedExchange ~ .,
                        trControl = myTimeControl)
 
 #pred <- ((as.numeric(predict(trainedModel,data)))/5)-1.95
-pred = predict(trainedModel,data)
-true <- data$AveragedExchange
+
+trainedModel
+pred = as.data.frame(as.numeric(predict(trainedModel,data)))
+true <- as.data.frame(as.numeric(test$AveragedExchange))
+
+merged = cbind(pred,true)
+
+conf1 <- confusionMatrix(pred, data$AveragedExchange)
+
+conf1
+probs <- predict(pred, newdata=data, type='prob')
+
+(trainedModel)
+trainedModel$results= true-pred
+resid = as.data.frame(as.numeric(true)-as.numeric(as.character(pred)))
 
 
 conf1 <- confusionMatrix(pred, data$AveragedExchange)
