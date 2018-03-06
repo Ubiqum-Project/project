@@ -197,20 +197,20 @@ print("rf loaded ")
 #########################################################################
 ##                SVM                                               ###
 #########################################################################
-nzv <- nearZeroVar(data)
-dataSVM <- data[,-nzv]
-
-#--------> Generate Predictions from Ranger One Day Out-------------------
-
-SVMDayPredict = predict(SVMDay,data[(nrow(dataSVM)-48):nrow(dataSVM),])
+# nzv <- nearZeroVar(data)
+# dataSVM <- data[,-nzv]
 # 
-# svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay))
-# svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
-# #--------------------------------------------------------------------------
+# #--------> Generate Predictions from Ranger One Day Out-------------------
 # 
-#--------> Generate Predictions from Ranger Two Days Out-------------------
-
-SVMTwoDayPredict = predict(SVMTwoDay,data[(nrow(dataSVM)-96):nrow(dataSVM),])
+# SVMDayPredict = predict(SVMDay,data[(nrow(dataSVM)-48):nrow(dataSVM),])
+# # 
+# # svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay))
+# # svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+# # #--------------------------------------------------------------------------
+# # 
+# #--------> Generate Predictions from Ranger Two Days Out-------------------
+# 
+# SVMTwoDayPredict = predict(SVMTwoDay,data[(nrow(dataSVM)-96):nrow(dataSVM),])
 
 # svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMTwoDay))
 # svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
@@ -259,13 +259,13 @@ colnames(historicalFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LS
 print("ghistorical frame built ")
 #---------DataFrame of Day Predictions ---------------------------------
 
-predictOneDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,SVMDayPredict,H2oDayPredict,RangerDayPredict)
+predictOneDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict,H2oDayPredict,RangerDayPredict)
 colnames(predictOneDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
 oneDayPredictions= rbind(historicalFrame, predictOneDayFrame)
 print("one day frame built ")
 #---------DataFrame of 2 Day Predictions -------------------------------
 
-predictTwoDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,SVMDayPredict,RangerDayPredict,RangerDayPredict)
+predictTwoDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict,RangerDayPredict)
 colnames(predictTwoDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
 twoDayPredictions = rbind(historicalFrame, predictTwoDayFrame)
 print("two day frame built ")
