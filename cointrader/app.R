@@ -37,21 +37,21 @@ library(caret)
 #-------->  Let's Import In Our Data ---------------------------
 
 #--------> Enable Below for Diagnostic Mode--------------------------------------
-#data = read.csv(gzfile("finalValue.csv.gz")) #-----------> For Local Runs outside of APP
-#data2 = read.csv(gzfile("finalRate.csv.gz"))#-----------> For Local Runs outside of APP
-#RangerDay <- readRDS("cointrader/trainedModels/dataLagDayModelRanger2.rds")
-#RangerTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelRanger2.rds")
-#GBMDay<- readRDS("cointrader/trainedModels/dataLagDayModelGBM2.rds")
-#GBMTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelGBM2.rds")
-#RFDay<- readRDS("cointrader/trainedModels/dataLagDayModelRF2.rds")
-#RFTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelRF2.rds")
-#SVMDay<- readRDS("cointrader/trainedModels/dataLagDayModelSVM2.rds")
-#SVMTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelSVM2.rds")
+# data = read.csv(gzfile("finalValue.csv.gz")) #-----------> For Local Runs outside of APP
+# data2 = read.csv(gzfile("finalRate.csv.gz"))#-----------> For Local Runs outside of APP
+# RangerDay <- readRDS("cointrader/trainedModels/dataLagDayModelRanger2.rds")
+# RangerTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelRanger2.rds")
+# GBMDay<- readRDS("cointrader/trainedModels/dataLagDayModelGBM2.rds")
+# GBMTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelGBM2.rds")
+# RFDay<- readRDS("cointrader/trainedModels/dataLagDayModelRF2.rds")
+# RFTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelRF2.rds")
+# SVMDay<- readRDS("cointrader/trainedModels/dataLagDayModelSVM2.rds")
+# SVMTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelSVM2.rds")
 
 
 #--------> Enable Below for App Mode--------------------------------------
-data = read.csv(gzfile("../finalValue.csv.gz")) #-----------> For App Runs 
-data2 = read.csv(gzfile("../finalRate.csv.gz")) #-----------> For App Runs 
+data = read.csv(gzfile("../finalValue.csv.gz")) #-----------> For App Runs
+data2 = read.csv(gzfile("../finalRate.csv.gz")) #-----------> For App Runs
 RangerDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRanger2.rds")
 RangerTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRanger2.rds")
 GBMDay <- readRDS("../cointrader/trainedModels/dataLagDayModelGBM2.rds")
