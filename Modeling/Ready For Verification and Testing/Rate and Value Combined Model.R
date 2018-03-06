@@ -1,9 +1,8 @@
 library(caret)
 library(keras)
-
+library(dplyr)
 ################################################################
-#data = read.csv(gzfile("finalRate.csv.gz"))
-#data = read.csv("rateRaw.csv")
+
 data = read.csv(gzfile("finalValue.csv.gz"))
 data = data
 which(data$AveragedExchange==0)
@@ -63,15 +62,33 @@ data = data3
 #data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
 
 targetColumn = which( colnames(data)=="AveragedExchange" )
-#------------------> experimental merging
+data[,targetColumn+1]
+#nzv <- nearZeroVar(data)
+#data <- data[,-nzv]
 
 
+#data = na.omit(data)
+#data = as.numeric(data)
+#data$AveragedExchange =as.factor(data$AveragedExchange)
 
+data = data[ , colSums(is.na(data)) == 0]
 
-#data[,targetColumn] = round(data[,targetColumn] , digits = 1)
+dataLagDay = cbind(data[,-targetColumn],lead(data$AveragedExchange, n=120))
+colnames(dataLagDay)[ncol(dataLagDay)] = c("AveragedExchange")
 
+data = na.omit(dataLagDay)
+# 
+trainIndex = round(nrow(data) *.70,digits =0)
+testIndex = nrow(data)-trainIndex
 
-#data[,targetColumn] = as.factor(as.numeric(as.character(data[,targetColumn])))
+trainIndex
+testIndex
+# 
+#  train = data[1:trainIndex,]
+#  test = data[testIndex:nrow(dataLagDay),]
+# train
+# test
+
 
 
 
@@ -124,6 +141,9 @@ generator <- function(data, lookback, delay, min_index, max_index,
   }
 }
 
+data[,targetColumn]
+
+data
 # The i variable contains the state that tracks next window of data to return, so it is updated using superassignment
 # (e.g. i <<- i + length(rows)).
 # 
@@ -141,12 +161,22 @@ step <- 20
 delay <- 2
 batch_size <- 15
 
+
+trainIndex
+testIndex
+# 
+#  train = data[1:trainIndex,]
+#  test = data[testIndex:nrow(dataLagDay),]
+# train
+# test
+
+
 train_gen <- generator(
   data,
   lookback = lookback,
   delay = delay,
   min_index = 1,
-  max_index = 2000,
+  max_index = trainIndex,
   shuffle = TRUE,
   step = step, 
   batch_size = batch_size
@@ -157,7 +187,7 @@ val_gen = generator(
   data,
   lookback = lookback,
   delay = delay,
-  min_index = 1,
+  min_index = trainIndex+1,
   max_index = nrow(data),
   step = step,
   batch_size = batch_size
@@ -167,12 +197,23 @@ test_gen <- generator(
   data,
   lookback = lookback,
   delay = delay,
-  min_index = 1,
+  min_index = trainIndex+1,
   max_index = nrow(data),
   step = step,
   batch_size = batch_size
 )
 
+pred_gen <- generator(
+  data,
+  lookback = 10,
+  delay = 0,
+  min_index = nrow(data)-100,
+  max_index = nrow(data),
+  step = 1,
+  batch_size = 1
+)
+pred_gen()[[2]]
+pred_gen()[[1]]
 # How many steps to draw from val_gen in order to see the entire validation set
 val_steps <- (nrow(data) - 1 - lookback) / batch_size
 
@@ -201,7 +242,7 @@ model %>% compile(
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 10,
+  epochs = 5,
   validation_data = val_gen,
   validation_steps = val_steps
 )
@@ -212,10 +253,32 @@ model %>% evaluate(val_gen()[[1]],val_gen()[[2]])
 testing = test_gen()
 x =as.data.frame(as.integer(round(model %>% predict(testing[[1]]), digits = 0)))
 y =as.data.frame(as.integer(testing[[2]]))
+testing[[1]]
 
-
+data
 resid = x-y
 
 answ = data.frame(x,y,resid)
 
 resid
+
+model %>% predict(testing[[1]])
+
+data[[1]]
+
+targetColumn
+features = data[,1:ncol(data)-1]
+
+features
+predout = pred_gen()
+
+predout[[1]]
+predout[[2]]
+testing[[2]]
+training =train_gen()
+
+training[[2]]
+predict(model,samples)
+
+val =val_gen()
+val[[2]]

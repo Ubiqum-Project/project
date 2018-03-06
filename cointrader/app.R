@@ -239,9 +239,9 @@ print("svm loaded ")
 
 h2o.init()
 print("H2O Initialized ")
-#H2oDay <- h2o.loadModel("cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+H2oDay <- h2o.loadModel("cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
 print("H2o model loaded ")
-H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+#H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
 dataX <- as.h2o(data)
 H2oDayALLPredict = predict(H2oDay,dataX)
 h20DayAllResults = as.data.frame(H2oDayALLPredict)
@@ -256,8 +256,8 @@ h2oAccuracyDay =round((H2oDay@model$validation_metrics@metrics$r2)*100,digits = 
 #--------------------------------------------------------------------------
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
-#H2oTwoDay <- h2o.loadModel("cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
-H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
+H2oTwoDay <- h2o.loadModel("cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
+#H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
 
 data2 <- as.h2o(data[(nrow(data)-96):nrow(data),])
 H2oTwoDayPredictData = predict(H2oTwoDay,data2)
@@ -362,30 +362,25 @@ oneDayPredictPlotWithHist = ggplot(data=test_data_long,
   geom_line()
 print("oneDayPredictPlotWithHist built ")
 
+combindedPlotData = oneDayAllCombined #-------------------------------------------------------------------Add index column
+combindedPlotData$X = seq.int(nrow(combindedPlotData))
+twoDayPredictPlotWithHist <- plot_ly(combindedPlotData, x = combindedPlotData$X) %>%
+  add_lines(y = ~Actual, name = "Actual") %>%
+  add_lines(y = ~Ranger, name = "Ranger") %>%
+  add_lines(y = ~RandomForest, name = "Random Forest") %>%
+  add_lines(y = ~GBM, name = "GBM") %>%
+  add_lines(y = ~SVM, name = "SVM") %>%
+  add_lines(y = ~H2O, name = "H2O") %>%
+  add_lines(y = ~LSTM, name = "LSTM") %>%
+  layout(
+    title = "Model Comparison",
+    xaxis = list(
+      rangeslider = list(type = "date")),
+    yaxis = list(title = "Change"))
 
 
-predict = oneDayAllCombined
 
-str(predict)
-predict$Actual = as.numeric(predict$Actual)
-predict$Ranger = as.numeric(predict$Ranger)
-predict$RandomForest = as.numeric(predict$RandomForest)
-predict$GBM = as.numeric(predict$GBM)
-predict$SVM = as.numeric(predict$SVM)
-predict$H2O = as.numeric(predict$H2O)
-predict$LSTM = as.numeric(predict$LSTM)
-predict$ID <- seq.int(nrow(predict))
-test_data_long <- melt(predict, id="ID")  # convert to long format
-twoDayPredictPlotWithHist = ggplot(data=test_data_long,
-                                   aes(x=ID, y=value, colour=variable)) +
-  geom_line()
 
-twoDayPredictPlotWithHist
-
-ggplot(data=oneDayAllCombined,
-       aes(x=ID, y=Ranger, colour=variable)) +
-  geom_line(aes(y=Actual))
-print("twoDayPredictPlotWithHist built ")
 
 #----------------------------------------------------------------------------------
 
@@ -1049,7 +1044,7 @@ ui <- dashboardPage(
                 infoBoxOutput('svmOne'),
                 infoBoxOutput('h2oOne'),
                 infoBoxOutput('lstmOne')),
-                box(plotOutput('twoDayPredictPlotWithHist')),
+                box(plotlyOutput('twoDayPredictPlotWithHist')),
                     box(plotOutput('oneDayPredictPlotWithHist')),
                         box(plotOutput('twoDayPredictPlot')),
                             box(plotOutput('oneDayPredictPlot')),
@@ -1622,7 +1617,7 @@ server <- function(input,output){
     oneDayPredictPlotWithHist
     
   )
-  output$twoDayPredictPlotWithHist <- renderPlot(
+  output$twoDayPredictPlotWithHist <- renderPlotly(
     
     twoDayPredictPlotWithHist
   )
