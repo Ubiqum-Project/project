@@ -239,9 +239,9 @@ print("svm loaded ")
 
 h2o.init()
 print("H2O Initialized ")
-H2oDay <- h2o.loadModel("cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+#H2oDay <- h2o.loadModel("cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
 print("H2o model loaded ")
-#H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
 dataX <- as.h2o(data)
 H2oDayALLPredict = predict(H2oDay,dataX)
 h20DayAllResults = as.data.frame(H2oDayALLPredict)
@@ -256,8 +256,8 @@ h2oAccuracyDay =round((H2oDay@model$validation_metrics@metrics$r2)*100,digits = 
 #--------------------------------------------------------------------------
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
-H2oTwoDay <- h2o.loadModel("cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
-#H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
+#H2oTwoDay <- h2o.loadModel("cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
+H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
 
 data2 <- as.h2o(data[(nrow(data)-96):nrow(data),])
 H2oTwoDayPredictData = predict(H2oTwoDay,data2)
