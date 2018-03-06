@@ -226,7 +226,7 @@ print("svm loaded ")
 #--------> Generate Predictions from Ranger One Day Out-------------------
 
 h2o.init()
-H2oDay <- h2o.loadModel("Modeling/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
 data1 <- as.h2o(data[(nrow(data)-48):nrow(data),])
 H2oDayPredictData = predict(H2oDay,data1)
 h20DayResults = as.data.frame(H2oDayPredictData)
@@ -236,7 +236,7 @@ h2oAccuracyDay =(H2oDay@model$validation_metrics@metrics$r2)
 
 #--------> Generate Predictions from Ranger Two Days Out-------------------
 
-H2oTwoDay <- h2o.loadModel("Modeling/trainedModels/h20ModelTwoDay/GBM_grid_0_AutoML_20180305_185644_model_3")
+H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
 data2 <- as.h2o(data[(nrow(data)-96):nrow(data),])
 H2oTwoDayPredictData = predict(H2oTwoDay,data2)
 h20TwoDayResults = as.data.frame(H2oTwoDayPredictData)
