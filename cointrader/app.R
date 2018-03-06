@@ -37,6 +37,7 @@ pdf(NULL)
 #jscode <- "shinyjs.refresh = function() { history.go(0); }"
 
 
+print("library Loaded")
 
 #----------------------------------------------------------
 #   This is the Magical Part of the Modeling Process #####
@@ -68,6 +69,8 @@ RFDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRF2.rds")
 RFTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRF2.rds")
 SVMDay <- readRDS("../cointrader/trainedModels/dataLagDayModelSVM2.rds")
 SVMTwoDay <-readRDS("../cointrader/trainedModels/dataLagDayModelSVM2.rds")
+
+print("files Loaded")
 
 data = data
 which(data$AveragedExchange==0)
@@ -112,7 +115,7 @@ data = data[,which( colnames(data)=="article" ):ncol(data)]
 
 # 
 
-
+print("data 1 preprocessed Loaded")
 #data2 = data2[,-3]
 data2 = data2[,-ncol(data2)]
 
@@ -137,7 +140,7 @@ targetColumn = which( colnames(data)=="AveragedExchange" )
 
 data = data[ , colSums(is.na(data)) == 0]
 
-
+print("data 2 preprocessed ")
 
 #--------------------------------------------------------------------------
 
@@ -158,6 +161,7 @@ RangerTwoDayPredict = predict(RangerTwoDay,data[(nrow(data)-96):nrow(data),])
 
 #--------------------------------------------------------------------------
 
+print("ranger loaded ")
 #########################################################################
 ##                GBM                                                 ###
 #########################################################################
@@ -173,7 +177,7 @@ GBMDayPredict = predict(GBMDay,data[(nrow(data)-48):nrow(data),])
 GBMTwoDayPredict = predict(GBMTwoDay,data[(nrow(data)-96):nrow(data),])
 
 #--------------------------------------------------------------------------
-
+print("gbm loaded ")
 #########################################################################
 ##                RF                                                 ###
 #########################################################################
@@ -189,7 +193,7 @@ RFDayPredict = predict(RFDay,data[(nrow(data)-48):nrow(data),])
 RFTwoDayPredict = predict(RFTwoDay,data[(nrow(data)-96):nrow(data),])
 
 #--------------------------------------------------------------------------
-
+print("rf loaded ")
 #########################################################################
 ##                SVM                                               ###
 #########################################################################
@@ -212,7 +216,7 @@ SVMTwoDayPredict = predict(SVMTwoDay,data[(nrow(dataSVM)-96):nrow(dataSVM),])
 # svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
 # print(svmOneAccuracy)
 #--------------------------------------------------------------------------
-
+print("svm loaded ")
 #########################################################################
 ##                H2O                                              ###
 #########################################################################
@@ -235,7 +239,7 @@ H2oTwoDayPredictData = predict(H2oTwoDay,data2)
 h20TwoDayResults = as.data.frame(H2oTwoDayPredictData)
 H2oTwoDayPredict = as.data.frame(h20TwoDayResults$predict)
 h2oAccuracyTwoDay =(H2oTwoDay@model$validation_metrics@metrics$r2)
-
+print("h2o loaded ")
 #########################################################################
 ##                LSTM                                               ###
 #########################################################################
@@ -252,19 +256,19 @@ AveragedExchange = data$AveragedExchange
 historicalFrame = data.frame(AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange)
 
 colnames(historicalFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
-
+print("ghistorical frame built ")
 #---------DataFrame of Day Predictions ---------------------------------
 
 predictOneDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,SVMDayPredict,H2oDayPredict,RangerDayPredict)
 colnames(predictOneDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
 oneDayPredictions= rbind(historicalFrame, predictOneDayFrame)
-
+print("one day frame built ")
 #---------DataFrame of 2 Day Predictions -------------------------------
 
 predictTwoDayFrame = data.frame(RangerDayPredict,RangerDayPredict,RangerDayPredict,SVMDayPredict,RangerDayPredict,RangerDayPredict)
 colnames(predictTwoDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
 twoDayPredictions = rbind(historicalFrame, predictTwoDayFrame)
-
+print("two day frame built ")
 #---------------------> Calculate Day Average -------------------------------------
 
 predictOneDayFrame$Ranger = as.numeric(predictOneDayFrame$Ranger)
@@ -275,7 +279,7 @@ predictOneDayFrame$H2O = as.numeric(predictOneDayFrame$H2O)
 predictOneDayFrame$LSTM = as.numeric(predictOneDayFrame$LSTM)
 
 oneDayMeans = colMeans(predictOneDayFrame)
-
+print("column means one day  frame built ")
 #--------------------> Calculate Two Day Average ----------------------------------
 
 predictTwoDayFrame$Ranger = as.numeric(predictTwoDayFrame$Ranger)
@@ -286,7 +290,7 @@ predictTwoDayFrame$H2O = as.numeric(predictTwoDayFrame$H2O)
 predictTwoDayFrame$LSTM = as.numeric(predictTwoDayFrame$LSTM)
 
 twoDayMeans = colMeans(predictTwoDayFrame)
-
+print("column means two day  frame built ")
 #---------------------------------------------------------------------------------
 predict = predictOneDayFrame
 predict$ID <- seq.int(nrow(predict))
@@ -295,7 +299,7 @@ oneDayPredictPlot = ggplot(data=test_data_long,
                            aes(x=ID, y=value, colour=variable)) +
   geom_line()
 
-
+print("oneDayPredictPlot built ")
 predict = predictTwoDayFrame
 predict$ID <- seq.int(nrow(predict))
 test_data_long <- melt(predict, id="ID")  # convert to long format
@@ -303,7 +307,7 @@ twoDayPredictPlot = ggplot(data=test_data_long,
                            aes(x=ID, y=value, colour=variable)) +
   geom_line()
 
-
+print("twoDayPredictPlot built ")
 predict = oneDayPredictions[(nrow(oneDayPredictions)-336):nrow(oneDayPredictions),]
 str(predict)
 predict$Ranger = as.numeric(predict$Ranger)
@@ -317,7 +321,7 @@ test_data_long <- melt(predict, id="ID")  # convert to long format
 oneDayPredictPlotWithHist = ggplot(data=test_data_long,
                                    aes(x=ID, y=value, colour=variable)) +
   geom_line()
-
+print("oneDayPredictPlotWithHist built ")
 
 predict = oneDayPredictions[(nrow(oneDayPredictions)-336):nrow(oneDayPredictions),]
 str(predict)
@@ -333,6 +337,7 @@ twoDayPredictPlotWithHist = ggplot(data=test_data_long,
                                    aes(x=ID, y=value, colour=variable)) +
   geom_line()
 
+print("twoDayPredictPlotWithHist built ")
 
 #----------------------------------------------------------------------------------
 
