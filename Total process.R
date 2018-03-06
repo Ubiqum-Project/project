@@ -14,7 +14,7 @@ rm(list=ls())
 
 #Sentiment
 print(paste("Sentiment"))
-source("Sentiment Engines/Main Running.R")
+source("Sentiment Engines/Main_running.R")
 print(paste("TOTAL TIME PROGRAM : ", round(difftime(.TT, Sys.time(),units = "mins"),2),"minutes"))
 print(paste("Sentiment : ",round(difftime(.TX, Sys.time(),units = "mins"),2),"minutes"))
 .TX<-Sys.time()
