@@ -10,6 +10,7 @@ library(gtools)
 library(zoo)
 library(RPostgreSQL)
 library(stringr)
+library(data.table)
 
 #####################################################################################################
 ####################################### Pull From Database ##########################################
@@ -43,6 +44,41 @@ library(stringr)
 # dbDisconnect(conn)
 # cleaned = unique(setDT(bitcoinDB), by = c('title'), fromLast = FALSE)    #NOT FOR USE  THIS filters unique values only
 
+#####################################################################################################
+####################################### Pull last 100000 From Database ##########################################
+
+# 
+# #Enter the values for you database connection
+# dsn_database = "bitcoin"            # e.g. "compose"
+# dsn_hostname = "165.227.167.6" # e.g.: "aws-us-east-1-portal.4.dblayer.com"
+# dsn_port = "5432"                 # e.g. 11101
+# dsn_uid = "postgres"        # e.g. "admin"
+# dsn_pwd = "840RanchoCircle!!"      # e.g. "xxx"
+# 
+# tryCatch({
+#   drv <- dbDriver("PostgreSQL")
+#   print("Connecting to database")
+#   conn <- dbConnect(drv,
+#                     dbname = dsn_database,
+#                     host = dsn_hostname,
+#                     port = dsn_port,
+#                     user = dsn_uid,
+#                     password = dsn_pwd)
+#   print("Connected!")
+# },
+# error=function(cond) {
+#   print("Unable to connect to database.")
+# })
+# 
+# 
+# #
+# bitcoinDB <- dbGetQuery(conn, "SELECT * FROM bitcoin ORDER BY time_now_gmt DESC LIMIT 100000;")   #NOT FOR USE  THIS DOWNLOADS THE ENTIRE DATABASE
+# 
+# 
+# 
+# dbDisconnect(conn)
+# cleaned = unique(setDT(bitcoinDB), by = c('title'), fromLast = FALSE)    #NOT FOR USE  THIS filters unique values only
+# 
 
 #######################################  Or Pull From File  #########################################
 #####################################################################################################

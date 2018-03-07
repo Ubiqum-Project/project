@@ -62,7 +62,7 @@ data = data3
 #data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
 
 targetColumn = which( colnames(data)=="AveragedExchange" )
-data[,targetColumn+1]
+data[,targetColumn]
 #nzv <- nearZeroVar(data)
 #data <- data[,-nzv]
 
@@ -73,7 +73,7 @@ data[,targetColumn+1]
 
 data = data[ , colSums(is.na(data)) == 0]
 
-dataLagDay = cbind(data[,-targetColumn],lead(data$AveragedExchange, n=120))
+dataLagDay = cbind(data[,-targetColumn],lead(data$AveragedExchange, n=200))
 colnames(dataLagDay)[ncol(dataLagDay)] = c("AveragedExchange")
 
 data = na.omit(dataLagDay)
@@ -134,15 +134,15 @@ generator <- function(data, lookback, delay, min_index, max_index,
       indices <- seq(rows[[j]] - lookback, rows[[j]], 
                      length.out = dim(samples)[[2]])
       samples[j,,] <- data[indices,]
-      targets[[j]] <- data[rows[[j]] + delay,targetColumn]
+      targets[[j]] <- data[rows[[j]] + delay,which( colnames(data)=="AveragedExchange" )]
     }            
     
     list(samples, targets)
   }
 }
 
-data[,targetColumn]
-
+data[,which( colnames(data)=="AveragedExchange" )]
+targetColumn
 data
 # The i variable contains the state that tracks next window of data to return, so it is updated using superassignment
 # (e.g. i <<- i + length(rows)).
@@ -205,15 +205,16 @@ test_gen <- generator(
 
 pred_gen <- generator(
   data,
-  lookback = 10,
-  delay = 0,
+  lookback = 1,
+  delay = 1,
   min_index = nrow(data)-100,
   max_index = nrow(data),
   step = 1,
   batch_size = 1
 )
 pred_gen()[[2]]
-pred_gen()[[1]]
+pred_gen()[[1]][,,103][1]
+
 # How many steps to draw from val_gen in order to see the entire validation set
 val_steps <- (nrow(data) - 1 - lookback) / batch_size
 
@@ -272,7 +273,10 @@ features = data[,1:ncol(data)-1]
 features
 predout = pred_gen()
 
-predout[[1]]
+test = predout[[1]]
+testing = as.data.frame(test)
+as.list(test)
+as.data.frame(predout[[1]])
 predout[[2]]
 testing[[2]]
 training =train_gen()
