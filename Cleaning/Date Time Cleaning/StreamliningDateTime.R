@@ -84,7 +84,8 @@ library(data.table)
 #####################################################################################################
 
 
-cleaned <- read_csv("bitcoinPull 2018-01-25")
+#cleaned <- read_csv("bitcoinPull 2018-01-25")
+cleaned <- read_csv("bitcoinPull 2018-02-23")
 
 #####################################################################################################
 #####################################################################################################
@@ -134,8 +135,9 @@ docs <- tm_map(docs, toSpace, "-")
 docs <- tm_map(docs, toSpace, "_")
 docs <- tm_map(docs, toSpace, "\r")
 docs <- tm_map(docs, toSpace, "\n")
-docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
 
+docs <- tm_map(docs, function(x) iconv(enc2native(docs$content), sub = "byte"))
+docs <- tm_map(docs, function(x) iconv(enc2utf8(docs$content), sub = "byte"))
 # united states correction
 us <- content_transformer(function (x, pattern) gsub(pattern, "unitedstates", x, fixed=TRUE))
 docs <- tm_map(docs, us, "U.S.")
