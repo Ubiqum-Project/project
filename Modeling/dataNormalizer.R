@@ -14,7 +14,7 @@ intervalTime = 30 # <<<<<-------------- Change this to adjust hourly sample inte
 interval = paste(intervalTime,"mins")
 
 
-sentimentValues = read.csv(gzfile("TITLE OF YOU FILE.csv"))
+sentimentValues = read.csv(gzfile("FINAL.csv.gz"))
 sentimentValues=sentimentValues[,2:ncol(sentimentValues)]
 sentimentValues$cleaned = as_datetime(sentimentValues$cleaned) #----> setting cleaned as datetime
 sentimentValues[is.na(sentimentValues)] <- 0
