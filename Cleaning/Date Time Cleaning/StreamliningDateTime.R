@@ -1,4 +1,3 @@
-
 library(readxl)
 library(chron)
 library(lubridate)
@@ -94,7 +93,8 @@ cleaned <- read_csv("bitcoinPull 2018-02-23")
 # cleaned <- cleaned[ grep("year", cleaned$article_time, invert = TRUE) , ]
 # cleaned <- cleaned[ grep("years", cleaned$article_time, invert = TRUE) , ] 
 # cleaned <- cleaned[ grep("months", cleaned$article_time, invert = TRUE) , ]
-Sys.setlocale("LC_ALL", "C")
+#Sys.setlocale("LC_ALL", "C")
+Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
 cleaned$paragraph <- as.character(cleaned$paragraph)
 cleaned$title <- as.character(cleaned$title)
 
@@ -102,6 +102,7 @@ cleaned$combination<-cleaned$title
 {cleaned$combination[which(cleaned$title != cleaned$paragraph)]=
     paste(cleaned$title[which(cleaned$title != cleaned$paragraph)],cleaned$paragraph
           [which(cleaned$title != cleaned$paragraph)])}
+
 
 docs <- Corpus(VectorSource(cleaned$combination))
 
