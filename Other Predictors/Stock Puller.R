@@ -16,24 +16,24 @@ library(gtrendsR)
 ############################--------> BEGIN PRICE LOOKUP FUNCTION <--------###########################
 
 
-final.test = read_csv(gzfile("FINAL.csv.gz"))
+final = read_csv(gzfile("FINAL.csv.gz"))
 final$cleaned = as_datetime(final$cleaned)
 
 
 ##############################-----KRAKKEN PRICE LOOKUP-----------########################################
 #---------------------Access Kraken Historical Price Info
 
-#---------> Download file 
-# temp <- tempfile()
-# download.file("http://api.bitcoincharts.com/v1/csv/krakenUSD.csv.gz",temp)
-# historicPriceKrakkenDL <- read.csv(gzfile(temp, ".krakenUSD.csv"))
-# # rm(temp)
+#---------> Download file
+temp <- tempfile()
+download.file("http://api.bitcoincharts.com/v1/csv/krakenUSD.csv.gz",temp)
+historicPriceKrakkenDL <- read.csv(gzfile(temp, ".krakenUSD.csv"), skip =4580000)
+ rm(temp)
 
 #---------> Or Read file 
 
-historicPriceKrakkenDL <- read.csv(".krakenUSD.csv", skip =4580000 )
-historicPriceKrakkenDL = historicPriceKrakkenDL[1:2]
-colnames(historicPriceKrakkenDL) = c("krakkenDate", "KrakkenPrice")
+# historicPriceKrakkenDL <- read.csv(".krakenUSD.csv", skip =4580000 )
+ historicPriceKrakkenDL = historicPriceKrakkenDL[1:2]
+ colnames(historicPriceKrakkenDL) = c("krakkenDate", "KrakkenPrice")
 
 #---------> End File Input 
 
@@ -61,21 +61,21 @@ colnames(testedKrakken)[2] = "KrakkenPrice"
 testedKrakken = testedKrakken[,-c(3,4)]
 
 final = testedKrakken
-
+rm(historicPriceKrakkenDL)
 
 #############################--->Coinbase<------####################################
 #---------------------Access Coinbase Historical Price Info
 
 #------------> Download Coinbase File-------------
-# temp <- tempfile()
-# download.file("http://api.bitcoincharts.com/v1/csv/coinbaseUSD.csv.gz",temp)
-# historicPriceCoinbaseDL <- read.csv(gzfile(temp, ".coinbaseUSD"))
-# rm(temp)
+temp <- tempfile()
+download.file("http://api.bitcoincharts.com/v1/csv/coinbaseUSD.csv.gz",temp)
+historicPriceCoinbaseDL <- read.csv(gzfile(temp, ".coinbaseUSD"), skip =24000000)
+rm(temp)
 
 #------------> Open Coinbase File-------------
 
 
-historicPriceCoinbaseDL <- read.csv(".coinbaseUSD.csv", skip =24000000)
+# historicPriceCoinbaseDL <- read.csv(".coinbaseUSD.csv", skip =24000000)
 colnames(historicPriceCoinbaseDL) = c("coinbaseDate", "coinbasePrice")
 historicPriceCoinbaseDL = historicPriceCoinbaseDL[1:2]
 #---------> End File Input 

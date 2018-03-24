@@ -46,45 +46,46 @@ library(data.table)
 #####################################################################################################
 ####################################### Pull last 100000 From Database ##########################################
 
-# 
-# #Enter the values for you database connection
-# dsn_database = "bitcoin"            # e.g. "compose"
-# dsn_hostname = "165.227.167.6" # e.g.: "aws-us-east-1-portal.4.dblayer.com"
-# dsn_port = "5432"                 # e.g. 11101
-# dsn_uid = "postgres"        # e.g. "admin"
-# dsn_pwd = "840RanchoCircle!!"      # e.g. "xxx"
-# 
-# tryCatch({
-#   drv <- dbDriver("PostgreSQL")
-#   print("Connecting to database")
-#   conn <- dbConnect(drv,
-#                     dbname = dsn_database,
-#                     host = dsn_hostname,
-#                     port = dsn_port,
-#                     user = dsn_uid,
-#                     password = dsn_pwd)
-#   print("Connected!")
-# },
-# error=function(cond) {
-#   print("Unable to connect to database.")
-# })
-# 
-# 
-# #
-# bitcoinDB <- dbGetQuery(conn, "SELECT * FROM bitcoin ORDER BY time_now_gmt DESC LIMIT 100000;")   #NOT FOR USE  THIS DOWNLOADS THE ENTIRE DATABASE
-# 
-# 
-# 
-# dbDisconnect(conn)
-# cleaned = unique(setDT(bitcoinDB), by = c('title'), fromLast = FALSE)    #NOT FOR USE  THIS filters unique values only
-# 
+
+#Enter the values for you database connection
+dsn_database = "bitcoin"            # e.g. "compose"
+dsn_hostname = "165.227.167.6" # e.g.: "aws-us-east-1-portal.4.dblayer.com"
+dsn_port = "5432"                 # e.g. 11101
+dsn_uid = "postgres"        # e.g. "admin"
+dsn_pwd = "840RanchoCircle!!"      # e.g. "xxx"
+
+tryCatch({
+  drv <- dbDriver("PostgreSQL")
+  print("Connecting to database")
+  conn <- dbConnect(drv,
+                    dbname = dsn_database,
+                    host = dsn_hostname,
+                    port = dsn_port,
+                    user = dsn_uid,
+                    password = dsn_pwd)
+  print("Connected!")
+},
+error=function(cond) {
+  print("Unable to connect to database.")
+})
+
+
+#
+bitcoinDB <- dbGetQuery(conn, "SELECT * FROM bitcoin ORDER BY time_now_gmt DESC LIMIT 100000;")   #NOT FOR USE  THIS DOWNLOADS THE ENTIRE DATABASE
+
+
+
+dbDisconnect(conn)
+cleaned = unique(setDT(bitcoinDB), by = c('title'), fromLast = FALSE)    #NOT FOR USE  THIS filters unique values only
+z <- gzfile("DBPull.csv.gz")
+write.csv(cleaned, z)
 
 #######################################  Or Pull From File  #########################################
 #####################################################################################################
 
 
 #cleaned <- read_csv("bitcoinPull 2018-01-25")
-cleaned <- read_csv("bitcoinPull 2018-02-23")
+#cleaned <- read_csv("bitcoinPull 2018-02-23")
 
 #####################################################################################################
 #####################################################################################################
@@ -796,6 +797,22 @@ time$timeNOWGMT = ymd_hms(as.character(time$timeNOWGMT))
 
 y = split(time, time$name)
 
+timeNOWGMT= Sys.time()
+name= NA
+articleTime= Sys.time()
+title= NA
+paragraph= NA
+source= NA
+price_gfbtc= NA
+price_gf_delta_btc = NA
+api_last_btc= NA
+api_vol_btc = NA
+api_bid_btc= NA
+combination= NA
+text= NA
+datez= Sys.time()
+cleaned= Sys.time()
+DateNotes= NA
 
 blm =  as.data.frame(y["Bloomberg"])
 bcn = as.data.frame(y["Bitcoin News"])              #### 1 Hours left of UTC
@@ -835,6 +852,7 @@ frt = as.data.frame(y["Fortune"])                   #### 0 hours right of UTC
 
 
 #----------->BBC Date Cleaning Function -------------------------
+if(length(bbc)>0){
 bbc$cleaned = as.POSIXct(bbc$BBC.timeNOWGMT)
 downloadTime =  as.data.frame(bbc$BBC.timeNOWGMT)
 articleTime =  as.data.frame(bbc$BBC.datez)
@@ -860,7 +878,12 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+} else{
+  name = "BBC" 
+  source = "BBC"
+  bbc= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes)  }
 #----------->BCN Date Cleaning Function -------------------------
+if(length(bcn)>0){
 bcn$cleaned = as.POSIXct(bcn$Bitcoin.News.timeNOWGMT)
 
 downloadTime =  as.data.frame(bcn$Bitcoin.News.timeNOWGMT)
@@ -892,9 +915,12 @@ for (i in 1:length(time$article))
   }
  }
 close(pb)
+} else{name = "Bitcoin News" 
+source = "Bitcoin News"
+bcn= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->cd Date Cleaning Function -------------------------
-
-cd$cleaned = as.POSIXct(cd$China.Daily.timeNOWGMT)
+if(length(cd)>0){
+cd$cleaned = try(as.POSIXct(cd$China.Daily.timeNOWGMT))
 downloadTime =  as.data.frame(cd$China.Daily.timeNOWGMT)
 articleTime =  as.data.frame(cd$China.Daily.datez)
 
@@ -914,8 +940,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "China Daily" 
+source = "China Daily"
+cd= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->cnbc Date Cleaning Function -------------------------
-
+if(length(cnbc)>0){
 cnbc$cleaned = as.POSIXct(cnbc$CNBC.timeNOWGMT)
 
 downloadTime =  as.data.frame(cnbc$CNBC.timeNOWGMT)
@@ -957,7 +986,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "CNBC" 
+source = "CNBC"
+cnbc= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->cndk Date Cleaning Function -------------------------
+if(length(cndk)>0){
 cndk$cleaned = as.POSIXct(cndk$Coin.Desk.timeNOWGMT)
 downloadTime =  as.data.frame(cndk$Coin.Desk.timeNOWGMT)
 articleTime =  as.data.frame(cndk$Coin.Desk.datez)
@@ -979,8 +1012,11 @@ for (i in 1:length(time$article))
 }
 
 close(pb)
+}else{name = "Coin Desk" 
+source = "Coin Desk"
+cndk= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->fbbtc Date Cleaning Function (German) -------------------------
-
+if(length(fbbtc)>0){
 fbbtc$cleaned = as.POSIXct(fbbtc$Facebook.BTC.Group.timeNOWGMT)
 downloadTime =  as.data.frame(fbbtc$Facebook.BTC.Group.timeNOWGMT)
 articleTime =  as.data.frame(fbbtc$Facebook.BTC.Group.datez)
@@ -1024,9 +1060,11 @@ if(grepl(paste(germanMonthLibrary,collapse="|"), time$article[i]))
 }
 }
 close(pb)
-
+}else{name = "Facebook BTC Group" 
+source = "Facebook BTC Group"
+fbbtc= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->fbbtc Date Cleaning Function -------------------------
-
+if(length(fbsrch)>0){
 
 fbsrch$cleaned = as.POSIXct(fbsrch$Facebook.Search.timeNOWGMT)
 downloadTime =  as.data.frame(fbsrch$Facebook.Search.timeNOWGMT)
@@ -1070,8 +1108,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Facebook Search" 
+source = "Facebook Search"
+fbsrch= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->fr Date Cleaning Function -------------------------
-
+if(length(fr)>0){
 fr$cleaned = as.POSIXct(fr$Free.Republic.timeNOWGMT)
 downloadTime =  as.data.frame(fr$Free.Republic.timeNOWGMT)
 articleTime =  as.data.frame(fr$Free.Republic.datez)
@@ -1091,8 +1132,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Free Republic" 
+source = "Free Republic"
+fr= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->gf Date Cleaning Function -------------------------
-
+if(length(gf)>0){
 gf$Google.Finance.datez= gsub("^.*?-","",gf$Google.Finance.datez)
 gf$cleaned = as.POSIXct(gf$Google.Finance.timeNOWGMT)
 downloadTime =  as.data.frame(gf$Google.Finance.timeNOWGMT)
@@ -1131,9 +1175,12 @@ if(grepl(paste(hourLibrary,collapse="|"), time$article[i]))
 }
 }
 close(pb)
+}else{name = "Google Finance" 
+source = "Google Finance"
+gf= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->gplus Date Cleaning Function -------------------------
 
-
+if(length(gplus)>0){
 gplus$cleaned = as.POSIXct(gplus$Google.Plus.timeNOWGMT)
 downloadTime =  as.data.frame(gplus$Google.Plus.timeNOWGMT)
 articleTime =  as.data.frame(gplus$Google.Plus.datez)
@@ -1154,8 +1201,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Google Plus" 
+source = "Google Plus"
+gplus= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->rba Date Cleaning Function -------------------------
-
+if(length(rba)>0){
 rba$cleaned = as.POSIXct(rba$Redit.BTC.All.timeNOWGMT)
 downloadTime =  as.data.frame(rba$Redit.BTC.All.timeNOWGMT)
 articleTime =  as.data.frame(rba$Redit.BTC.All.datez)
@@ -1198,8 +1248,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Redit BTC All" 
+source = "Redit BTC All"
+rba= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->rbb Date Cleaning Function -------------------------
-
+if(length(rbb)>0){
 rbb$cleaned = as.POSIXct(rbb$Redit.BTC.Bay.timeNOWGMT)
 downloadTime =  as.data.frame(rbb$Redit.BTC.Bay.timeNOWGMT)
 articleTime =  as.data.frame(rbb$Redit.BTC.Bay.datez)
@@ -1242,8 +1295,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Redit BTC Bay" 
+source = "Redit BTC Bay"
+rbb= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->rbm Date Cleaning Function -------------------------
-
+if(length(rbm)>0){
 rbm$cleaned = as.POSIXct(rbm$Redit.BTC.Markets.timeNOWGMT)
 downloadTime =  as.data.frame(rbm$Redit.BTC.Markets.timeNOWGMT)
 articleTime =  as.data.frame(rbm$Redit.BTC.Markets.datez)
@@ -1286,8 +1342,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Redit BTC Markets" 
+source = "Redit BTC Markets"
+rbm= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->rbc Date Cleaning Function -------------------------
-
+if(length(rbc)>0){
 rbc$cleaned = as.POSIXct(rbc$Redit.Crypto.timeNOWGMT)
 downloadTime =  as.data.frame(rbc$Redit.Crypto.timeNOWGMT)
 articleTime =  as.data.frame(rbc$Redit.Crypto.datez)
@@ -1330,8 +1389,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Redit Crypto" 
+source = "Redit Crypto"
+rbc= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->RBmine Date Cleaning Function -------------------------
-
+if(length(rbmine)>0){
 rbmine$cleaned = as.POSIXct(rbmine$Redit.BTC.Mining.timeNOWGMT)
 downloadTime =  as.data.frame(rbmine$Redit.BTC.Mining.timeNOWGMT)
 articleTime =  as.data.frame(rbmine$Redit.BTC.Mining.datez)
@@ -1374,8 +1436,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Redit BTC Mining" 
+source = "Redit BTC Mining"
+rbmine= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->reu Date Cleaning Function -------------------------
-
+if(length(reu)>0){
 
 reu$cleaned = as.POSIXct(reu$Reuters.timeNOWGMT)
 downloadTime =  as.data.frame(reu$Reuters.timeNOWGMT)
@@ -1397,8 +1462,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Reuters" 
+source = "Reuters"
+reu= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->blm Date Cleaning Function -------------------------
-
+if(length(blm)>0){
 
 blm$cleaned = as.POSIXct(blm$Bloomberg.timeNOWGMT)
 downloadTime =  as.data.frame(blm$Bloomberg.timeNOWGMT)
@@ -1415,8 +1483,11 @@ for (i in 1:length(time$article))
   
 }
 close(pb)
+}else{name = "Bloomberg" 
+source = "Bloomberg"
+blm= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->scmp Date Cleaning Function -------------------------
-
+if(length(scmp)>0){
 
 
 
@@ -1439,9 +1510,12 @@ for (i in 1:length(time$article))
 }
 close(pb)
 
+}else{name = "South China Morning Post" 
+source = "South China Morning Post"
+scmp= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->tw Date Cleaning Function -------------------------
 
-
+if(length(tw)>0){
 tw$cleaned = as.POSIXct(tw$Twitter.timeNOWGMT)
 downloadTime =  as.data.frame(tw$Twitter.timeNOWGMT)
 articleTime =  as.data.frame(tw$Twitter.datez)
@@ -1462,9 +1536,12 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Twitter" 
+source = "Twitter"
+tw= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->iet Date Cleaning Function -------------------------
 
-
+if(length(iet)>0){
 iet$cleaned = as.POSIXct(iet$India.Economic.Times..timeNOWGMT)
 downloadTime =  as.data.frame(iet$India.Economic.Times..timeNOWGMT)
 articleTime =  as.data.frame(iet$India.Economic.Times..datez)
@@ -1486,8 +1563,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "India Economic Times:" 
+source = "India Economic Times:"
+iet= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->yn Date Cleaning Function -------------------------
-
+if(length(yn)>0){
 
 yn$cleaned = as.POSIXct(yn$Yahoo.News.timeNOWGMT)
 downloadTime =  as.data.frame(yn$Yahoo.News.timeNOWGMT)
@@ -1526,8 +1606,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Yahoo News" 
+source = "Yahoo News"
+yn= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->you Date Cleaning Function -------------------------
-
+if(length(you)>0){
 you$cleaned = as.POSIXct(you$Youtube.timeNOWGMT)
 downloadTime =  as.data.frame(you$Youtube.timeNOWGMT)
 articleTime =  as.data.frame(you$Youtube.datez)
@@ -1567,8 +1650,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Youtube" 
+source = "Youtube"
+you= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->you Date Cleaning Function -------------------------
-
+if(length(zh)>0){
 zh$cleaned = as.POSIXct(zh$Zero.Hedge.timeNOWGMT)
 downloadTime =  as.data.frame(zh$Zero.Hedge.timeNOWGMT)
 articleTime =  as.data.frame(zh$Zero.Hedge.datez)
@@ -1597,7 +1683,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
+}else{name = "Zero Hedge" 
+source = "Zero Hedge"
+zh= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->you Date Cleaning Function -------------------------
+if(length(wsj)>0){
 wsj$cleaned = as.POSIXct(wsj$Wall.Street.Journal.timeNOWGMT)
 downloadTime =  as.data.frame(wsj$Wall.Street.Journal.timeNOWGMT)
 articleTime =  as.data.frame(wsj$Wall.Street.Journal.datez)
@@ -1636,9 +1726,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
-
+}else{name = "Wall Street Journal" 
+source = "Wall Street Journal"
+wsj= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->ccn Date Cleaning Function -------------------------
-
+if(length(ccn)>0){
 ccn$cleaned = as.POSIXct(ccn$Crypto.Coin.News.timeNOWGMT )
 downloadTime =  as.data.frame(ccn$Crypto.Coin.News.timeNOWGMT)
 articleTime =  as.data.frame(ccn$Crypto.Coin.News.datez)
@@ -1660,9 +1752,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
-
+}else{name = "Crypto Coin News" 
+source = "Crypto Coin News"
+ccn= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->rbx Date Cleaning Function -------------------------
-
+if(length(rbx)>0){
 rbx$cleaned = as.POSIXct(rbx$Redit.BTC.XT.timeNOWGMT)
 downloadTime =  as.data.frame(rbx$Redit.BTC.XT.timeNOWGMT)
 articleTime =  as.data.frame(rbx$Redit.BTC.XT.datez)
@@ -1704,8 +1798,11 @@ for (i in 1:length(time$article))
   }
 }
 close(pb)
-
+}else{name = "Redit BTC XT" 
+source = "Redit BTC XT"
+rbx= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
 #----------->frt Date Cleaning Function -------------------------
+if(length(frt)>0){
 frt$cleaned = as.POSIXct(frt$Fortune.timeNOWGMT)
 downloadTime =  as.data.frame(frt$Fortune.timeNOWGMT)
 articleTime =  as.data.frame(frt$Fortune.datez)
@@ -1726,42 +1823,72 @@ for (i in 1:length(time$article))
 }
 close(pb)
 
+}else{name = "Fortune" 
+source = "Fortune"
+frt= data.frame(timeNOWGMT,name,articleTime,title, paragraph, source, price_gfbtc, price_gf_delta_btc, api_last_btc, api_vol_btc,api_bid_btc , combination, text, datez, cleaned, DateNotes) }
+
 
 #--------------------------BEGIN CONCATENATION-----------------------------------------
 colnames(blm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+blm[ ][is.na(blm[] ) ] = 0
 colnames(bcn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+bcn[ ][is.na(bcn[] ) ] = 0
 colnames(cd)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+cd[ ][is.na(cd[] ) ] = 0
 colnames(cnbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+cnbc[ ][is.na(cnbc[] ) ] = 0
 colnames(cndk)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+cndk[ ][is.na(cndk[] ) ] = 0
 colnames(fbbtc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+fbbtc[ ][is.na(fbbtc[] ) ] = 0
 colnames(fbsrch)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+fbsrch[ ][is.na(fbsrch[] ) ] = 0
 colnames(fr)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+fr[ ][is.na(fr[] ) ] = 0
 colnames(gf)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+gf[ ][is.na(gf[] ) ] = 0
 colnames(rba)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+rba[ ][is.na(rba[] ) ] = 0
 colnames(rbmine)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+rbmine[ ][is.na(rbmine[] ) ] = 0
 colnames(reu)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+reu[ ][is.na(reu[] ) ] = 0
 colnames(scmp)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+scmp[ ][is.na(scmp[] ) ] = 0
 colnames(tw)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+tw[ ][is.na(tw[] ) ] = 0
 colnames(yn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+yn[ ][is.na(yn[] ) ] = 0
 colnames(you)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+you[ ][is.na(you[] ) ] = 0
 colnames(zh)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+zh[ ][is.na(zh[] ) ] = 0
 colnames(wsj)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+wsj[ ][is.na(wsj[] ) ] = 0
 colnames(rbb)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+rbb[ ][is.na(rbb[] ) ] = 0
 colnames(rbm)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+rbm[ ][is.na(rbm[] ) ] = 0
 colnames(rbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+rbc[ ][is.na(rbc[] ) ] = 0
 colnames(bbc)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+bbc[ ][is.na(bbc[] ) ] = 0
 colnames(gplus)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+gplus[ ][is.na(gplus[] ) ] = 0
 colnames(iet)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+iet[ ][is.na(iet[] ) ] = 0
 colnames(ccn)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+ccn[ ][is.na(ccn[] ) ] = 0
 colnames(rbx)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
+rbx[ ][is.na(rbx[] ) ] = 0
 colnames(frt)= c("timeNOWGMT", "name","articleTime","title", "paragraph", "source", "price_gfbtc", "price_gf_delta_btc", "api_last_btc", "api_vol_btc", "api_bid_btc" , "combination", "text", "datez", "cleaned", "DateNotes")  
- 
+frt[ ][is.na(frt[] ) ] = 0
  
 
 final = rbind(
   blm,
   bcn ,
-  cd ,
+   cd ,
    cnbc,
    cndk,
    fbbtc,
@@ -1769,7 +1896,7 @@ final = rbind(
    fr,
    gf,
    rba,
-   rbmine, 
+   rbmine,
    reu,
    scmp,
    tw,
@@ -1779,18 +1906,18 @@ final = rbind(
    wsj,
    rbb ,
    rbm,
-   rbc , 
+   rbc ,
    bbc ,
    gplus,
    iet,
    ccn ,
    rbx,
-   frt 
+   frt
  )
 
-rm(
-  blm,bcn , cd ,  cnbc,  cndk,  fbbtc,  fbsrch,  fr,  gf,  rba,  rbmine,   reu,  scmp,  tw,  yn,  you,  zh,
-  wsj,  rbb ,  rbm,  rbc ,   bbc ,  gplus,  iet,  ccn ,  rbx,  frt )
+# rm(
+#   blm,bcn , cd ,  cnbc,  cndk,  fbbtc,  fbsrch,  fr,  gf,  rba,  rbmine,   reu,  scmp,  tw,  yn,  you,  zh,
+#   wsj,  rbb ,  rbm,  rbc ,   bbc ,  gplus,  iet,  ccn ,  rbx,  frt )
 
 #remove columns
 remove.columns <- c( "X", "X1", "text.1", "articleTime", "title", "paragraph" ,
@@ -1798,11 +1925,12 @@ remove.columns <- c( "X", "X1", "text.1", "articleTime", "title", "paragraph" ,
                     "api_vol_btc" , "api_vol_btc")
 
 cleaned = final[,!(names(final) %in% remove.columns)]
-
+cleaned  = cleaned[complete.cases(cleaned), ]
 final = subset(cleaned, cleaned > "2017-11-29 00:00:00")
 
 
 #write.csv(final, "final5.csv")
+final = unique(setDT(final), by = c('text','name'), fromLast = FALSE)
 
 z <- gzfile("cleaned_with_dates.csv.gz")
 write.csv(final, z)

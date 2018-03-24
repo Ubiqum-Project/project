@@ -3,62 +3,7 @@ library(keras)
 library(dplyr)
 ################################################################
 
-data = read.csv(gzfile("finalValue.csv.gz"))
-data = data
-which(data$AveragedExchange==0)
-data$AveragedExchange = as.numeric(data$AveragedExchange) 
-str(data$AveragedExchange)
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange<= -.5] = -1
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange> -.5 & data$AveragedExchange< .01] = -.5
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange>= -.2 & data$AveragedExchange<= .2] = 0
-hist(data$AveragedExchange)
-
-data$AveragedExchange[data$AveragedExchange<= .5 & data$AveragedExchange> .01] = .5
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange> .5 ] = 1
-hist(data$AveragedExchange)
-
-data$AveragedExchange[data$AveragedExchange == 1] = 5
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange== -1] = 1
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange == -.5] = 2
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange==0] = 3
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange== .5] = 4
-hist(data$AveragedExchange)
-
-
-data$AveragedExchange = as.factor(data$AveragedExchange)
-data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
-
-
-# nzv <- nearZeroVar(data)
-# data <- data[,-nzv]
-################################################################
-#-----> Removing Low Res Data
-data = data[,which( colnames(data)=="article" ):ncol(data)]
-################################################################
-#--------------> Experimental Merging
-
-# 
-data2 = read.csv(gzfile("finalRate.csv.gz"))
-
-#data2 = data2[,-3]
-data2 = data2[,-ncol(data2)]
-
-data2 = data2[,which( colnames(data2)=="article" ):ncol(data2)]
-data2 = data2[ , apply(data2, 2, function(x) !any(is.na(x)))]
-
-
-data3 = cbind(data, data2)
-# data3 = data3[,-1]
-# 
-data = data3
+data = read.csv(gzfile("FullDBDataOutput.csv.gz")) #-----------> For Local Runs outside of APP
 #data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
 
 targetColumn = which( colnames(data)=="AveragedExchange" )
@@ -73,13 +18,14 @@ data[,targetColumn]
 
 data = data[ , colSums(is.na(data)) == 0]
 
-dataLagDay = cbind(data[,-targetColumn],lead(data$AveragedExchange, n=200))
+dataLagDay = cbind(data[,-targetColumn],lead(data$AveragedExchange, n=48))
 colnames(dataLagDay)[ncol(dataLagDay)] = c("AveragedExchange")
 
 data = na.omit(dataLagDay)
 # 
-trainIndex = round(nrow(data) *.70,digits =0)
+trainIndex = round(nrow(data) *.60,digits =0)
 testIndex = nrow(data)-trainIndex
+
 
 trainIndex
 testIndex
@@ -155,11 +101,11 @@ data
 # steps = 2 — Observations will be sampled at one data point per hour. (we pull 2x per hour...1 hour = 2 samples)
 # delay = 48 — we sample every 30 minutes, so 24*2= 1 day in the future
 
-lookback <- 100
+lookback <- 500
 
-step <- 20
-delay <- 2
-batch_size <- 15
+step <- 200
+delay <- 20
+batch_size <- 150
 
 
 trainIndex
@@ -182,7 +128,7 @@ train_gen <- generator(
   batch_size = batch_size
 )
 
-train_gen()[[2]]
+
 val_gen = generator(
   data,
   lookback = lookback,
@@ -224,7 +170,7 @@ test_steps <- (nrow(data) - 1 - lookback) / batch_size
 
 
 model <- keras_model_sequential() %>% 
-  layer_gru(units = dim(data)[[2]]-4, 
+  layer_gru(units = dim(data)[[2]]-1, 
             dropout = 0.1, 
             recurrent_dropout = 0.5,
             return_sequences = TRUE,
@@ -243,7 +189,7 @@ model %>% compile(
 history <- model %>% fit_generator(
   train_gen,
   steps_per_epoch = 500,
-  epochs = 5,
+  epochs =10,
   validation_data = val_gen,
   validation_steps = val_steps
 )

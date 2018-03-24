@@ -11,7 +11,7 @@ TARGET_WORDS.count<-Text.word %>%
 TARGET_WORDS.article<-Text.word %>%
   filter(word%in% TARGET_WORDS)%>%
   count(article)%>%
-  select(article)
+  dplyr::select(article)
 
 #===================================================================
 #GENERAL PREPROCESS

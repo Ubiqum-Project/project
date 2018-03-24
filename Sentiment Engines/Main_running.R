@@ -2,7 +2,7 @@
 
 #TIME
 T1<-Sys.time()
-
+library(dplyr)
 #Main Source
 source("Sentiment Engines/Index common.R")
 source("Sentiment Engines/Function Used.R")
@@ -14,13 +14,13 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   #--------Time for the Index Common Start
   T2<-Sys.time()
   #Final Table creation
-  Final.table<-Text.art%>%
-    select(time,article)
+  Final.table<- Text.art%>%
+    dplyr::select(time,article)
   #Sources dummys
   Final.table <- cbind(Final.table,createDummyFeatures(Text.art$source, cols = "name-dummy"))
   #Number of words
   Final.table<-Final.table%>%
-    left_join(Index_0_nbwords(Text.art))
+    dplyr::left_join(Index_0_nbwords(Text.art))
   #Maturity/Countarticle last 4 hours/Last 24h
   Final.table<-Final.table%>%
     left_join(Index_0_maturity(Text.art,Time.art))%>%
@@ -141,12 +141,14 @@ print(paste("Main sources and functions : ",difftime(T1, Sys.time())))
   print(paste("TOTAL TIME PROGRAM : ",difftime(T1, Sys.time())))
   
 text.art2<-Text.art%>%
-  select(article,text)
+  dplyr::select(article,text)
 
 Merge_Table<-Final.table%>%
   left_join(Time.art2)%>%
   left_join(text.art2)
 
+
+Merge_Table = Merge_Table[!duplicated(Merge_Table$text),]
    z <- gzfile("FINAL.csv.gz")
     write.csv(Merge_Table, z)
 

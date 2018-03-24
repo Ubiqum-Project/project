@@ -1,7 +1,10 @@
 #LIST of working repertories
 
 #COUNTRIES
-TARGET_COUNTRY<-tolower(countrycode_data$country.name.en)
+
+
+
+TARGET_COUNTRY<-tolower(codelist$country.name.en)
 TARGET_COUNTRY<-c(TARGET_COUNTRY,"southkorean","vietnam","usa","unitedstates","europe","americas","asia","southkorea")
 
 #### IMPACT WORDS START ####

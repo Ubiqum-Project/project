@@ -41,13 +41,13 @@ pdf(NULL)
 
 print("library Loaded")
 
-#----------------------------------------------------------
-#   This is the Magical Part of the Modeling Process #####
-#----------------------------------------------------------
-
-#-------->  Let's Import In Our Data ---------------------------
-
-#--------> Enable Below for Diagnostic Mode--------------------------------------
+# #----------------------------------------------------------
+# #   This is the Magical Part of the Modeling Process #####
+# #----------------------------------------------------------
+# 
+# #-------->  Let's Import In Our Data ---------------------------
+# 
+# #--------> Enable Below for Diagnostic Mode--------------------------------------
 # data = read.csv(gzfile("finalValue.csv.gz")) #-----------> For Local Runs outside of APP
 # data2 = read.csv(gzfile("finalRate.csv.gz"))#-----------> For Local Runs outside of APP
 # RangerDay <- readRDS("cointrader/trainedModels/dataLagDayModelRanger2.rds")
@@ -58,248 +58,263 @@ print("library Loaded")
 # RFTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelRF2.rds")
 # SVMDay<- readRDS("cointrader/trainedModels/dataLagDayModelSVM2.rds")
 # SVMTwoDay<- readRDS("cointrader/trainedModels/dataLagDayModelSVM2.rds")
-
-
-#--------> Enable Below for App Mode--------------------------------------
-data = read.csv(gzfile("../finalValue.csv.gz")) #-----------> For App Runs
-data2 = read.csv(gzfile("../finalRate.csv.gz")) #-----------> For App Runs
-RangerDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRanger2.rds")
-RangerTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRanger2.rds")
-GBMDay <- readRDS("../cointrader/trainedModels/dataLagDayModelGBM2.rds")
-GBMTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelGBM2.rds")
-RFDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRF2.rds")
-RFTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRF2.rds")
-SVMDay <- readRDS("../cointrader/trainedModels/dataLagDayModelSVM2.rds")
-SVMTwoDay <-readRDS("../cointrader/trainedModels/dataLagDayModelSVM2.rds")
-
-print("files Loaded")
-
-data = data
-which(data$AveragedExchange==0)
-data$AveragedExchange = as.numeric(data$AveragedExchange) 
-str(data$AveragedExchange)
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange<= -.5] = -1
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange> -.5 & data$AveragedExchange< .01] = -.5
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange>= -.2 & data$AveragedExchange<= .2] = 0
-hist(data$AveragedExchange)
-
-data$AveragedExchange[data$AveragedExchange<= .5 & data$AveragedExchange> .01] = .5
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange> .5 ] = 1
-hist(data$AveragedExchange)
-
-data$AveragedExchange[data$AveragedExchange == 1] = 5
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange== -1] = 1
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange == -.5] = 2
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange==0] = 3
-hist(data$AveragedExchange)
-data$AveragedExchange[data$AveragedExchange== .5] = 4
-hist(data$AveragedExchange)
-
-
-data$AveragedExchange = as.factor(data$AveragedExchange)
-data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
-
-
+# 
+# 
+# #--------> Enable Below for App Mode--------------------------------------
+# # data = read.csv(gzfile("../finalValue.csv.gz")) #-----------> For App Runs
+# # data2 = read.csv(gzfile("../finalRate.csv.gz")) #-----------> For App Runs
+# # RangerDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRanger2.rds")
+# # RangerTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRanger2.rds")
+# # GBMDay <- readRDS("../cointrader/trainedModels/dataLagDayModelGBM2.rds")
+# # GBMTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelGBM2.rds")
+# # RFDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRF2.rds")
+# # RFTwoDay <- readRDS("../cointrader/trainedModels/dataLagDayModelRF2.rds")
+# # SVMDay <- readRDS("../cointrader/trainedModels/dataLagDayModelSVM2.rds")
+# # SVMTwoDay <-readRDS("../cointrader/trainedModels/dataLagDayModelSVM2.rds")
+# 
+# print("files Loaded")
+# 
+# data = data
+# which(data$AveragedExchange==0)
+# data$AveragedExchange = as.numeric(data$AveragedExchange) 
+# str(data$AveragedExchange)
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange<= -.5] = -1
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange> -.5 & data$AveragedExchange< .01] = -.5
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange>= -.2 & data$AveragedExchange<= .2] = 0
+# hist(data$AveragedExchange)
+# 
+# data$AveragedExchange[data$AveragedExchange<= .5 & data$AveragedExchange> .01] = .5
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange> .5 ] = 1
+# hist(data$AveragedExchange)
+# 
+# data$AveragedExchange[data$AveragedExchange == 1] = 5
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange== -1] = 1
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange == -.5] = 2
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange==0] = 3
+# hist(data$AveragedExchange)
+# data$AveragedExchange[data$AveragedExchange== .5] = 4
+# hist(data$AveragedExchange)
+# 
+# 
+# data$AveragedExchange = as.factor(data$AveragedExchange)
+# data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+# 
+# 
+# # nzv <- nearZeroVar(data)
+# # data <- data[,-nzv]
+# ################################################################
+# #-----> Removing Low Res Data
+# data = data[,which( colnames(data)=="article" ):ncol(data)]
+# ################################################################
+# #--------------> Experimental Merging
+# 
+# # 
+# 
+# print("data 1 preprocessed Loaded")
+# #data2 = data2[,-3]
+# data2 = data2[,-ncol(data2)]
+# 
+# data2 = data2[,which( colnames(data2)=="article" ):ncol(data2)]
+# data2 = data2[ , apply(data2, 2, function(x) !any(is.na(x)))]
+# 
+# 
+# data3 = cbind(data, data2)
+# # data3 = data3[,-1]
+# # 
+# data = data3
+# #data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
+# 
+# targetColumn = which( colnames(data)=="AveragedExchange" )
+# #nzv <- nearZeroVar(data)
+# #data <- data[,-nzv]
+# 
+# 
+# #data = na.omit(data)
+# #data = as.numeric(data)
+# #data$AveragedExchange =as.factor(data$AveragedExchange)
+# 
+# data = data[ , colSums(is.na(data)) == 0]
+# 
+# print("data 2 preprocessed ")
+# 
+# #--------------------------------------------------------------------------
+# 
+# 
+# #########################################################################
+# ##                RANGER                                              ###
+# #########################################################################
+# RangerDayALLPredict = predict(RangerDay,data)
+# #--------> Generate Predictions from Ranger One Day Out-------------------
+# 
+# RangerDayPredict = predict(RangerDay,data[(nrow(data)-48):nrow(data),])
+# 
+# RangerDayAccuracy = paste0(round(max(RangerDay$results[4])*100, digits = 0))
+# #--------------------------------------------------------------------------
+# 
+# #--------> Generate Predictions from Ranger Two Days Out-------------------
+# 
+# RangerTwoDayPredict = predict(RangerTwoDay,data[(nrow(data)-96):nrow(data),])
+# 
+# RangerTwoDayAccuracy = paste0(round(max(RangerTwoDay$results[4])*100, digits = 0))
+# #--------------------------------------------------------------------------
+# 
+# print("ranger loaded ")
+# #########################################################################
+# ##                GBM                                                 ###
+# #########################################################################
+# GBMDayALLPredict = predict(GBMDay,data)
+# #--------> Generate Predictions from Ranger One Day Out-------------------
+# 
+# GBMDayPredict = predict(GBMDay,data[(nrow(data)-48):nrow(data),])
+# GBMDayAccuracy = paste0(round(max(GBMDay$results[5])*100, digits = 0))
+# 
+# #--------------------------------------------------------------------------
+# 
+# #--------> Generate Predictions from Ranger Two Days Out-------------------
+# 
+# GBMTwoDayPredict = predict(GBMTwoDay,data[(nrow(data)-96):nrow(data),])
+# GBMTwoDayAccuracy = paste0(round(max(GBMTwoDay$results[5])*100, digits = 0))
+# #--------------------------------------------------------------------------
+# print("gbm loaded ")
+# #########################################################################
+# ##                RF                                                 ###
+# #########################################################################
+# RFDayALLPredict = predict(RFDay,data)
+# #--------> Generate Predictions from Ranger One Day Out-------------------
+# 
+# RFDayPredict = predict(RFDay,data[(nrow(data)-48):nrow(data),])
+# RFDayAccuracy = paste0(round(max(RFDay$results[2])*100, digits = 0))
+# 
+# #--------------------------------------------------------------------------
+# 
+# #--------> Generate Predictions from Ranger Two Days Out-------------------
+# 
+# RFTwoDayPredict = predict(RFTwoDay,data[(nrow(data)-96):nrow(data),])
+# RFTwoDayAccuracy = paste0(round(max(RFTwoDay$results[2])*100, digits = 0))
+# #--------------------------------------------------------------------------
+# print("rf loaded ")
+# #########################################################################
+# ##                SVM                                               ###
+# #########################################################################
 # nzv <- nearZeroVar(data)
-# data <- data[,-nzv]
-################################################################
-#-----> Removing Low Res Data
-data = data[,which( colnames(data)=="article" ):ncol(data)]
-################################################################
-#--------------> Experimental Merging
-
+# dataSVM <- data[,-nzv]
 # 
-
-print("data 1 preprocessed Loaded")
-#data2 = data2[,-3]
-data2 = data2[,-ncol(data2)]
-
-data2 = data2[,which( colnames(data2)=="article" ):ncol(data2)]
-data2 = data2[ , apply(data2, 2, function(x) !any(is.na(x)))]
-
-
-data3 = cbind(data, data2)
-# data3 = data3[,-1]
+# SVMDayALLPredict = predict(SVMDay,data)
+# #--------> Generate Predictions from Ranger One Day Out-------------------
 # 
-data = data3
-#data = data[ , apply(data, 2, function(x) !any(is.na(x)))]
-
-targetColumn = which( colnames(data)=="AveragedExchange" )
-#nzv <- nearZeroVar(data)
-#data <- data[,-nzv]
-
-
-#data = na.omit(data)
-#data = as.numeric(data)
-#data$AveragedExchange =as.factor(data$AveragedExchange)
-
-data = data[ , colSums(is.na(data)) == 0]
-
-print("data 2 preprocessed ")
-
-#--------------------------------------------------------------------------
-
-
-#########################################################################
-##                RANGER                                              ###
-#########################################################################
-RangerDayALLPredict = predict(RangerDay,data)
-#--------> Generate Predictions from Ranger One Day Out-------------------
-
-RangerDayPredict = predict(RangerDay,data[(nrow(data)-48):nrow(data),])
-
-RangerDayAccuracy = paste0(round(max(RangerDay$results[4])*100, digits = 0))
-#--------------------------------------------------------------------------
-
-#--------> Generate Predictions from Ranger Two Days Out-------------------
-
-RangerTwoDayPredict = predict(RangerTwoDay,data[(nrow(data)-96):nrow(data),])
-
-RangerTwoDayAccuracy = paste0(round(max(RangerTwoDay$results[4])*100, digits = 0))
-#--------------------------------------------------------------------------
-
-print("ranger loaded ")
-#########################################################################
-##                GBM                                                 ###
-#########################################################################
-GBMDayALLPredict = predict(GBMDay,data)
-#--------> Generate Predictions from Ranger One Day Out-------------------
-
-GBMDayPredict = predict(GBMDay,data[(nrow(data)-48):nrow(data),])
-GBMDayAccuracy = paste0(round(max(GBMDay$results[5])*100, digits = 0))
-
-#--------------------------------------------------------------------------
-
-#--------> Generate Predictions from Ranger Two Days Out-------------------
-
-GBMTwoDayPredict = predict(GBMTwoDay,data[(nrow(data)-96):nrow(data),])
-GBMTwoDayAccuracy = paste0(round(max(GBMTwoDay$results[5])*100, digits = 0))
-#--------------------------------------------------------------------------
-print("gbm loaded ")
-#########################################################################
-##                RF                                                 ###
-#########################################################################
-RFDayALLPredict = predict(RFDay,data)
-#--------> Generate Predictions from Ranger One Day Out-------------------
-
-RFDayPredict = predict(RFDay,data[(nrow(data)-48):nrow(data),])
-RFDayAccuracy = paste0(round(max(RFDay$results[2])*100, digits = 0))
-
-#--------------------------------------------------------------------------
-
-#--------> Generate Predictions from Ranger Two Days Out-------------------
-
-RFTwoDayPredict = predict(RFTwoDay,data[(nrow(data)-96):nrow(data),])
-RFTwoDayAccuracy = paste0(round(max(RFTwoDay$results[2])*100, digits = 0))
-#--------------------------------------------------------------------------
-print("rf loaded ")
-#########################################################################
-##                SVM                                               ###
-#########################################################################
-nzv <- nearZeroVar(data)
-dataSVM <- data[,-nzv]
-
-SVMDayALLPredict = predict(SVMDay,data)
-#--------> Generate Predictions from Ranger One Day Out-------------------
-
-SVMDayPredict = predict(SVMDay,dataSVM[(nrow(dataSVM)-48):nrow(dataSVM),])
-
-svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay,dataSVM))
-svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
-
-#--------------------------------------------------------------------------
-
-#--------> Generate Predictions from Ranger Two Days Out-------------------
-
-
-SVMTwoDayPredict = predict(SVMTwoDay,dataSVM[(nrow(dataSVM)-96):nrow(dataSVM),])
-
-svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMTwoDay,dataSVM))
-svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
-
-
-svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+# SVMDayPredict = predict(SVMDay,dataSVM[(nrow(dataSVM)-48):nrow(dataSVM),])
+# 
+# svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMDay,dataSVM))
+# svmOneAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+# 
+# #--------------------------------------------------------------------------
+# 
+# #--------> Generate Predictions from Ranger Two Days Out-------------------
+# 
+# 
+# SVMTwoDayPredict = predict(SVMTwoDay,dataSVM[(nrow(dataSVM)-96):nrow(dataSVM),])
+# 
+# svmAccuracy = confusionMatrix(dataSVM$AveragedExchange, predict(SVMTwoDay,dataSVM))
+# svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+# 
+# 
+# svmTwoAccuracy = round(svmAccuracy$overall[1]*100, digits = 0)
+# 
+# 
+# 
+# #--------------------------------------------------------------------------
+# print("svm loaded ")
+# #########################################################################
+# ##                H2O                                              ###
+# #########################################################################
+# 
+# #--------> Generate Predictions from Ranger One Day Out-------------------
+# 
+# h2o.init()
+# print("H2O Initialized ")
+# #H2oDay <- h2o.loadModel("cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+# print("H2o model loaded ")
+# H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
+# dataX <- as.h2o(data)
+# H2oDayALLPredict = predict(H2oDay,dataX)
+# h20DayAllResults = as.data.frame(H2oDayALLPredict)
+# H2oDayAllPredict = as.data.frame(h20DayAllResults$predict)
+# 
+# data1 <- as.h2o(data[(nrow(data)-48):nrow(data),])
+# H2oDayPredictData = predict(H2oDay,data1)
+# h20DayResults = as.data.frame(H2oDayPredictData)
+# H2oDayPredict = as.data.frame(h20DayResults$predict)
+# h2oAccuracyDay =round((H2oDay@model$validation_metrics@metrics$r2)*100,digits = 0)
+# 
+# #--------------------------------------------------------------------------
+# 
+# #--------> Generate Predictions from Ranger Two Days Out-------------------
+# #H2oTwoDay <- h2o.loadModel("cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
+# H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
+# 
+# data2 <- as.h2o(data[(nrow(data)-96):nrow(data),])
+# H2oTwoDayPredictData = predict(H2oTwoDay,data2)
+# h20TwoDayResults = as.data.frame(H2oTwoDayPredictData)
+# H2oTwoDayPredict = as.data.frame(h20TwoDayResults$predict)
+# h2oAccuracyTwoDay =round((H2oTwoDay@model$validation_metrics@metrics$r2)*100,digits = 0)
+# print("h2o loaded ")
+# 
+# #########################################################################
+# ##                LSTM                                               ###
+# #########################################################################
+# 
+# 
+# #########################################################################
+# ##                Build the Predictions Frame                         ###
+# #########################################################################
+# H2oDayALLPredict$predict
+# 
+# oneDayAllCombined = cbind(as.data.frame(data$AveragedExchange), as.data.frame(RangerDayALLPredict),RFDayALLPredict,GBMDayALLPredict,SVMDayALLPredict,as.data.frame(H2oDayALLPredict$predict),as.data.frame(RangerDayALLPredict))
+# oneDayAllCombined = as.data.frame(oneDayAllCombined)
+# colnames(oneDayAllCombined) = c("Actual", "Ranger","RandomForest", "GBM", "SVM", "H2O", "LSTM")
+# 
+# #-------> Building Answer Key ------------------------------------------
+# 
+# AveragedExchange = data$AveragedExchange
+# 
+# historicalFrame = data.frame(AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange)
+# 
+# colnames(historicalFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
+# print("ghistorical frame built ")
+# #---------DataFrame of Day Predictions ---------------------------------
+# 
+# predictOneDayFrame = data.frame(RangerDayPredict,RFDayPredict,GBMDayPredict,SVMDayPredict,H2oDayPredict,RangerDayPredict)
+# colnames(predictOneDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
+# oneDayPredictions= rbind(historicalFrame, predictOneDayFrame)
+# print("one day frame built ")
+# #---------DataFrame of 2 Day Predictions -------------------------------
+# 
+# predictTwoDayFrame = data.frame(RangerTwoDayPredict,RFTwoDayPredict,GBMTwoDayPredict,SVMTwoDayPredict,H2oTwoDayPredict,RangerTwoDayPredict)
+# colnames(predictTwoDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
+# twoDayPredictions = rbind(historicalFrame, predictTwoDayFrame)
+# print("two day frame built ")
 
 
 
-#--------------------------------------------------------------------------
-print("svm loaded ")
-#########################################################################
-##                H2O                                              ###
-#########################################################################
+#---------->For DIagnostics
+# predictOneDayFrame = read.csv(gzfile("cointrader/trainedModels/RoutineOneDay.csv.gz"))
+# predictTwoDayFrame=read.csv(gzfile("cointrader/trainedModels/RoutineTwoDay.csv.gz"))
+# oneDayAccuracy = read.csv(gzfile("cointrader/trainedModels/RoutineOneDayAccuracy.csv.gz"))
+# twoDayAccuracy=read.csv(gzfile("cointrader/trainedModels/RoutineTwoDayAccuracy.csv.gz"))
 
-#--------> Generate Predictions from Ranger One Day Out-------------------
+#---------->For App
+predictOneDayFrame = read.csv(gzfile("../cointrader/trainedModels/RoutineOneDay.csv.gz"))
+predictTwoDayFrame=read.csv(gzfile("../cointrader/trainedModels/RoutineTwoDay.csv.gz"))
+oneDayAccuracy = read.csv(gzfile("../cointrader/trainedModels/RoutineOneDayAccuracy.csv.gz"))
+twoDayAccuracy=read.csv(gzfile("../cointrader/trainedModels/RoutineTwoDayAccuracy.csv.gz"))
 
-h2o.init()
-print("H2O Initialized ")
-#H2oDay <- h2o.loadModel("cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
-print("H2o model loaded ")
-H2oDay <- h2o.loadModel("../cointrader/trainedModels/StackedEnsemble_AllModels_0_AutoML_20180305_184458")
-dataX <- as.h2o(data)
-H2oDayALLPredict = predict(H2oDay,dataX)
-h20DayAllResults = as.data.frame(H2oDayALLPredict)
-H2oDayAllPredict = as.data.frame(h20DayAllResults$predict)
-
-data1 <- as.h2o(data[(nrow(data)-48):nrow(data),])
-H2oDayPredictData = predict(H2oDay,data1)
-h20DayResults = as.data.frame(H2oDayPredictData)
-H2oDayPredict = as.data.frame(h20DayResults$predict)
-h2oAccuracyDay =round((H2oDay@model$validation_metrics@metrics$r2)*100,digits = 0)
-
-#--------------------------------------------------------------------------
-
-#--------> Generate Predictions from Ranger Two Days Out-------------------
-#H2oTwoDay <- h2o.loadModel("cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
-H2oTwoDay <- h2o.loadModel("../cointrader/trainedModels/GBM_grid_0_AutoML_20180305_185644_model_3")
-
-data2 <- as.h2o(data[(nrow(data)-96):nrow(data),])
-H2oTwoDayPredictData = predict(H2oTwoDay,data2)
-h20TwoDayResults = as.data.frame(H2oTwoDayPredictData)
-H2oTwoDayPredict = as.data.frame(h20TwoDayResults$predict)
-h2oAccuracyTwoDay =round((H2oTwoDay@model$validation_metrics@metrics$r2)*100,digits = 0)
-print("h2o loaded ")
-
-#########################################################################
-##                LSTM                                               ###
-#########################################################################
-
-
-#########################################################################
-##                Build the Predictions Frame                         ###
-#########################################################################
-H2oDayALLPredict$predict
-
-oneDayAllCombined = cbind(as.data.frame(data$AveragedExchange), as.data.frame(RangerDayALLPredict),RFDayALLPredict,GBMDayALLPredict,SVMDayALLPredict,as.data.frame(H2oDayALLPredict$predict),as.data.frame(RangerDayALLPredict))
-oneDayAllCombined = as.data.frame(oneDayAllCombined)
-colnames(oneDayAllCombined) = c("Actual", "Ranger","RandomForest", "GBM", "SVM", "H2O", "LSTM")
-
-#-------> Building Answer Key ------------------------------------------
-
-AveragedExchange = data$AveragedExchange
-
-historicalFrame = data.frame(AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange,AveragedExchange)
-
-colnames(historicalFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
-print("ghistorical frame built ")
-#---------DataFrame of Day Predictions ---------------------------------
-
-predictOneDayFrame = data.frame(RangerDayPredict,RFDayPredict,GBMDayPredict,SVMDayPredict,H2oDayPredict,RangerDayPredict)
-colnames(predictOneDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
-oneDayPredictions= rbind(historicalFrame, predictOneDayFrame)
-print("one day frame built ")
-#---------DataFrame of 2 Day Predictions -------------------------------
-
-predictTwoDayFrame = data.frame(RangerTwoDayPredict,RFTwoDayPredict,GBMTwoDayPredict,SVMTwoDayPredict,H2oTwoDayPredict,RangerTwoDayPredict)
-colnames(predictTwoDayFrame) = c("Ranger", "RandomForest", "GBM", "SVM", "H2O", "LSTM")
-twoDayPredictions = rbind(historicalFrame, predictTwoDayFrame)
-print("two day frame built ")
 #---------------------> Calculate Day Average -------------------------------------
 predictOneDayFrame
 predictOneDayFrame$Ranger = as.numeric(predictOneDayFrame$Ranger)

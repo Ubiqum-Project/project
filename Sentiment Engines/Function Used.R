@@ -7,7 +7,7 @@
   Index_daily <- function(Final.table, variable)
   {
     working.table <-   Final.table %>% 
-      select(time, variable) %>%
+      dplyr::select(time, variable) %>%
       group_by(time)%>%
       summarise_all(.funs = c(mean="mean"), na.rm = TRUE)
     
@@ -31,14 +31,14 @@
     Working_table1<-Text.art%>%
       filter(grepl(paste("\\b",NegationWords[1],"\\b"),text ))%>%
       mutate(test=TRUE)%>%
-      select(article,test)
+      dplyr::select(article,test)
     
     for(i in 2:length(NegationWords))
     {Working_table1tmp<-Text.art%>%
       filter(grepl(paste("\\b",NegationWords[i],"\\b"),text ))%>%
       mutate(word=NegationWords[i])%>%
       mutate(test=TRUE)%>%
-      select(article,test)
+      dplyr::select(article,test)
     
     Working_table1<-Working_table1%>%
       full_join(Working_table1tmp)
@@ -46,7 +46,7 @@
     Working_Table<-Text.art%>%
       left_join(Working_table1)%>%
       filter(is.na(test))%>%
-      select(article,source,text,time)
+      dplyr::select(article,source,text,time)
     
     #TIME
     T1<-Sys.time()
@@ -92,18 +92,18 @@
   {
     result<-Text.art%>%
       mutate(nbwords=sapply(gregexpr("\\W+", text), length) + 1)%>%
-      select(article,nbwords)
+      dplyr::select(article,nbwords)
     return(result)
   }
   Index_0_maturity <- function(Text.art,Time.art)
   {
     Working_Table<-Time.art%>%
       mutate(maturity=as.POSIXlt(Sys.time())-Time.art$time_Posixt)%>%
-      select(article,maturity)
+      dplyr::select(article,maturity)
     
     result<-Text.art%>%
       left_join(Working_Table)%>%
-      select(article,maturity,time)
+      dplyr::select(article,maturity,time)
     
     return(result)
   }
@@ -112,14 +112,14 @@
   {
     Working_Table<-Time.art%>%
       mutate(maturity=difftime(Sys.time(), Time.art$time_Posixt,units = "hours"))%>%
-      select(article,maturity)%>%
+      dplyr::select(article,maturity)%>%
       arrange(maturity)%>%
       mutate(article_TOrder = 1:n())%>%
       mutate(maturity=round(maturity,0))%>%
       mutate(lastday=maturity+hour)
     
     Working_Table2<-Working_Table%>%
-      select(maturity,article_TOrder)%>%
+      dplyr::select(maturity,article_TOrder)%>%
       group_by(maturity)%>%
       summarise(article_n=min(article_TOrder))
     
@@ -129,11 +129,11 @@
       left_join(Working_Table2)%>%
       mutate(article_n=rev(na.locf(rev(article_n),na.rm=FALSE)))%>%
       mutate(count_art=article_n-article_TOrder)%>%
-      select(article,count_art)
+      dplyr::select(article,count_art)
     
     result<-Text.art%>%
       left_join(Working_Table)%>%
-      select(article,count_art)
+      dplyr::select(article,count_art)
     
     colnames(result)[2]<-paste(c("count_art",hour),collapse="_")
     return(result)
@@ -148,7 +148,7 @@
     
     working.table<-SEARCH_WORD.article%>%
       filter(word%in% SEARCH_WORD[1])%>%
-      select(time,n)
+      dplyr::select(time,n)
     
     colnames(working.table)[2] <- SEARCH_WORD[1]
     
@@ -156,7 +156,7 @@
     for(i in 2:length(SEARCH_WORD)){
       working.table_tmp<-SEARCH_WORD.article%>%
         filter(word%in% SEARCH_WORD[i])%>%
-        select(time,n)
+        dplyr::select(time,n)
       
       colnames(working.table_tmp)[2] <- SEARCH_WORD[i]
       
@@ -165,7 +165,7 @@
     }
     Result<-Text.art%>%
       left_join(working.table)%>%
-      select(article,bubble,tether,hack,crisis,record,fork,whale,ban,bankruptcy,legal)
+      dplyr::select(article,bubble,tether,hack,crisis,record,fork,whale,ban,bankruptcy,legal)
     return(Result)
   }
   
@@ -181,7 +181,7 @@
     
     result <- Text.art   %>%
       left_join (working.table)   %>%
-      select(article,Test)
+      dplyr::select(article,Test)
     
     colnames(result)[2]<-paste(c(target_name,"Mention"),collapse="_")
     return(result)
@@ -201,7 +201,7 @@
       group_by(article)%>%
       count(article)%>%
       mutate(Test=1)%>%
-      select(article,Test)
+      dplyr::select(article,Test)
     
     colnames(result)[2]<-paste(c(target_name,"TOP_Mention"),collapse="_")
     return(result)
@@ -265,7 +265,7 @@
     
     sentim.around <- full_join(sentim, sentim.end)%>%
       mutate(score=ifelse(is.na(score1),0,score1)+ifelse(is.na(score2),0,score2))%>%
-      select(time,tword,score)
+      dplyr::select(time,tword,score)
     
     rm(sentim,sentim.end)
     
@@ -283,7 +283,7 @@
     
     Result<-Text.art%>%
       left_join(Index)%>%
-      select(article,index.value)
+      dplyr::select(article,index.value)
     
     colnames(Result)[2]<-paste(c(target_name,"Indexe1_1",sentiment.used),collapse="_")
     #TIME
@@ -334,7 +334,7 @@
     
     sentim.around <- full_join(sentim, sentim.end)%>%
       mutate(score=ifelse(is.na(score1),0,score1)+ifelse(is.na(score2),0,score2))%>%
-      select(article,score)
+      dplyr::select(article,score)
     
     rm(sentim,sentim.end)
     #3)Index formula
@@ -342,7 +342,7 @@
     
     Result<-Text.art%>%
       left_join(Index)%>%
-      select(article,score)
+      dplyr::select(article,score)
     
     colnames(Result)[2]<-paste(c(target_name,"Indexe1_2",sentiment.used),collapse="_")
     #TIME
@@ -370,38 +370,38 @@
     Negative_Impact<-Negative_Impact%>%
       mutate(negative=afinn+bing+syuzhet+nrc)%>%
       mutate(negative=(negative>=2))%>%
-      select(negative)
+      dplyr::select(negative)
     #Positive  
     Positive_Impact<-(Sentiment.Impact[,2:5]>0)*1
     Positive_Impact<-tbl_df(Positive_Impact)
     Positive_Impact<-Positive_Impact%>%
       mutate(positive=afinn+bing+syuzhet+nrc)%>%
       mutate(positive=(positive>=2))%>%
-      select(positive)
+      dplyr::select(positive)
     
     #Create the list of positive and negative words list
     Positive_Impact.list<-data.frame(ImpactWords,positive=Positive_Impact,negative=Negative_Impact)%>%
       filter(positive==TRUE)%>%
-      select(ImpactWords)%>%
+      dplyr::select(ImpactWords)%>%
       filter(ImpactWords!="govern")#Eleminate impact words
     
     
     Negative_Impact.list<-data.frame(ImpactWords,positive=Positive_Impact,negative=Negative_Impact)%>%
       filter(negative==TRUE)%>%
-      select(ImpactWords)%>%
+      dplyr::select(ImpactWords)%>%
       filter(ImpactWords!="bank")#Eleminate impact words
     
     #Merge Quadrigram and Quadrigram.end
     quatrigram_merge.impact<-quatrigrams_filtered%>%
       full_join(quatrigrams_filtered.end)%>%
-      select(time,trigram)
+      dplyr::select(time,trigram)
     
     #Initialization of the table
     Result<-quatrigram_merge.impact%>%
       count(time)%>%
       mutate(Positive=0)%>%
       mutate(Negative=0)%>%
-      select(time,Positive,Negative)
+      dplyr::select(time,Positive,Negative)
     
     
     #Create the list of positive and negative words list
@@ -418,7 +418,7 @@
       Result<-Result%>%
         left_join(Working_Table)%>%
         mutate(Positive=Positive+ifelse(is.na(Positivetmp),0,Positivetmp))%>%
-        select(time,Positive,Negative)
+        dplyr::select(time,Positive,Negative)
       
       #Positive + negation => Negative
       for(j in 1:length(NegationWords)){
@@ -433,7 +433,7 @@
         Result<-Result%>%
           left_join(Working_Table)%>%
           mutate(Negative=Negative+ifelse(is.na(Negativetmp),0,Negativetmp))%>%
-          select(time,Positive,Negative)
+          dplyr::select(time,Positive,Negative)
       }
     }
     #negative
@@ -449,7 +449,7 @@
       Result<-Result%>%
         left_join(Working_Table)%>%
         mutate(Negative=Negative+ifelse(is.na(Negativetmp),0,Negativetmp))%>%
-        select(time,Positive,Negative)
+        dplyr::select(time,Positive,Negative)
       
       #Negative + negation => Positive
       for(j in 1:length(NegationWords)){
@@ -464,7 +464,7 @@
         Result<-Result%>%
           left_join(Working_Table)%>%
           mutate(Positive=Positive+ifelse(is.na(Positivetmp),0,Positivetmp))%>%
-          select(time,Positive,Negative)
+          dplyr::select(time,Positive,Negative)
         
       }
     }
