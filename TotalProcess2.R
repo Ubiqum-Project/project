@@ -3,8 +3,8 @@
 # This file pulls 2 days of data from the server to run through the models.  This is used by the app to predict.  This Rscript is 
 # automated to run every few hours.
 
-library(R.utils)
-R.utils::gcDLLs()
+#library(R.utils)
+#R.utils::gcDLLs()
 #TIME
 .TT<-Sys.time()
 .TX<-Sys.time()
@@ -33,7 +33,7 @@ print(paste("Secondary predictors TIME : ",round(difftime(.TX, Sys.time(),units 
 .TX<-Sys.time()
 rm(list=ls())
 
-R.utils::gcDLLs()
+#R.utils::gcDLLs()
 #Data Normalization
 print(paste("Data Normalization"))
 source("Modeling/dataNormalizer.R")
@@ -42,7 +42,7 @@ print(paste("Data Normalization TIME : ",round(difftime(.TX, Sys.time(),units = 
 .TX<-Sys.time()
 rm(list=ls())
 
-R.utils::gcDLLs()
+#R.utils::gcDLLs()
 #Models
 print(paste("Models"))
 source("Modeling/Model Pool/RoutineModelRun.R")
