@@ -37,11 +37,13 @@ print(paste("Data Normalization TIME : ",round(difftime(.TX, Sys.time(),units = 
 rm(list=ls())
 
 #Models
-print(paste("Models"))
-source("XXXXXXXXXXXXX.R")
-print(paste("TOTAL TIME PROGRAM : ", round(difftime(.TT, Sys.time(),units = "mins"),2),"minutes"))
-print(paste("Models TIME : ",round(difftime(.TX, Sys.time(),units = "mins"),2),"minutes"))
-.TX<-Sys.time()
+# print(paste("Models"))
+# source("XXXXXXXXXXXXX.R")
+# print(paste("TOTAL TIME PROGRAM : ", round(difftime(.TT, Sys.time(),units = "mins"),2),"minutes"))
+# print(paste("Models TIME : ",round(difftime(.TX, Sys.time(),units = "mins"),2),"minutes"))
+# .TX<-Sys.time()
 
 #TOTAL TIME
 print(paste("TOTAL TIME PROGRAM : ", round(difftime(.TT, Sys.time(),units = "mins"),2),"minutes"))
+
+
